@@ -13,15 +13,26 @@
     <meta property="og:image" content="/bumil_ceria/logo.jpg" />
     <meta property="og:type" content="website" />
     <title>Bumil Ceria — Panduan Kehamilan Mama &amp; Papa</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/logo.jpg" />
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/bumil_ceria/favicon.svg" />
+    <link rel="apple-touch-icon" href="/bumil_ceria/logo.jpg" />
+    <link rel="manifest" href="/bumil_ceria/manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <!-- GitHub Pages SPA: restore path from 404 redirect -->
+    <script>
+      (function () {
+        var redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+

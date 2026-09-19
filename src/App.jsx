@@ -162,7 +162,7 @@ function App() {
 
   return (
     <AppContext.Provider value={contextValue}>
-      <BrowserRouter>
+      <BrowserRouter basename="/bumil_ceria">
         {!onboarded ? (
           <div className="app-container">
             <Routes>
