@@ -49,7 +49,7 @@ export default function DesktopCompanionSidebar({ onOpenAudio }) {
       <aside className="desktop-sidebar desktop-sidebar--left" aria-label="Navigasi Desktop">
         <div className="desk-brand">
           <div className="desk-logo" style={{ padding: 0, overflow: 'hidden' }}>
-            <img src="logo.jpg" alt="Bumil Ceria" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
+            <img src={`${import.meta.env.BASE_URL}logo.jpg`} alt="Bumil Ceria" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 'inherit' }} />
           </div>
           <div>
             <h3>Bumil Ceria</h3>

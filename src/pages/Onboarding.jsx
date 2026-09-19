@@ -96,7 +96,7 @@ function Onboarding() {
         <div className="onboarding__step onboarding__welcome animate-fade-in-up">
           <div className="onboarding__hero">
             <div className="onboarding__hero-icon">
-              <img src="logo.jpg" alt="Bumil Ceria" style={{ width: 80, height: 80, borderRadius: 20, objectFit: 'cover', boxShadow: '0 8px 24px rgba(255,107,138,0.3)' }} />
+              <img src={`${import.meta.env.BASE_URL}logo.jpg`} alt="Bumil Ceria" style={{ width: 80, height: 80, borderRadius: 20, objectFit: 'cover', boxShadow: '0 8px 24px rgba(255,107,138,0.3)' }} />
             </div>
             <h1 className="onboarding__title">Bumil Ceria</h1>
             <p className="onboarding__subtitle">

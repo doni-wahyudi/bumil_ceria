@@ -133,7 +133,7 @@ function App() {
         <div className="login-bg" aria-hidden="true" />
         <div className="login-card animate-fade-in-up" style={{ maxWidth: 280, padding: '28px 20px' }}>
           <div className="login-logo" style={{ width: 64, height: 64, margin: '0 auto 12px' }}>
-            <img src="logo.jpg" alt="Bumil Ceria" className="login-logo__img" onError={(e) => { e.target.src = '/bumil_ceria/logo.jpg'; }} />
+            <img src={`${import.meta.env.BASE_URL}logo.jpg`} alt="Bumil Ceria" className="login-logo__img" />
           </div>
           <h2 className="login-title" style={{ fontSize: '1.2rem', marginBottom: 2 }}>Bumil Ceria</h2>
           <p className="login-subtitle" style={{ marginBottom: 14 }}>Memuat aplikasi...</p>

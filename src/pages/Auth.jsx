@@ -94,7 +94,7 @@ export default function Auth({ initialTab = 'login' }) {
       <div className="login-card animate-fade-in-up">
         {/* Logo */}
         <div className="login-logo">
-          <img src="logo.jpg" alt="Bumil Ceria" className="login-logo__img" onError={(e) => { e.target.src = '/bumil_ceria/logo.jpg'; }} />
+          <img src={`${import.meta.env.BASE_URL}logo.jpg`} alt="Bumil Ceria" className="login-logo__img" />
         </div>
 
         <h1 className="login-title">Bumil Ceria</h1>
