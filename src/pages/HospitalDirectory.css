@@ -1,0 +1,336 @@
+/* Hospital Directory Page Styles */
+
+.hospital-dir-page {
+  padding-bottom: 96px;
+}
+
+.hd-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.hd-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.hd-back-btn:hover {
+  background: var(--color-bg-secondary);
+  transform: scale(1.05);
+}
+
+.hd-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary-dark);
+  margin-bottom: 2px;
+}
+
+/* Emergency Protocol Card */
+.hd-emergency-card {
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(224, 86, 96, 0.06) 100%);
+  border: 1px solid rgba(224, 86, 96, 0.3);
+}
+
+.hd-emergency-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.hd-emergency-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--color-danger);
+}
+
+.hd-bpjs-rule-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(126, 174, 178, 0.15);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.hd-shield-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.hd-red-flags-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(224, 86, 96, 0.2);
+}
+
+.hd-flag-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.hd-flag-emoji {
+  font-size: 1.25rem;
+}
+
+.hd-flag-content {
+  flex: 1;
+}
+
+.hd-flag-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.hd-flag-top strong {
+  font-size: var(--text-xs);
+  color: var(--color-text-primary);
+}
+
+.hd-urgency-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: rgba(224, 86, 96, 0.15);
+  color: var(--color-danger);
+}
+
+.hd-flag-content p {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.35;
+}
+
+/* Controls: Search & Filter */
+.hd-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.hd-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.hd-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: var(--text-xs);
+  color: var(--color-text-primary);
+  outline: none;
+}
+
+.hd-filter-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.hd-filter-btn {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.hd-filter-btn--active {
+  background: var(--color-text-primary);
+  color: var(--color-surface);
+  border-color: var(--color-text-primary);
+}
+
+/* Hospital Cards List */
+.hd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hd-card {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.hd-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.hd-area-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+}
+
+.hd-bpjs-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+}
+
+.hd-bpjs-badge--yes {
+  background: var(--color-secondary-light);
+  color: var(--color-secondary-dark);
+}
+
+.hd-bpjs-badge--no {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-tertiary);
+}
+
+.hd-rec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+
+.hd-card-name {
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: 2px;
+}
+
+.hd-card-type {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.hd-card-address {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.hd-addr-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-text-tertiary);
+}
+
+.hd-facilities-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.hd-fac-chip {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-warm);
+  color: var(--color-text-primary);
+}
+
+/* Actions */
+.hd-card-actions {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 10px;
+}
+
+.hd-call-btn {
+  flex: 2;
+  font-size: var(--text-xs);
+  padding: 8px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.hd-maps-btn {
+  flex: 1;
+  font-size: var(--text-xs);
+  padding: 8px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.hd-empty-card {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--color-text-secondary);
+}
+
+.hd-empty-emoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 8px;
+}

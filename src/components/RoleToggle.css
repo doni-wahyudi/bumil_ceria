@@ -1,0 +1,49 @@
+.role-toggle {
+  display: flex;
+  gap: var(--space-1);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-full);
+  padding: 3px;
+}
+
+.role-toggle__btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-tertiary);
+  transition: all var(--duration-fast) var(--ease-spring);
+  min-height: 36px;
+  touch-action: manipulation;
+}
+
+.role-toggle__btn:active {
+  transform: scale(0.96);
+}
+
+.role-toggle__btn--active {
+  box-shadow: var(--shadow-sm);
+}
+
+.role-toggle__btn--mama.role-toggle__btn--active {
+  background: var(--color-mama-light);
+  color: var(--color-mama);
+}
+
+.role-toggle__btn--papa.role-toggle__btn--active {
+  background: var(--color-papa-light);
+  color: var(--color-papa);
+}
+
+.role-toggle__emoji {
+  font-size: 16px;
+  line-height: 1;
+}

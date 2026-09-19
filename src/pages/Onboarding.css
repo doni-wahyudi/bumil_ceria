@@ -1,0 +1,228 @@
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: var(--space-6) var(--space-5);
+  padding-bottom: var(--space-10);
+}
+
+.onboarding__progress {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  margin-bottom: var(--space-8);
+}
+
+.onboarding__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  transition: all var(--duration-normal) var(--ease-spring);
+}
+
+.onboarding__dot--active {
+  width: 24px;
+  background: var(--color-primary);
+}
+
+.onboarding__step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Welcome step */
+.onboarding__welcome {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.onboarding__hero {
+  margin-bottom: var(--space-10);
+}
+
+.onboarding__hero-icon {
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-2xl);
+  background: var(--color-mama-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-5);
+  box-shadow: 0 4px 20px rgba(var(--color-primary-rgb), 0.15);
+}
+
+.onboarding__title {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: 800;
+  color: var(--color-primary);
+  letter-spacing: -0.03em;
+  margin-bottom: var(--space-2);
+}
+
+.onboarding__subtitle {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  max-width: 280px;
+  line-height: 1.5;
+}
+
+.onboarding__features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  text-align: left;
+}
+
+.onboarding__feature {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+}
+
+.onboarding__feature-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.onboarding__feature h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  margin-bottom: 1px;
+}
+
+.onboarding__feature p {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.3;
+}
+
+/* Form steps */
+.onboarding__step-header {
+  margin-bottom: var(--space-6);
+}
+
+.onboarding__step-emoji {
+  font-size: 40px;
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+.onboarding__step-header h2 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-2);
+}
+
+.onboarding__step-header p {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.onboarding__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Insurance options */
+.onboarding__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.onboarding__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  transition: all var(--duration-fast) var(--ease-spring);
+  touch-action: manipulation;
+}
+
+.onboarding__option:active {
+  transform: scale(0.98);
+}
+
+.onboarding__option--selected {
+  border-color: var(--color-primary);
+  background: var(--color-mama-light);
+}
+
+.onboarding__option-emoji {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.onboarding__option-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.onboarding__option-text strong {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+
+.onboarding__option-text span {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+.onboarding__option-check {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+  animation: scaleIn var(--duration-fast) var(--ease-spring);
+}
+
+/* Bottom actions */
+.onboarding__actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: auto;
+  padding-top: var(--space-6);
+}
+
+/* Input error state */
+.input-field--error {
+  border-color: var(--color-danger);
+}
+
+.input-error {
+  font-size: var(--text-xs);
+  color: var(--color-danger);
+  font-weight: 500;
+}

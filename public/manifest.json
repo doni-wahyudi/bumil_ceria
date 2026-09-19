@@ -1,0 +1,27 @@
+{
+  "name": "Bumil Ceria — Panduan Kehamilan Mama & Papa",
+  "short_name": "Bumil Ceria",
+  "description": "Aplikasi panduan kehamilan minggu demi minggu untuk Mama & Papa, checklist medis, faskes Bandar Lampung, dan alat persalinan.",
+  "start_url": "/bumil_ceria/",
+  "scope": "/bumil_ceria/",
+  "display": "standalone",
+  "background_color": "#FDF8F4",
+  "theme_color": "#FF6B8A",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/bumil_ceria/logo.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/bumil_ceria/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["medical", "health", "lifestyle"],
+  "lang": "id-ID"
+}

@@ -1,0 +1,90 @@
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  transition: all var(--duration-fast) var(--ease-smooth);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.checklist-item:active {
+  transform: scale(0.985);
+  background: var(--color-bg);
+}
+
+.checklist-item--completed {
+  opacity: 0.65;
+}
+
+.checklist-item--completed .checklist-item__text {
+  text-decoration: line-through;
+  color: var(--color-text-tertiary);
+}
+
+.checklist-item--animating .checklist-item__check {
+  animation: checkPop 350ms var(--ease-spring);
+}
+
+.checklist-item__check {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  border: 2px solid var(--color-border);
+  background: transparent;
+  transition: all var(--duration-fast) var(--ease-spring);
+  margin-top: 1px;
+}
+
+.checklist-item__check--done {
+  border-color: var(--color-success);
+  background: var(--color-success);
+}
+
+.checklist-item__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.checklist-item__text {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+  transition: all var(--duration-fast) var(--ease-smooth);
+}
+
+.checklist-item__meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+.checklist-item__priority {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-light);
+  color: var(--color-accent-dark);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  margin-top: 2px;
+}

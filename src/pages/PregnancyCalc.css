@@ -1,0 +1,234 @@
+/* Pregnancy Calculator Page Styles */
+
+.calc-page {
+  padding-bottom: 96px;
+}
+
+.calc-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.calc-back-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.calc-back-btn:hover {
+  background: var(--color-bg-secondary);
+  transform: scale(1.05);
+}
+
+.calc-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-primary-dark);
+  margin-bottom: 2px;
+}
+
+.calc-alert-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-secondary-light);
+  color: var(--color-secondary-dark);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  margin-bottom: 14px;
+  border: 1px solid var(--color-secondary);
+}
+
+/* Method Selector */
+.calc-methods {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.calc-method-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+}
+
+.calc-method-btn--active {
+  background: var(--color-surface);
+  border-color: var(--color-primary);
+  color: var(--color-text-primary);
+  box-shadow: 0 4px 12px rgba(216, 142, 170, 0.18);
+}
+
+/* Input Card */
+.calc-input-card {
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.calc-cycle-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.calc-cycle-value {
+  font-size: var(--text-xs);
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.calc-range-slider {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-secondary);
+  outline: none;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.calc-slider-hints {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: var(--color-text-tertiary);
+  margin-top: 4px;
+}
+
+.calc-usg-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 10px;
+}
+
+/* Results Section */
+.calc-results-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.calc-hpl-card {
+  text-align: center;
+  padding: 20px 16px;
+  background: linear-gradient(135deg, var(--color-surface) 0%, rgba(216, 142, 170, 0.08) 100%);
+  border: 1.5px solid var(--color-primary-light);
+}
+
+.calc-hpl-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-primary-dark);
+  margin-bottom: 8px;
+}
+
+.calc-hpl-date {
+  font-size: 1.6rem;
+  font-family: var(--font-display);
+  color: var(--color-primary);
+  margin-bottom: 6px;
+}
+
+.calc-hpl-sub {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+
+.calc-apply-btn {
+  margin-top: 6px;
+  gap: 6px;
+}
+
+/* Milestones List */
+.calc-milestones {
+  padding: 16px;
+}
+
+.calc-milestones-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-light);
+  padding-bottom: 8px;
+}
+
+.calc-milestone-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.calc-milestone-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--text-xs);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-warm);
+  gap: 8px;
+}
+
+.calc-ms-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-primary);
+}
+
+.calc-milestone-row strong {
+  color: var(--color-text-primary);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.calc-ms-aterm {
+  background: rgba(126, 174, 178, 0.15);
+  border: 1px solid rgba(126, 174, 178, 0.3);
+}
+
+.calc-ms-aterm strong {
+  color: var(--color-secondary-dark);
+}
