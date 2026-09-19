@@ -1,7 +1,9 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { isOnboardingDone, getProfile } from './utils/storage';
+import { getSession, onAuthStateChange, signOut } from './utils/supabaseClient';
 import { getCurrentWeek, getCurrentDay, getTrimester, getDaysRemaining, getProgressPercentage, calculateDueDate } from './utils/pregnancyCalc';
+import Login from './pages/Login';
 import Onboarding from './pages/Onboarding';
 import Home from './pages/Home';
 import Timeline from './pages/Timeline';
@@ -32,6 +34,7 @@ export function useApp() {
 
 function App() {
   const [ready, setReady] = useState(false);
+  const [session, setSession] = useState(null);
   const [onboarded, setOnboarded] = useState(false);
   const [profile, setProfile] = useState(null);
   const [role, setRole] = useState('mama'); // 'mama' | 'papa'
@@ -56,8 +59,14 @@ function App() {
     }
   };
 
+  const handleLogout = async () => {
+    handleStopAudio();
+    await signOut();
+    // onAuthStateChange listener will set session to null → Login shown automatically
+  };
+
   useEffect(() => {
-    // Phase 3: Initialize Theme
+    // Initialize theme
     const savedTheme = localStorage.getItem('bumpbuddy_theme') || 'system';
     if (savedTheme === 'system') {
       const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -66,14 +75,38 @@ function App() {
       document.documentElement.setAttribute('data-theme', savedTheme);
     }
 
+    // Check initial session
     async function init() {
-      const done = await isOnboardingDone();
-      const prof = await getProfile();
-      setOnboarded(done);
-      setProfile(prof);
+      const { data } = await getSession();
+      setSession(data.session);
+
+      if (data.session) {
+        const done = await isOnboardingDone();
+        const prof = await getProfile();
+        setOnboarded(done);
+        setProfile(prof);
+      }
+
       setReady(true);
     }
     init();
+
+    // Subscribe to auth state changes
+    const unsubscribe = onAuthStateChange(async (event, newSession) => {
+      setSession(newSession);
+      if (newSession) {
+        const done = await isOnboardingDone();
+        const prof = await getProfile();
+        setOnboarded(done);
+        setProfile(prof);
+      } else {
+        // Logged out — clear state
+        setOnboarded(false);
+        setProfile(null);
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const refreshProfile = async () => {
@@ -93,12 +126,18 @@ function App() {
       }
     : null;
 
+  // Loading splash
   if (!ready) {
     return (
       <div className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div className="loading-spinner" />
       </div>
     );
+  }
+
+  // Not logged in → show login
+  if (!session) {
+    return <Login />;
   }
 
   const contextValue = {
@@ -110,6 +149,8 @@ function App() {
     pregnancyData,
     onboarded,
     setOnboarded,
+    session,
+    handleLogout,
     openAudioModal: () => setShowAudioModal(true),
     closeAudioModal: () => setShowAudioModal(false),
     activeSound,

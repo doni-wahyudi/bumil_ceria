@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../App';
 import {
@@ -7,11 +7,6 @@ import {
   syncLocalToSupabase,
   fetchSupabaseToLocal,
 } from '../utils/storage';
-import {
-  getSupabaseConfig,
-  saveSupabaseConfig,
-  testSupabaseConnection,
-} from '../utils/supabaseClient';
 import {
   printMedicalSummary,
   exportDataToJSON,
@@ -29,15 +24,13 @@ import {
   Sun,
   Moon,
   Monitor,
-  Cloud,
-  Database,
   Printer,
   Download,
   Upload,
   Building2,
+  LogOut,
+  Cloud,
   Check,
-  AlertCircle,
-  ExternalLink,
 } from 'lucide-react';
 import './Profile.css';
 
@@ -49,27 +42,16 @@ const insuranceLabels = {
 
 function Profile() {
   const navigate = useNavigate();
-  const { profile, refreshProfile, pregnancyData } = useApp();
+  const { profile, refreshProfile, pregnancyData, handleLogout } = useApp();
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
   const [showReset, setShowReset] = useState(false);
   const [saved, setSaved] = useState(false);
-
-  // Phase 3: Theme State
-  const [theme, setTheme] = useState(localStorage.getItem('bumpbuddy_theme') || 'system');
-
-  // Phase 3: Supabase Config State
-  const [showCloudConfig, setShowCloudConfig] = useState(false);
-  const [supabaseUrl, setSupabaseUrl] = useState('');
-  const [supabaseKey, setSupabaseKey] = useState('');
-  const [cloudStatus, setCloudStatus] = useState(null); // { type: 'success' | 'error' | 'info', message: string }
+  const [cloudStatus, setCloudStatus] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  useEffect(() => {
-    const config = getSupabaseConfig();
-    setSupabaseUrl(config.url || '');
-    setSupabaseKey(config.anonKey || '');
-  }, []);
+  // Theme State
+  const [theme, setTheme] = useState(localStorage.getItem('bumpbuddy_theme') || 'system');
 
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
@@ -115,24 +97,9 @@ function Profile() {
     window.location.reload();
   };
 
-  // Supabase actions
-  const handleSaveCloudConfig = () => {
-    saveSupabaseConfig(supabaseUrl, supabaseKey);
-    setCloudStatus({ type: 'success', message: 'Kredensial Supabase berhasil disimpan!' });
-  };
-
-  const handleTestConnection = async () => {
-    setCloudStatus({ type: 'info', message: 'Menguji koneksi ke server Supabase...' });
-    const res = await testSupabaseConnection(supabaseUrl, supabaseKey);
-    setCloudStatus({
-      type: res.success ? 'success' : 'error',
-      message: res.message,
-    });
-  };
-
+  // Cloud sync actions
   const handleSyncToCloud = async () => {
     setIsSyncing(true);
-    handleSaveCloudConfig();
     const res = await syncLocalToSupabase();
     setIsSyncing(false);
     setCloudStatus({
@@ -409,97 +376,44 @@ function Profile() {
         </div>
       </div>
 
-      {/* Supabase Cloud Sync Card (Phase 3) */}
+      {/* Cloud Sync Card */}
       <div className="profile-cloud-card card animate-fade-in-up" style={{ animationDelay: '180ms' }}>
-        <button
-          type="button"
-          className="profile-cloud-header"
-          onClick={() => setShowCloudConfig(!showCloudConfig)}
-        >
-          <div className="profile-cloud-title">
-            <Cloud size={18} color="var(--color-secondary-dark)" />
-            <div>
-              <span className="eyebrow">Database Cloud Supabase</span>
-              <p className="text-sm">
-                {supabaseUrl ? 'Kredensial Terkonfigurasi' : 'Mode Penyimpanan Lokal'}
-              </p>
-            </div>
+        <div className="profile-cloud-title" style={{ marginBottom: '10px' }}>
+          <Cloud size={18} color="var(--color-secondary-dark)" />
+          <div>
+            <span className="eyebrow">Sinkronisasi Cloud</span>
+            <p className="text-xs text-secondary">Data disimpan ke Supabase database</p>
           </div>
-          <ChevronRight
-            size={18}
-            color="var(--color-text-tertiary)"
-            style={{ transform: showCloudConfig ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}
-          />
-        </button>
+        </div>
 
-        {showCloudConfig && (
-          <div className="profile-cloud-body animate-fade-in-up">
-            <p className="text-xs text-secondary" style={{ marginBottom: '10px' }}>
-              Sinkronkan data ke database Supabase Anda agar tersimpan aman di cloud. File skema SQL tersedia di <code>supabase_schema.sql</code>.
-            </p>
-
-            <div className="input-group">
-              <label>Project URL Supabase</label>
-              <input
-                type="text"
-                className="input-field"
-                placeholder="https://xyzcompany.supabase.co"
-                value={supabaseUrl}
-                onChange={(e) => setSupabaseUrl(e.target.value)}
-              />
-            </div>
-
-            <div className="input-group" style={{ marginTop: '8px' }}>
-              <label>Anon Public Key</label>
-              <input
-                type="password"
-                className="input-field"
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-                value={supabaseKey}
-                onChange={(e) => setSupabaseKey(e.target.value)}
-              />
-            </div>
-
-            {cloudStatus && (
-              <div
-                className={`profile-cloud-status profile-cloud-status--${cloudStatus.type} animate-scale-in`}
-              >
-                {cloudStatus.type === 'success' ? (
-                  <Check size={14} />
-                ) : (
-                  <AlertCircle size={14} />
-                )}
-                <span>{cloudStatus.message}</span>
-              </div>
-            )}
-
-            <div className="profile-cloud-actions">
-              <button
-                type="button"
-                className="btn btn-ghost text-xs"
-                onClick={handleTestConnection}
-              >
-                Tes Koneksi
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary text-xs"
-                onClick={handleFetchFromCloud}
-                disabled={isSyncing || !supabaseUrl}
-              >
-                Tarik Cloud
-              </button>
-              <button
-                type="button"
-                className="btn btn-primary text-xs"
-                onClick={handleSyncToCloud}
-                disabled={isSyncing || !supabaseUrl}
-              >
-                {isSyncing ? 'Menyinkronkan...' : 'Unggah ke Cloud'}
-              </button>
-            </div>
+        {cloudStatus && (
+          <div
+            className={`profile-cloud-status profile-cloud-status--${cloudStatus.type} animate-scale-in`}
+            style={{ marginBottom: '8px' }}
+          >
+            <Check size={14} />
+            <span>{cloudStatus.message}</span>
           </div>
         )}
+
+        <div className="profile-cloud-actions">
+          <button
+            type="button"
+            className="btn btn-secondary text-xs"
+            onClick={handleFetchFromCloud}
+            disabled={isSyncing}
+          >
+            Tarik Cloud
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary text-xs"
+            onClick={handleSyncToCloud}
+            disabled={isSyncing}
+          >
+            {isSyncing ? 'Menyinkronkan...' : 'Unggah ke Cloud'}
+          </button>
+        </div>
       </div>
 
       {/* Export & Medical Summary Card (Phase 3) */}
@@ -554,6 +468,17 @@ function Profile() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Logout */}
+      <div className="profile-reset animate-fade-in-up" style={{ animationDelay: '255ms' }}>
+        <button
+          className="btn btn-ghost"
+          style={{ color: 'var(--color-danger)', gap: '6px' }}
+          onClick={handleLogout}
+        >
+          <LogOut size={16} /> Keluar dari Akun
+        </button>
       </div>
 
       {/* App info */}

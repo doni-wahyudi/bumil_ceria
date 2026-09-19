@@ -1,11 +1,52 @@
 import { createClient } from '@supabase/supabase-js';
 
-const CONFIG_KEY = 'bumpbuddy_supabase_config';
-const USER_ID_KEY = 'bumpbuddy_client_user_id';
+// Initialize from Vite env vars (injected by GitHub Actions secrets at build time)
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-/**
- * Get or generate a persistent user ID for anonymous sync.
- */
+export const isSupabaseConfigured = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+
+// Singleton client
+let _client = null;
+
+export function getSupabase() {
+  if (_client) return _client;
+  if (!isSupabaseConfigured) return null;
+  _client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return _client;
+}
+
+/** Sign in with email + password */
+export async function signIn(email, password) {
+  const supabase = getSupabase();
+  if (!supabase) return { error: { message: 'Supabase belum dikonfigurasi.' } };
+  return supabase.auth.signInWithPassword({ email, password });
+}
+
+/** Sign out current user */
+export async function signOut() {
+  const supabase = getSupabase();
+  if (!supabase) return;
+  return supabase.auth.signOut();
+}
+
+/** Get current session */
+export async function getSession() {
+  const supabase = getSupabase();
+  if (!supabase) return { data: { session: null } };
+  return supabase.auth.getSession();
+}
+
+/** Subscribe to auth state changes — returns unsubscribe fn */
+export function onAuthStateChange(callback) {
+  const supabase = getSupabase();
+  if (!supabase) return () => {};
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(callback);
+  return () => subscription.unsubscribe();
+}
+
+/** Get or generate a persistent anonymous device user ID (for local storage sync) */
+const USER_ID_KEY = 'bumilceria_client_user_id';
 export function getDeviceUserId() {
   let userId = localStorage.getItem(USER_ID_KEY);
   if (!userId) {
@@ -15,109 +56,20 @@ export function getDeviceUserId() {
   return userId;
 }
 
-/**
- * Get stored Supabase configuration (from localStorage or Vite environment variables).
- */
-export function getSupabaseConfig() {
+/** Test Supabase connection (used in storage sync) */
+export async function testSupabaseConnection() {
+  const supabase = getSupabase();
+  if (!supabase) return { success: false, message: 'Supabase belum dikonfigurasi.' };
   try {
-    const raw = localStorage.getItem(CONFIG_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed.url && parsed.anonKey) return parsed;
-    }
-  } catch {
-    // ignore
-  }
-
-  // Fallback to .env variables if present
-  const envUrl = import.meta.env?.VITE_SUPABASE_URL;
-  const envKey = import.meta.env?.VITE_SUPABASE_ANON_KEY;
-  if (envUrl && envKey) {
-    return { url: envUrl, anonKey: envKey, fromEnv: true };
-  }
-
-  return { url: '', anonKey: '', isConfigured: false };
-}
-
-/**
- * Save user-entered Supabase config to localStorage.
- */
-export function saveSupabaseConfig(url, anonKey) {
-  if (!url || !anonKey) {
-    localStorage.removeItem(CONFIG_KEY);
-    cachedClient = null;
-    return;
-  }
-  localStorage.setItem(CONFIG_KEY, JSON.stringify({ url: url.trim(), anonKey: anonKey.trim() }));
-  cachedClient = null; // reset cached client
-}
-
-let cachedClient = null;
-
-/**
- * Get Supabase client instance.
- * @returns {import('@supabase/supabase-js').SupabaseClient | null}
- */
-export function getSupabase() {
-  if (cachedClient) return cachedClient;
-
-  const config = getSupabaseConfig();
-  if (config.url && config.anonKey) {
-    try {
-      cachedClient = createClient(config.url, config.anonKey, {
-        auth: { persistSession: false },
-      });
-      return cachedClient;
-    } catch (err) {
-      console.warn('Failed to initialize Supabase client:', err);
-      return null;
-    }
-  }
-  return null;
-}
-
-/**
- * Test whether given or stored Supabase credentials can connect to the database.
- * @param {string} [testUrl]
- * @param {string} [testKey]
- * @returns {Promise<{ success: boolean, message: string }>}
- */
-export async function testSupabaseConnection(testUrl, testKey) {
-  const url = testUrl || getSupabaseConfig().url;
-  const anonKey = testKey || getSupabaseConfig().anonKey;
-
-  if (!url || !anonKey) {
-    return {
-      success: false,
-      message: 'URL proyek dan Anon Key belum diisi.',
-    };
-  }
-
-  try {
-    const client = createClient(url.trim(), anonKey.trim());
-    // Quick test query
-    const { error } = await client.from('profiles').select('count', { count: 'exact', head: true });
+    const { error } = await supabase.from('profiles').select('count', { count: 'exact', head: true });
     if (error) {
-      // If table doesn't exist yet, it's still a valid connection to Supabase!
       if (error.code === '42P01') {
-        return {
-          success: true,
-          message: 'Tersambung ke Supabase! (Catatan: Jalankan supabase_schema.sql di SQL Editor untuk membuat tabel).',
-        };
+        return { success: true, message: 'Tersambung ke Supabase! Jalankan supabase_schema.sql untuk membuat tabel.' };
       }
-      return {
-        success: false,
-        message: `Gagal query: ${error.message} (Kode: ${error.code})`,
-      };
+      return { success: false, message: `Gagal query: ${error.message}` };
     }
-    return {
-      success: true,
-      message: 'Koneksi ke Supabase berhasil dan tabel terverifikasi!',
-    };
+    return { success: true, message: 'Koneksi ke Supabase berhasil!' };
   } catch (err) {
-    return {
-      success: false,
-      message: `Gagal menghubungi server: ${err.message}`,
-    };
+    return { success: false, message: `Gagal menghubungi server: ${err.message}` };
   }
 }
