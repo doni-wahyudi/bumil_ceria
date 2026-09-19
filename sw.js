@@ -1,10 +1,12 @@
-// BumpBuddy PWA Service Worker
-const CACHE_NAME = 'bumpbuddy-cache-v1';
+// Bumil Ceria PWA Service Worker
+const CACHE_NAME = 'bumilceria-cache-v2';
+const BASE = '/bumil_ceria';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.svg',
+  `${BASE}/`,
+  `${BASE}/index.html`,
+  `${BASE}/manifest.json`,
+  `${BASE}/favicon.svg`,
+  `${BASE}/logo.jpg`,
 ];
 
 self.addEventListener('install', (event) => {
@@ -30,26 +32,27 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Ignore non-GET and chrome-extension/remote API requests
+  // Ignore non-GET requests
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
 
-  // Network-first for navigation/HTML, cache-first for static assets
+  // Only handle requests within our base scope
+  if (!url.pathname.startsWith(BASE)) return;
+
+  // Network-first for navigation (HTML), fall back to index.html for SPA
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => {
-        return caches.match('/index.html') || caches.match('/');
+        return caches.match(`${BASE}/index.html`) || caches.match(`${BASE}/`);
       })
     );
     return;
   }
 
-  // Cache first for assets (scripts, styles, fonts, images)
+  // Cache-first for static assets (scripts, styles, fonts, images)
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+      if (cachedResponse) return cachedResponse;
       return fetch(event.request).then((networkResponse) => {
         if (
           !networkResponse ||
