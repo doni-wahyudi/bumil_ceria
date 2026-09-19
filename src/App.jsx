@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { isOnboardingDone, getProfile } from './utils/storage';
 import { getSession, onAuthStateChange, signOut } from './utils/supabaseClient';
 import { getCurrentWeek, getCurrentDay, getTrimester, getDaysRemaining, getProgressPercentage, calculateDueDate } from './utils/pregnancyCalc';
-import Login from './pages/Login';
+import Auth from './pages/Auth';
 import Onboarding from './pages/Onboarding';
 import Home from './pages/Home';
 import Timeline from './pages/Timeline';
@@ -129,15 +129,18 @@ function App() {
   // Loading splash
   if (!ready) {
     return (
-      <div className="app-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="loading-spinner" />
+      <div className="login-page">
+        <div className="login-bg" aria-hidden="true" />
+        <div className="login-card animate-fade-in-up" style={{ maxWidth: 280, padding: '28px 20px' }}>
+          <div className="login-logo" style={{ width: 64, height: 64, margin: '0 auto 12px' }}>
+            <img src="logo.jpg" alt="Bumil Ceria" className="login-logo__img" onError={(e) => { e.target.src = '/bumil_ceria/logo.jpg'; }} />
+          </div>
+          <h2 className="login-title" style={{ fontSize: '1.2rem', marginBottom: 2 }}>Bumil Ceria</h2>
+          <p className="login-subtitle" style={{ marginBottom: 14 }}>Memuat aplikasi...</p>
+          <div className="login-spinner" style={{ borderColor: 'rgba(255,107,138,0.25)', borderTopColor: 'var(--color-primary)' }} />
+        </div>
       </div>
     );
-  }
-
-  // Not logged in → show login
-  if (!session) {
-    return <Login />;
   }
 
   const contextValue = {
@@ -161,9 +164,15 @@ function App() {
   };
 
   return (
-    <AppContext.Provider value={contextValue}>
-      <BrowserRouter basename="/bumil_ceria">
-        {!onboarded ? (
+    <BrowserRouter basename="/bumil_ceria">
+      <AppContext.Provider value={contextValue}>
+        {!session ? (
+          <Routes>
+            <Route path="/signup" element={<Auth initialTab="signup" />} />
+            <Route path="/login" element={<Auth initialTab="login" />} />
+            <Route path="*" element={<Auth initialTab="login" />} />
+          </Routes>
+        ) : !onboarded ? (
           <div className="app-container">
             <Routes>
               <Route path="*" element={<Onboarding />} />
@@ -229,8 +238,8 @@ function App() {
             />
           </div>
         )}
-      </BrowserRouter>
-    </AppContext.Provider>
+      </AppContext.Provider>
+    </BrowserRouter>
   );
 }
 
