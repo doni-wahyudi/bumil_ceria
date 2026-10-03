@@ -6,12 +6,7 @@ import {
   Square,
   X,
   Headphones,
-  Heart,
-  Waves,
-  CloudRain,
-  Wind,
   Clock,
-  Sparkles,
 } from 'lucide-react';
 import { audioSynth } from '../utils/audioSynth';
 import { RELAXATION_SOUNDS } from '../data/audioSounds';
@@ -80,6 +75,12 @@ export default function AudioRelaxationModal({
       clearInterval(breatheIntervalRef.current);
       breatheIntervalRef.current = null;
     }
+    if (sleepTimerRef.current) {
+      clearInterval(sleepTimerRef.current);
+      sleepTimerRef.current = null;
+    }
+    setSleepTimerSecondsLeft(null);
+    setSleepTimerMinutes(null);
   };
 
   // 4-7-8 Breathing Guide Engine
@@ -114,32 +115,38 @@ export default function AudioRelaxationModal({
     }, 1000);
   };
 
-  // Sleep Timer logic
-  useEffect(() => {
-    if (sleepTimerMinutes && isPlaying) {
-      setSleepTimerSecondsLeft(sleepTimerMinutes * 60);
-      if (sleepTimerRef.current) clearInterval(sleepTimerRef.current);
+  const handleSelectSleepTimer = (mins) => {
+    setSleepTimerMinutes(mins);
+    setSleepTimerSecondsLeft(mins ? mins * 60 : null);
+  };
 
-      sleepTimerRef.current = setInterval(() => {
-        setSleepTimerSecondsLeft((prev) => {
-          if (prev <= 1) {
-            stopPlayback();
-            clearInterval(sleepTimerRef.current);
-            setSleepTimerMinutes(null);
-            return null;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else if (!isPlaying) {
+  // Sleep Timer countdown logic
+  useEffect(() => {
+    if (!sleepTimerMinutes || !isPlaying) {
       if (sleepTimerRef.current) clearInterval(sleepTimerRef.current);
-      setSleepTimerSecondsLeft(null);
+      return;
     }
+
+    if (sleepTimerRef.current) clearInterval(sleepTimerRef.current);
+
+    sleepTimerRef.current = setInterval(() => {
+      setSleepTimerSecondsLeft((prev) => {
+        if (!prev || prev <= 1) {
+          audioSynth.stop();
+          setIsPlaying(false);
+          if (breatheIntervalRef.current) clearInterval(breatheIntervalRef.current);
+          clearInterval(sleepTimerRef.current);
+          setSleepTimerMinutes(null);
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
     return () => {
       if (sleepTimerRef.current) clearInterval(sleepTimerRef.current);
     };
-  }, [sleepTimerMinutes, isPlaying]);
+  }, [sleepTimerMinutes, isPlaying, setIsPlaying]);
 
   // Clean up when modal unmounts
   useEffect(() => {
@@ -288,7 +295,7 @@ export default function AudioRelaxationModal({
                   key={mins ?? 'off'}
                   type="button"
                   className={`audio-sleep-pill ${sleepTimerMinutes === mins ? 'audio-sleep-pill--active' : ''}`}
-                  onClick={() => setSleepTimerMinutes(mins)}
+                  onClick={() => handleSelectSleepTimer(mins)}
                 >
                   {mins ? `${mins}m` : 'Mati'}
                 </button>

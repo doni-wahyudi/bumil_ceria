@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useApp } from '../App';
+import { useApp } from '../context/AppContext';
 import { getWeekData } from '../data/weeklyData';
 import { hasUSGInWeek, getUSGForWeek } from '../data/usgSchedule';
 import WeekSelector from '../components/WeekSelector';
@@ -21,7 +21,11 @@ function Timeline() {
   const toggleExpand = (week) => {
     setExpandedWeeks((prev) => {
       const next = new Set(prev);
-      next.has(week) ? next.delete(week) : next.add(week);
+      if (next.has(week)) {
+        next.delete(week);
+      } else {
+        next.add(week);
+      }
       return next;
     });
   };

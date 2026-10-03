@@ -13,7 +13,7 @@ import {
   Coins,
   Headphones,
 } from 'lucide-react';
-import { useApp } from '../App';
+import { useApp } from '../context/AppContext';
 import { getCompletedItems } from '../utils/storage';
 import { formatDateID } from '../utils/pregnancyCalc';
 import { getWeekData, getWeekChecklist } from '../data/weeklyData';

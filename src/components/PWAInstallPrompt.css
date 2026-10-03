@@ -1,7 +1,7 @@
 /* PWA Install Prompt Banner Styles */
 .pwa-prompt-banner {
   position: fixed;
-  bottom: calc(var(--bottom-nav-height) + 12px);
+  bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 12px);
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 32px);
@@ -19,7 +19,15 @@
 }
 
 .pwa-prompt-banner--lifted {
-  bottom: calc(var(--bottom-nav-height) + 64px) !important;
+  bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 68px) !important;
+}
+
+.pwa-prompt-banner--subpage {
+  bottom: calc(var(--safe-area-bottom) + 16px);
+}
+
+.pwa-prompt-banner--subpage.pwa-prompt-banner--lifted {
+  bottom: calc(var(--safe-area-bottom) + 72px) !important;
 }
 
 .pwa-prompt-icon {

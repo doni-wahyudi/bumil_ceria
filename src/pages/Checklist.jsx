@@ -1,12 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useApp } from '../App';
+import { useApp } from '../context/AppContext';
 import { getCompletedItems, toggleChecklistItem } from '../utils/storage';
 import { getChecklistByRole, getCategories } from '../data/weeklyData';
 import RoleToggle from '../components/RoleToggle';
 import ChecklistItem from '../components/ChecklistItem';
 import HospitalBag from './HospitalBag';
 import {
-  ChevronDown,
   ChevronUp,
   Filter,
   ListChecks,
@@ -75,7 +74,11 @@ function Checklist() {
   const toggleCategory = (catId) => {
     setCollapsedCats((prev) => {
       const next = new Set(prev);
-      next.has(catId) ? next.delete(catId) : next.add(catId);
+      if (next.has(catId)) {
+        next.delete(catId);
+      } else {
+        next.add(catId);
+      }
       return next;
     });
   };
@@ -84,7 +87,11 @@ function Checklist() {
   const toggleFullExpansion = (catId) => {
     setFullyExpandedCats((prev) => {
       const next = new Set(prev);
-      next.has(catId) ? next.delete(catId) : next.add(catId);
+      if (next.has(catId)) {
+        next.delete(catId);
+      } else {
+        next.add(catId);
+      }
       return next;
     });
   };

@@ -1,6 +1,6 @@
 .home-page {
   padding-top: var(--space-5);
-  padding-bottom: 96px;
+  padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 36px);
 }
 
 /* Header */

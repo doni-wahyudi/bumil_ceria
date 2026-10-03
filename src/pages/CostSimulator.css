@@ -1,6 +1,6 @@
 /* Cost Simulator Styles - Bandar Lampung Labor Budgeting */
 .cost-sim-page {
-  padding-bottom: calc(var(--bottom-nav-height) + 32px);
+  padding-bottom: calc(var(--safe-area-bottom) + 36px);
 }
 
 .cs-header {
@@ -80,6 +80,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+@media (max-width: 360px) {
+  .cs-methods-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .cs-method-card {

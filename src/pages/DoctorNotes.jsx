@@ -14,7 +14,7 @@ import {
   Sparkles,
   ClipboardList,
 } from 'lucide-react';
-import { useApp } from '../App';
+import { useApp } from '../context/AppContext';
 import {
   getDoctorVisits,
   addDoctorVisit,
@@ -108,7 +108,12 @@ function DoctorNotes() {
     <div className="page-content doctor-notes-page" id="doctor-notes-page">
       {/* Header */}
       <header className="dn-header animate-fade-in-up">
-        <button className="dn-back-btn" onClick={() => navigate(-1)} aria-label="Kembali">
+        <button
+          type="button"
+          className="dn-back-btn"
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+          aria-label="Kembali"
+        >
           <ArrowLeft size={20} />
         </button>
         <div>

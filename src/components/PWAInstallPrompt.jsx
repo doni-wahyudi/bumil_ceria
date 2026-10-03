@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Download, X, Smartphone } from 'lucide-react';
 import './PWAInstallPrompt.css';
 
-export default function PWAInstallPrompt({ hasMiniPlayer = false }) {
+export default function PWAInstallPrompt({ hasMiniPlayer = false, hasBottomNav = true }) {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showPrompt, setShowPrompt] = useState(false);
 
@@ -43,7 +43,7 @@ export default function PWAInstallPrompt({ hasMiniPlayer = false }) {
 
   return (
     <aside
-      className={`pwa-prompt-banner card animate-fade-in-up ${hasMiniPlayer ? 'pwa-prompt-banner--lifted' : ''}`}
+      className={`pwa-prompt-banner card animate-fade-in-up ${hasMiniPlayer ? 'pwa-prompt-banner--lifted' : ''} ${!hasBottomNav ? 'pwa-prompt-banner--subpage' : ''}`}
       role="region"
       aria-label="Instalasi Aplikasi"
     >

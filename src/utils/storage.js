@@ -6,7 +6,22 @@
  * migration will be a drop-in replacement without changing consumers.
  */
 
-import { getSupabase, getDeviceUserId } from './supabaseClient';
+import { getSupabase, getSession, getDeviceUserId } from './supabaseClient';
+
+/**
+ * Get effective user ID: prefers authenticated Supabase user ID, falls back to persistent device ID.
+ */
+export async function getEffectiveUserId() {
+  try {
+    const { data } = await getSession();
+    if (data?.session?.user?.id) {
+      return data.session.user.id;
+    }
+  } catch {
+    // fallback
+  }
+  return getDeviceUserId();
+}
 
 const STORAGE_KEYS = {
   PROFILE: 'bumpbuddy_profile',
@@ -184,13 +199,15 @@ export async function getCustomBagItems() {
  * Add a custom item to the hospital bag.
  * @param {string} category - 'mama' | 'baby' | 'papa'
  * @param {string} text - Item description
+ * @param {string} [qty] - Item quantity
  */
-export async function addCustomBagItem(category, text) {
+export async function addCustomBagItem(category, text, qty = '1 buah') {
   const items = await getCustomBagItems();
   const newItem = {
     id: `custom_hb_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
     category,
     text,
+    qty: qty || '1 buah',
     isCustom: true,
   };
   items.push(newItem);
@@ -389,10 +406,10 @@ export async function isCloudConnected() {
 export async function syncLocalToSupabase() {
   const supabase = getSupabase();
   if (!supabase) {
-    return { success: false, message: 'Supabase belum dikonfigurasi. Masukkan URL dan Anon Key di Pengaturan.' };
+    return { success: false, message: 'Koneksi Supabase belum aktif. Pastikan backend Supabase terhubung.' };
   }
 
-  const userId = getDeviceUserId();
+  const userId = await getEffectiveUserId();
 
   try {
     // 1. Sync Profile
@@ -421,7 +438,18 @@ export async function syncLocalToSupabase() {
       await supabase.from('checklist_completions').upsert(records, { onConflict: 'user_id,item_id' });
     }
 
-    // 3. Sync Hospital Bag
+    // 3. Sync USG Milestones
+    const usgStatus = await getUSGStatus();
+    const usgCompleted = Object.entries(usgStatus).filter(([, done]) => done).map(([id]) => id);
+    if (usgCompleted.length > 0) {
+      const records = usgCompleted.map((usgId) => ({
+        user_id: userId,
+        usg_id: usgId,
+      }));
+      await supabase.from('usg_completions').upsert(records, { onConflict: 'user_id,usg_id' });
+    }
+
+    // 4. Sync Hospital Bag Packed Status
     const bagPacked = await getHospitalBagItems();
     if (bagPacked.length > 0) {
       const records = bagPacked.map((itemId) => ({
@@ -431,20 +459,22 @@ export async function syncLocalToSupabase() {
       await supabase.from('hospital_bag_completions').upsert(records, { onConflict: 'user_id,item_id' });
     }
 
-    // 4. Sync Custom Bag Items
+    // 5. Sync Custom Bag Items (clean replace to avoid duplicates)
     const customBag = await getCustomBagItems();
     if (customBag.length > 0) {
+      await supabase.from('custom_bag_items').delete().eq('user_id', userId);
       const records = customBag.map((ci) => ({
         user_id: userId,
         category: ci.category,
         title: ci.text,
       }));
-      await supabase.from('custom_bag_items').upsert(records);
+      await supabase.from('custom_bag_items').insert(records);
     }
 
-    // 5. Sync Doctor Visits
+    // 6. Sync Doctor Visits (clean replace to avoid duplicates)
     const visits = await getDoctorVisits();
     if (visits.length > 0) {
+      await supabase.from('doctor_visits').delete().eq('user_id', userId);
       const records = visits.map((v) => ({
         user_id: userId,
         date: v.date,
@@ -455,19 +485,40 @@ export async function syncLocalToSupabase() {
         doctor_notes: v.doctorNotes,
         doctor_name: v.doctorName,
       }));
-      await supabase.from('doctor_visits').upsert(records);
+      await supabase.from('doctor_visits').insert(records);
     }
 
-    // 6. Sync Doctor Questions
+    // 7. Sync Doctor Questions (clean replace to avoid duplicates)
     const questions = await getDoctorQuestions();
     if (questions.length > 0) {
+      await supabase.from('doctor_questions').delete().eq('user_id', userId);
       const records = questions.map((q) => ({
         user_id: userId,
         text: q.text,
         is_answered: q.isAnswered,
         note: q.note || '',
       }));
-      await supabase.from('doctor_questions').upsert(records);
+      await supabase.from('doctor_questions').insert(records);
+    }
+
+    // 8. Sync Daily Logs (Hydration & Vitamin)
+    const rawDaily = localStorage.getItem(STORAGE_KEYS.DAILY_LOGS);
+    if (rawDaily) {
+      try {
+        const dailyLogs = JSON.parse(rawDaily);
+        const entries = Object.entries(dailyLogs);
+        if (entries.length > 0) {
+          const records = entries.map(([date, val]) => ({
+            user_id: userId,
+            date,
+            water_glasses: val.waterGlasses || 0,
+            took_vitamin: !!val.tookVitamin,
+          }));
+          await supabase.from('daily_logs').upsert(records, { onConflict: 'user_id,date' });
+        }
+      } catch {
+        // ignore parse error
+      }
     }
 
     return {
@@ -485,10 +536,10 @@ export async function syncLocalToSupabase() {
 export async function fetchSupabaseToLocal() {
   const supabase = getSupabase();
   if (!supabase) {
-    return { success: false, message: 'Supabase belum dikonfigurasi.' };
+    return { success: false, message: 'Koneksi Supabase belum aktif.' };
   }
 
-  const userId = getDeviceUserId();
+  const userId = await getEffectiveUserId();
 
   try {
     // 1. Fetch Profile
@@ -512,14 +563,35 @@ export async function fetchSupabaseToLocal() {
       localStorage.setItem(STORAGE_KEYS.CHECKLIST, JSON.stringify(ids));
     }
 
-    // 3. Fetch Hospital Bag
+    // 3. Fetch USG Milestones
+    const { data: usgData } = await supabase.from('usg_completions').select('usg_id').eq('user_id', userId);
+    if (usgData) {
+      const usgMap = {};
+      usgData.forEach((r) => { usgMap[r.usg_id] = true; });
+      localStorage.setItem(STORAGE_KEYS.USG_STATUS, JSON.stringify(usgMap));
+    }
+
+    // 4. Fetch Hospital Bag
     const { data: bagData } = await supabase.from('hospital_bag_completions').select('item_id').eq('user_id', userId);
     if (bagData) {
       const ids = bagData.map((r) => r.item_id);
       localStorage.setItem(STORAGE_KEYS.HOSPITAL_BAG, JSON.stringify(ids));
     }
 
-    // 4. Fetch Doctor Visits
+    // 5. Fetch Custom Bag Items
+    const { data: customBagData } = await supabase.from('custom_bag_items').select('*').eq('user_id', userId);
+    if (customBagData && customBagData.length > 0) {
+      const formattedBag = customBagData.map((ci) => ({
+        id: ci.id || `custom_hb_${Date.now()}`,
+        category: ci.category,
+        text: ci.title,
+        qty: '1 buah',
+        isCustom: true,
+      }));
+      localStorage.setItem(STORAGE_KEYS.CUSTOM_BAG_ITEMS, JSON.stringify(formattedBag));
+    }
+
+    // 6. Fetch Doctor Visits
     const { data: visitData } = await supabase.from('doctor_visits').select('*').eq('user_id', userId).order('date', { ascending: false });
     if (visitData) {
       const formatted = visitData.map((v) => ({
@@ -533,6 +605,31 @@ export async function fetchSupabaseToLocal() {
         doctorName: v.doctor_name,
       }));
       localStorage.setItem(STORAGE_KEYS.DOCTOR_VISITS, JSON.stringify(formatted));
+    }
+
+    // 7. Fetch Doctor Questions
+    const { data: qData } = await supabase.from('doctor_questions').select('*').eq('user_id', userId);
+    if (qData && qData.length > 0) {
+      const formattedQ = qData.map((q) => ({
+        id: q.id || `q_${Date.now()}`,
+        text: q.text,
+        isAnswered: q.is_answered,
+        note: q.note || '',
+      }));
+      localStorage.setItem(STORAGE_KEYS.DOCTOR_QUESTIONS, JSON.stringify(formattedQ));
+    }
+
+    // 8. Fetch Daily Logs
+    const { data: dailyData } = await supabase.from('daily_logs').select('*').eq('user_id', userId);
+    if (dailyData && dailyData.length > 0) {
+      const dailyMap = {};
+      dailyData.forEach((row) => {
+        dailyMap[row.date] = {
+          waterGlasses: row.water_glasses || 0,
+          tookVitamin: !!row.took_vitamin,
+        };
+      });
+      localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, JSON.stringify(dailyMap));
     }
 
     return {

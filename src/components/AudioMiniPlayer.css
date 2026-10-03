@@ -1,7 +1,7 @@
 /* Persistent Mini Audio Player Styles */
 .audio-mini-player {
   position: fixed;
-  bottom: calc(var(--bottom-nav-height) + 12px);
+  bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 12px);
   left: 50%;
   transform: translateX(-50%);
   width: calc(100% - 32px);
@@ -17,6 +17,11 @@
   z-index: 110;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  transition: bottom var(--duration-normal) var(--ease-spring);
+}
+
+.audio-mini-player--subpage {
+  bottom: calc(var(--safe-area-bottom) + 16px);
 }
 
 @media (min-width: 1024px) {
@@ -25,6 +30,9 @@
     bottom: calc(var(--bottom-nav-height) + 12px);
     width: calc(100% - 32px);
     max-width: 400px;
+  }
+  .desktop-layout-wrapper .audio-mini-player--subpage {
+    bottom: 24px;
   }
 }
 

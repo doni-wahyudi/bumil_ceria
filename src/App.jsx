@@ -1,5 +1,5 @@
-import { useState, useEffect, createContext, useContext } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { isOnboardingDone, getProfile } from './utils/storage';
 import { getSession, onAuthStateChange, signOut } from './utils/supabaseClient';
 import { getCurrentWeek, getCurrentDay, getTrimester, getDaysRemaining, getProgressPercentage, calculateDueDate } from './utils/pregnancyCalc';
@@ -25,11 +25,89 @@ import { audioSynth } from './utils/audioSynth';
 import { Headphones } from 'lucide-react';
 import './index.css';
 
-// Global context for app state
-export const AppContext = createContext(null);
+import { AppContext } from './context/AppContext';
 
-export function useApp() {
-  return useContext(AppContext);
+const MAIN_ROUTES = ['/', '/timeline', '/checklist', '/profile'];
+
+function AuthenticatedAppLayout({
+  showAudioModal,
+  setShowAudioModal,
+  activeSound,
+  setActiveSound,
+  isPlayingAudio,
+  setIsPlayingAudio,
+  handleStopAudio,
+  handleToggleMiniPlay,
+}) {
+  const location = useLocation();
+  const isMainRoute = MAIN_ROUTES.includes(location.pathname);
+
+  return (
+    <div className="desktop-layout-wrapper">
+      <DesktopCompanionSidebar onOpenAudio={() => setShowAudioModal(true)} />
+
+      <div className={`app-container ${!isMainRoute ? 'app-container--subpage' : ''}`}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/timeline" element={<Timeline />} />
+          <Route path="/checklist" element={<Checklist />} />
+          <Route path="/profile" element={<Profile />} />
+          {/* Phase 2 Enhanced Feature Routes */}
+          <Route path="/hospital-bag" element={<HospitalBag />} />
+          <Route path="/doctor-notes" element={<DoctorNotes />} />
+          <Route path="/nutrition" element={<NutritionGuide />} />
+          <Route path="/calculator" element={<PregnancyCalc />} />
+          {/* Phase 3 Hospital Directory Route */}
+          <Route path="/hospitals" element={<HospitalDirectory />} />
+          {/* Phase 4 Kick Counter, Contraction Timer & Cost Simulator */}
+          <Route path="/labor-tools" element={<LaborTools />} />
+          <Route path="/cost-simulator" element={<CostSimulator />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+
+        {/* Bottom Navigation is displayed exclusively on main tabs */}
+        {isMainRoute && <BottomNav />}
+
+        {/* Persistent Mini Audio Player when audio is active */}
+        <AudioMiniPlayer
+          isPlaying={isPlayingAudio && !showAudioModal}
+          activeSound={activeSound}
+          onOpenModal={() => setShowAudioModal(true)}
+          onStop={handleStopAudio}
+          onTogglePlay={handleToggleMiniPlay}
+          hasBottomNav={isMainRoute}
+        />
+
+        {/* Mobile Floating Audio Pill: only on main tabs when audio is not playing */}
+        {!isPlayingAudio && isMainRoute && (
+          <button
+            type="button"
+            className="mobile-audio-fab"
+            onClick={() => setShowAudioModal(true)}
+            aria-label="Buka Audio Relaksasi"
+            title="Audio Relaksasi Rahim & Meditasi"
+          >
+            <Headphones size={18} />
+            <span>Relaksasi</span>
+          </button>
+        )}
+
+        <PWAInstallPrompt
+          hasBottomNav={isMainRoute}
+          hasMiniPlayer={isPlayingAudio && !showAudioModal}
+        />
+      </div>
+
+      <AudioRelaxationModal
+        isOpen={showAudioModal}
+        onClose={() => setShowAudioModal(false)}
+        activeSound={activeSound}
+        setActiveSound={setActiveSound}
+        isPlaying={isPlayingAudio}
+        setIsPlaying={setIsPlayingAudio}
+      />
+    </div>
+  );
 }
 
 function App() {
@@ -61,8 +139,21 @@ function App() {
 
   const handleLogout = async () => {
     handleStopAudio();
+    localStorage.removeItem('bumpbuddy_guest_session');
     await signOut();
-    // onAuthStateChange listener will set session to null → Login shown automatically
+    setSession(null);
+    setOnboarded(false);
+    setProfile(null);
+  };
+
+  const handleGuestLogin = async () => {
+    localStorage.setItem('bumpbuddy_guest_session', 'true');
+    const guestSession = { isGuest: true, user: { id: 'guest_user', email: 'tamu@bumilceria.local' } };
+    setSession(guestSession);
+    const done = await isOnboardingDone();
+    const prof = await getProfile();
+    setOnboarded(done);
+    setProfile(prof);
   };
 
   useEffect(() => {
@@ -78,9 +169,11 @@ function App() {
     // Check initial session
     async function init() {
       const { data } = await getSession();
-      setSession(data.session);
+      const isGuest = localStorage.getItem('bumpbuddy_guest_session') === 'true';
+      const activeSession = data?.session || (isGuest ? { isGuest: true, user: { id: 'guest_user', email: 'tamu@bumilceria.local' } } : null);
+      setSession(activeSession);
 
-      if (data.session) {
+      if (activeSession) {
         const done = await isOnboardingDone();
         const prof = await getProfile();
         setOnboarded(done);
@@ -93,16 +186,20 @@ function App() {
 
     // Subscribe to auth state changes
     const unsubscribe = onAuthStateChange(async (event, newSession) => {
-      setSession(newSession);
       if (newSession) {
+        localStorage.removeItem('bumpbuddy_guest_session');
+        setSession(newSession);
         const done = await isOnboardingDone();
         const prof = await getProfile();
         setOnboarded(done);
         setProfile(prof);
       } else {
-        // Logged out — clear state
-        setOnboarded(false);
-        setProfile(null);
+        const isGuest = localStorage.getItem('bumpbuddy_guest_session') === 'true';
+        if (!isGuest) {
+          setSession(null);
+          setOnboarded(false);
+          setProfile(null);
+        }
       }
     });
 
@@ -168,9 +265,9 @@ function App() {
       <AppContext.Provider value={contextValue}>
         {!session ? (
           <Routes>
-            <Route path="/signup" element={<Auth initialTab="signup" />} />
-            <Route path="/login" element={<Auth initialTab="login" />} />
-            <Route path="*" element={<Auth initialTab="login" />} />
+            <Route path="/signup" element={<Auth initialTab="info" onGuestLogin={handleGuestLogin} />} />
+            <Route path="/login" element={<Auth initialTab="login" onGuestLogin={handleGuestLogin} />} />
+            <Route path="*" element={<Auth initialTab="login" onGuestLogin={handleGuestLogin} />} />
           </Routes>
         ) : !onboarded ? (
           <div className="app-container">
@@ -179,64 +276,16 @@ function App() {
             </Routes>
           </div>
         ) : (
-          <div className="desktop-layout-wrapper">
-            <DesktopCompanionSidebar onOpenAudio={() => setShowAudioModal(true)} />
-
-            <div className="app-container">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/timeline" element={<Timeline />} />
-                <Route path="/checklist" element={<Checklist />} />
-                <Route path="/profile" element={<Profile />} />
-                {/* Phase 2 Enhanced Feature Routes */}
-                <Route path="/hospital-bag" element={<HospitalBag />} />
-                <Route path="/doctor-notes" element={<DoctorNotes />} />
-                <Route path="/nutrition" element={<NutritionGuide />} />
-                <Route path="/calculator" element={<PregnancyCalc />} />
-                {/* Phase 3 Hospital Directory Route */}
-                <Route path="/hospitals" element={<HospitalDirectory />} />
-                {/* Phase 4 Kick Counter, Contraction Timer & Cost Simulator */}
-                <Route path="/labor-tools" element={<LaborTools />} />
-                <Route path="/cost-simulator" element={<CostSimulator />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-              <BottomNav />
-
-              {/* Persistent Mini Audio Player when audio is active */}
-              <AudioMiniPlayer
-                isPlaying={isPlayingAudio && !showAudioModal}
-                activeSound={activeSound}
-                onOpenModal={() => setShowAudioModal(true)}
-                onStop={handleStopAudio}
-                onTogglePlay={handleToggleMiniPlay}
-              />
-
-              {/* Mobile Floating Audio Pill (when audio is not actively playing) */}
-              {!isPlayingAudio && (
-                <button
-                  type="button"
-                  className="mobile-audio-fab"
-                  onClick={() => setShowAudioModal(true)}
-                  aria-label="Buka Audio Relaksasi"
-                  title="Audio Relaksasi Rahim & Meditasi"
-                >
-                  <Headphones size={18} />
-                  <span>Relaksasi</span>
-                </button>
-              )}
-
-              <PWAInstallPrompt hasMiniPlayer={isPlayingAudio && !showAudioModal} />
-            </div>
-
-            <AudioRelaxationModal
-              isOpen={showAudioModal}
-              onClose={() => setShowAudioModal(false)}
-              activeSound={activeSound}
-              setActiveSound={setActiveSound}
-              isPlaying={isPlayingAudio}
-              setIsPlaying={setIsPlayingAudio}
-            />
-          </div>
+          <AuthenticatedAppLayout
+            showAudioModal={showAudioModal}
+            setShowAudioModal={setShowAudioModal}
+            activeSound={activeSound}
+            setActiveSound={setActiveSound}
+            isPlayingAudio={isPlayingAudio}
+            setIsPlayingAudio={setIsPlayingAudio}
+            handleStopAudio={handleStopAudio}
+            handleToggleMiniPlay={handleToggleMiniPlay}
+          />
         )}
       </AppContext.Provider>
     </BrowserRouter>

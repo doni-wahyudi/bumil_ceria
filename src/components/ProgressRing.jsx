@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './ProgressRing.css';
 
 function ProgressRing({ progress = 0, week = 0, size = 140, strokeWidth = 10 }) {

@@ -44,7 +44,7 @@ class AudioSynthesizer {
       try {
         this.activeSource.stop();
         this.activeSource.disconnect();
-      } catch (e) {
+      } catch {
         // ignore if already stopped
       }
       this.activeSource = null;

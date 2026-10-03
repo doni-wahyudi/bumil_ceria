@@ -1,7 +1,7 @@
 /* Hospital Bag Page Styles */
 
 .hospital-bag-page {
-  padding-bottom: 96px;
+  padding-bottom: calc(var(--safe-area-bottom) + 36px);
 }
 
 .hb-header {

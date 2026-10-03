@@ -1,7 +1,7 @@
 /* Hospital Directory Page Styles */
 
 .hospital-dir-page {
-  padding-bottom: 96px;
+  padding-bottom: calc(var(--safe-area-bottom) + 36px);
 }
 
 .hd-header {

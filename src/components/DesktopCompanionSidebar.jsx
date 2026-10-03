@@ -14,11 +14,9 @@ import {
   Headphones,
   PhoneCall,
   AlertTriangle,
-  Heart,
-  Baby,
   ShieldAlert,
 } from 'lucide-react';
-import { useApp } from '../App';
+import { useApp } from '../context/AppContext';
 import { LAMPUNG_HOSPITALS } from '../data/lampungHospitals';
 import './DesktopCompanionSidebar.css';
 
@@ -60,7 +58,7 @@ export default function DesktopCompanionSidebar({ onOpenAudio }) {
         {/* Status Profile Pill */}
         <div className="desk-profile-card card">
           <div className="desk-profile-header">
-            <strong>{profile.motherName || 'Mama'} & {profile.fatherName || 'Papa'}</strong>
+            <strong>{profile.mamaName || 'Mama'} & {profile.papaName || 'Papa'}</strong>
             <button
               className={`desk-role-toggle ${role === 'mama' ? 'desk-role--mama' : 'desk-role--papa'}`}
               onClick={() => setRole(role === 'mama' ? 'papa' : 'mama')}

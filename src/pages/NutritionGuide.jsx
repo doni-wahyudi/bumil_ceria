@@ -62,7 +62,12 @@ function NutritionGuide() {
     <div className="page-content nutrition-page" id="nutrition-page">
       {/* Header */}
       <header className="ng-header animate-fade-in-up">
-        <button className="ng-back-btn" onClick={() => navigate(-1)} aria-label="Kembali">
+        <button
+          type="button"
+          className="ng-back-btn"
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+          aria-label="Kembali"
+        >
           <ArrowLeft size={20} />
         </button>
         <div>

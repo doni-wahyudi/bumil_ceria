@@ -1,7 +1,7 @@
 /* Pregnancy Calculator Page Styles */
 
 .calc-page {
-  padding-bottom: 96px;
+  padding-bottom: calc(var(--safe-area-bottom) + 36px);
 }
 
 .calc-header {

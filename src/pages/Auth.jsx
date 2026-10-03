@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { signIn, isSupabaseConfigured } from '../utils/supabaseClient';
-import { Heart, LogIn, UserPlus, Eye, EyeOff, AlertCircle, CheckCircle2, Sparkles, User, Mail, Lock } from 'lucide-react';
+import { Heart, LogIn, Eye, EyeOff, AlertCircle, Sparkles, Mail, Lock, ShieldCheck, Smartphone } from 'lucide-react';
 import './Login.css';
 
-export default function Auth({ initialTab = 'login' }) {
-  const [activeTab, setActiveTab] = useState(initialTab);
+export default function Auth({ initialTab = 'login', onGuestLogin }) {
+  const [activeTab, setActiveTab] = useState(initialTab === 'info' ? 'info' : 'login');
 
   // Login form state
   const [email, setEmail] = useState('');
@@ -12,17 +12,6 @@ export default function Auth({ initialTab = 'login' }) {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // Signup form state (Mockup)
-  const [signupName, setSignupName] = useState('');
-  const [signupRole, setSignupRole] = useState('mama'); // 'mama' | 'papa'
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [signupConfirmPassword, setSignupConfirmPassword] = useState('');
-  const [showSignupPassword, setShowSignupPassword] = useState(false);
-  const [signupLoading, setSignupLoading] = useState(false);
-  const [signupError, setSignupError] = useState('');
-  const [signupSuccess, setSignupSuccess] = useState(false);
 
   // Handle Login submission
   const handleLoginSubmit = async (e) => {
@@ -46,45 +35,6 @@ export default function Auth({ initialTab = 'login' }) {
         setError(authError.message || 'Gagal masuk. Coba lagi beberapa saat lagi.');
       }
     }
-    // On success, App.jsx onAuthStateChange listener automatically updates session
-  };
-
-  // Handle Signup Mockup submission
-  const handleSignupSubmit = (e) => {
-    e.preventDefault();
-    setSignupError('');
-
-    if (!signupName.trim()) {
-      setSignupError('Silakan masukkan nama lengkap Mama atau Papa.');
-      return;
-    }
-    if (!signupEmail.trim() || !signupEmail.includes('@')) {
-      setSignupError('Silakan masukkan alamat email yang valid.');
-      return;
-    }
-    if (signupPassword.length < 6) {
-      setSignupError('Kata sandi minimal 6 karakter.');
-      return;
-    }
-    if (signupPassword !== signupConfirmPassword) {
-      setSignupError('Konfirmasi kata sandi tidak cocok.');
-      return;
-    }
-
-    setSignupLoading(true);
-    // Simulate real network request
-    setTimeout(() => {
-      setSignupLoading(false);
-      setSignupSuccess(true);
-    }, 700);
-  };
-
-  // Proceed from signup success to login tab
-  const handleProceedToLogin = () => {
-    setEmail(signupEmail);
-    setActiveTab('login');
-    setSignupSuccess(false);
-    setError('');
   };
 
   return (
@@ -115,13 +65,12 @@ export default function Auth({ initialTab = 'login' }) {
           <button
             type="button"
             role="tab"
-            aria-selected={activeTab === 'signup'}
-            className={`auth-tab ${activeTab === 'signup' ? 'auth-tab--active' : ''}`}
-            onClick={() => { setActiveTab('signup'); setSignupError(''); }}
+            aria-selected={activeTab === 'info'}
+            className={`auth-tab ${activeTab === 'info' ? 'auth-tab--active' : ''}`}
+            onClick={() => { setActiveTab('info'); setError(''); }}
           >
-            <UserPlus size={15} />
-            <span>Daftar</span>
-            <span className="auth-tab-mock-pill">Demo</span>
+            <ShieldCheck size={15} />
+            <span>Info Akses</span>
           </button>
         </div>
 
@@ -129,10 +78,23 @@ export default function Auth({ initialTab = 'login' }) {
         {activeTab === 'login' && (
           <div>
             {!isSupabaseConfigured && (
-              <div className="login-unconfigured">
+              <div className="login-unconfigured" style={{ marginBottom: '16px' }}>
                 <AlertCircle size={20} />
-                <p>Koneksi Supabase belum terdeteksi.</p>
-                <p className="text-xs">Pastikan VITE_SUPABASE_URL & ANON_KEY sudah terpasang.</p>
+                <p>Mode Offline / Pratinjau Lokal</p>
+                <p className="text-xs" style={{ marginTop: '4px' }}>
+                  Koneksi Supabase belum terdeteksi secara lokal (secret aktif di GitHub Actions). Anda dapat menggunakan aplikasi sepenuhnya via Mode Tamu.
+                </p>
+                {onGuestLogin && (
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-full login-btn"
+                    style={{ marginTop: '10px' }}
+                    onClick={onGuestLogin}
+                  >
+                    <Smartphone size={16} />
+                    <span>Lanjut Mode Tamu (Offline)</span>
+                  </button>
+                )}
               </div>
             )}
 
@@ -209,195 +171,78 @@ export default function Auth({ initialTab = 'login' }) {
               </button>
             </form>
 
+            {isSupabaseConfigured && onGuestLogin && (
+              <div style={{ marginTop: '14px', textAlign: 'center' }}>
+                <button
+                  type="button"
+                  className="btn btn-ghost text-xs"
+                  style={{ color: 'var(--color-text-secondary)', padding: '6px 12px' }}
+                  onClick={onGuestLogin}
+                >
+                  <Smartphone size={14} style={{ marginRight: '4px' }} />
+                  Coba Tanpa Akun (Mode Tamu / Offline)
+                </button>
+              </div>
+            )}
+
             <div className="auth-switch-prompt">
               <span>Belum memiliki akun? </span>
               <button
                 type="button"
                 className="auth-link-btn"
-                onClick={() => { setActiveTab('signup'); setSignupError(''); }}
+                onClick={() => { setActiveTab('info'); setError(''); }}
               >
-                Daftar sekarang
+                Lihat informasi akses
               </button>
             </div>
           </div>
         )}
 
-        {/* TAB 2: SIGNUP (MOCKUP) */}
-        {activeTab === 'signup' && (
-          <div>
-            {signupSuccess ? (
-              <div className="auth-success-card animate-scale-in">
-                <div className="auth-success-icon">
-                  <CheckCircle2 size={40} color="#10b981" />
-                </div>
-                <h3>Pendaftaran Mockup Berhasil!</h3>
-                <p className="auth-success-desc">
-                  Selamat datang, <strong>{signupName}</strong> ({signupRole === 'mama' ? 'Calon Mama' : 'Calon Papa'})! 🌸
-                </p>
-                <div className="auth-success-note">
-                  <p className="text-xs">
-                    Akun Anda telah tercatat dalam simulasi pendaftaran. Akun resmi Bumil Ceria dikelola secara terpusat oleh admin melalui Supabase Auth.
-                  </p>
-                </div>
+        {/* TAB 2: INFO AKSES & PENDAFTARAN ADMIN */}
+        {activeTab === 'info' && (
+          <div className="animate-fade-in-up">
+            <div className="auth-mockup-badge" style={{ marginBottom: '14px' }}>
+              <Sparkles size={13} />
+              <span>Akses Khusus & Terkelola</span>
+            </div>
 
-                <button
-                  type="button"
-                  className="btn btn-primary btn-full login-btn"
-                  onClick={handleProceedToLogin}
-                >
-                  <LogIn size={16} />
-                  <span>Lanjut Masuk dengan Akun Ini</span>
-                </button>
+            <div className="card" style={{ padding: '16px', background: 'var(--color-bg-card)', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <ShieldCheck size={20} color="var(--color-primary)" />
+                <h3 style={{ fontSize: '0.95rem', margin: 0, fontWeight: 700 }}>Pendaftaran Terpusat</h3>
               </div>
-            ) : (
-              <div>
-                <div className="auth-mockup-badge">
-                  <Sparkles size={13} />
-                  <span>Mode Pendaftaran (Simulasi / Mockup)</span>
-                </div>
+              <p className="text-xs text-secondary" style={{ lineHeight: 1.6, margin: 0 }}>
+                Akun Bumil Ceria dikelola secara privat oleh Admin. Akses masuk hanya diberikan kepada pengguna yang telah didaftarkan secara resmi di database Supabase.
+              </p>
+            </div>
 
-                <form className="login-form" onSubmit={handleSignupSubmit} noValidate>
-                  {/* Role Selector */}
-                  <div className="input-group">
-                    <label>Peran Saya</label>
-                    <div className="auth-role-pills">
-                      <button
-                        type="button"
-                        className={`auth-role-pill ${signupRole === 'mama' ? 'auth-role-pill--active' : ''}`}
-                        onClick={() => setSignupRole('mama')}
-                      >
-                        🌸 Calon Mama
-                      </button>
-                      <button
-                        type="button"
-                        className={`auth-role-pill ${signupRole === 'papa' ? 'auth-role-pill--active' : ''}`}
-                        onClick={() => setSignupRole('papa')}
-                      >
-                        👔 Calon Papa
-                      </button>
-                    </div>
-                  </div>
+            <div className="card" style={{ padding: '14px', background: 'var(--color-primary-subtle)', marginBottom: '18px' }}>
+              <p className="text-xs" style={{ color: 'var(--color-text-primary)', margin: 0, lineHeight: 1.5 }}>
+                💡 <em>Ingin mencoba seluruh fitur kehamilan langsung?</em> Anda dapat menggunakan <strong>Mode Tamu</strong> dengan penyimpanan lokal tanpa login.
+              </p>
+            </div>
 
-                  {/* Name */}
-                  <div className="input-group" style={{ marginTop: '12px' }}>
-                    <label htmlFor="signup-name">
-                      <User size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} />
-                      Nama Lengkap
-                    </label>
-                    <input
-                      id="signup-name"
-                      type="text"
-                      className="input-field"
-                      placeholder={signupRole === 'mama' ? 'Contoh: Bunda Sarah' : 'Contoh: Ayah Dimas'}
-                      value={signupName}
-                      onChange={(e) => setSignupName(e.target.value)}
-                      disabled={signupLoading}
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div className="input-group" style={{ marginTop: '12px' }}>
-                    <label htmlFor="signup-email">
-                      <Mail size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} />
-                      Alamat Email
-                    </label>
-                    <input
-                      id="signup-email"
-                      type="email"
-                      className="input-field"
-                      placeholder="nama@email.com"
-                      value={signupEmail}
-                      onChange={(e) => setSignupEmail(e.target.value)}
-                      autoComplete="email"
-                      disabled={signupLoading}
-                    />
-                  </div>
-
-                  {/* Password */}
-                  <div className="input-group" style={{ marginTop: '12px' }}>
-                    <label htmlFor="signup-password">
-                      <Lock size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} />
-                      Kata Sandi (min. 6 karakter)
-                    </label>
-                    <div className="input-password-wrapper">
-                      <input
-                        id="signup-password"
-                        type={showSignupPassword ? 'text' : 'password'}
-                        className="input-field"
-                        placeholder="••••••••"
-                        value={signupPassword}
-                        onChange={(e) => setSignupPassword(e.target.value)}
-                        autoComplete="new-password"
-                        disabled={signupLoading}
-                      />
-                      <button
-                        type="button"
-                        className="password-toggle-btn"
-                        onClick={() => setShowSignupPassword(!showSignupPassword)}
-                        tabIndex={-1}
-                        aria-label={showSignupPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'}
-                      >
-                        {showSignupPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Confirm Password */}
-                  <div className="input-group" style={{ marginTop: '12px' }}>
-                    <label htmlFor="signup-confirm">
-                      <Lock size={13} style={{ display: 'inline', marginRight: 4, verticalAlign: -1 }} />
-                      Konfirmasi Kata Sandi
-                    </label>
-                    <input
-                      id="signup-confirm"
-                      type={showSignupPassword ? 'text' : 'password'}
-                      className="input-field"
-                      placeholder="••••••••"
-                      value={signupConfirmPassword}
-                      onChange={(e) => setSignupConfirmPassword(e.target.value)}
-                      autoComplete="new-password"
-                      disabled={signupLoading}
-                    />
-                  </div>
-
-                  {signupError && (
-                    <div className="login-error animate-scale-in">
-                      <AlertCircle size={15} style={{ flexShrink: 0 }} />
-                      <span>{signupError}</span>
-                    </div>
-                  )}
-
-                  <button
-                    type="submit"
-                    className="btn btn-primary btn-full login-btn"
-                    disabled={signupLoading}
-                  >
-                    {signupLoading ? (
-                      <>
-                        <span className="login-spinner" />
-                        <span>Mendaftarkan Akun...</span>
-                      </>
-                    ) : (
-                      <>
-                        <UserPlus size={16} />
-                        <span>Daftar Akun Baru</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-
-                <div className="auth-switch-prompt">
-                  <span>Sudah memiliki akun? </span>
-                  <button
-                    type="button"
-                    className="auth-link-btn"
-                    onClick={() => { setActiveTab('login'); setError(''); }}
-                  >
-                    Masuk sekarang
-                  </button>
-                </div>
-              </div>
+            {onGuestLogin && (
+              <button
+                type="button"
+                className="btn btn-primary btn-full login-btn"
+                onClick={onGuestLogin}
+              >
+                <Smartphone size={16} />
+                <span>Mulai dengan Mode Tamu (Offline)</span>
+              </button>
             )}
+
+            <div className="auth-switch-prompt" style={{ marginTop: '16px' }}>
+              <span>Sudah memiliki akun? </span>
+              <button
+                type="button"
+                className="auth-link-btn"
+                onClick={() => { setActiveTab('login'); setError(''); }}
+              >
+                Masuk sekarang
+              </button>
+            </div>
           </div>
         )}
 

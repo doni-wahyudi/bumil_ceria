@@ -11,7 +11,7 @@ import {
   Heart,
   Save,
 } from 'lucide-react';
-import { useApp } from '../App';
+import { useApp } from '../context/AppContext';
 import { updateProfile } from '../utils/storage';
 import { formatDateID } from '../utils/pregnancyCalc';
 import './PregnancyCalc.css';
@@ -108,7 +108,12 @@ function PregnancyCalc() {
     <div className="page-content calc-page" id="calc-page">
       {/* Header */}
       <header className="calc-header animate-fade-in-up">
-        <button className="calc-back-btn" onClick={() => navigate(-1)} aria-label="Kembali">
+        <button
+          type="button"
+          className="calc-back-btn"
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+          aria-label="Kembali"
+        >
           <ArrowLeft size={20} />
         </button>
         <div>

@@ -1,6 +1,6 @@
 .checklist-page {
   padding-top: var(--space-4);
-  padding-bottom: 96px;
+  padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 36px);
 }
 
 /* Sub-Tab Switcher */
@@ -379,28 +379,23 @@
   gap: 8px;
 }
 
-/* Bounded scrollable items container (prevents endless page stretching!) */
+/* Checklist items container */
 .checklist-category__items--scrollable {
-  max-height: 290px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 4px;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border-hover) transparent;
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
 }
 
-.checklist-category__items--scrollable::-webkit-scrollbar {
-  width: 4px;
-}
-
-.checklist-category__items--scrollable::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.checklist-category__items--scrollable::-webkit-scrollbar-thumb {
-  background: var(--color-border-hover);
-  border-radius: var(--radius-full);
+@media (min-width: 769px) {
+  .checklist-category__items--scrollable {
+    max-height: 380px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 4px;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-hover) transparent;
+  }
 }
 
 .checklist-category__items--expanded {

@@ -55,7 +55,7 @@ function HospitalBag({ hideBackButton = false }) {
   const handleAddItem = async (e) => {
     e.preventDefault();
     if (!newItemTitle.trim()) return;
-    const added = await addCustomBagItem(newItemCategory, newItemTitle.trim());
+    const added = await addCustomBagItem(newItemCategory, newItemTitle.trim(), newItemQty.trim());
     setCustomItems((prev) => [...prev, added]);
     setNewItemTitle('');
     setNewItemQty('');
@@ -101,7 +101,12 @@ function HospitalBag({ hideBackButton = false }) {
       {/* Top Header */}
       <header className="hb-header animate-fade-in-up">
         {!hideBackButton && (
-          <button className="hb-back-btn" onClick={() => navigate(-1)} aria-label="Kembali">
+          <button
+            type="button"
+            className="hb-back-btn"
+            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+            aria-label="Kembali"
+          >
             <ArrowLeft size={20} />
           </button>
         )}
@@ -202,6 +207,15 @@ function HospitalBag({ hideBackButton = false }) {
               value={newItemTitle}
               onChange={(e) => setNewItemTitle(e.target.value)}
               autoFocus
+            />
+          </div>
+          <div className="input-group" style={{ marginTop: '8px' }}>
+            <input
+              type="text"
+              className="input-field"
+              placeholder="Jumlah (contoh: 2 buah / 1 pasang)"
+              value={newItemQty}
+              onChange={(e) => setNewItemQty(e.target.value)}
             />
           </div>
           <div className="hb-form-actions">

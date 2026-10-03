@@ -7,7 +7,6 @@ import {
   Play,
   Square,
   RotateCcw,
-  Sparkles,
   AlertTriangle,
   Heart,
   CheckCircle2,
@@ -201,7 +200,12 @@ function LaborTools() {
     <div className="page-content labor-tools-page" id="labor-tools-page">
       {/* Top Header */}
       <header className="lt-header animate-fade-in-up">
-        <button className="lt-back-btn" onClick={() => navigate(-1)} aria-label="Kembali">
+        <button
+          type="button"
+          className="lt-back-btn"
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+          aria-label="Kembali"
+        >
           <ArrowLeft size={20} />
         </button>
         <div>

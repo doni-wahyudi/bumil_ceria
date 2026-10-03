@@ -191,13 +191,20 @@ body {
   position: relative;
   background-color: var(--color-bg);
   transition: background-color var(--duration-normal) ease;
+  overflow-x: hidden;
 }
 
 /* ---- Page Content ---- */
 .page-content {
   padding: var(--space-4);
-  padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + var(--space-6));
+  padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 36px);
   min-height: 100dvh;
+  box-sizing: border-box;
+}
+
+.app-container--subpage .page-content,
+.page-content--subpage {
+  padding-bottom: calc(var(--safe-area-bottom) + 36px);
 }
 
 /* ---- Typography Utilities ---- */
@@ -527,8 +534,8 @@ h4 { font-size: var(--text-lg); }
 /* ---- Mobile Audio Floating Action Button ---- */
 .mobile-audio-fab {
   position: fixed;
-  bottom: calc(var(--bottom-nav-height) + 16px);
-  right: 16px;
+  bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 14px);
+  right: max(16px, calc((100vw - var(--app-max-width)) / 2 + 16px));
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -537,12 +544,14 @@ h4 { font-size: var(--text-lg); }
   border: none;
   padding: 8px 14px;
   border-radius: var(--radius-full);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   box-shadow: 0 4px 16px rgba(216, 142, 170, 0.45);
   cursor: pointer;
-  z-index: 90;
-  transition: all var(--transition-fast);
+  z-index: 85;
+  transition: all var(--duration-fast) var(--ease-spring);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .mobile-audio-fab:hover {

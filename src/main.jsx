@@ -9,7 +9,7 @@ createRoot(document.getElementById('root')).render(
 );
 
 // Register PWA Service Worker for offline capability
-if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/bumil_ceria/sw.js', { scope: '/bumil_ceria/' }).catch((err) => {
       console.warn('ServiceWorker registration failed: ', err);

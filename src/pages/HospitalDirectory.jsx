@@ -40,7 +40,12 @@ function HospitalDirectory() {
     <div className="page-content hospital-dir-page" id="hospital-dir-page">
       {/* Header */}
       <header className="hd-header animate-fade-in-up">
-        <button className="hd-back-btn" onClick={() => navigate(-1)} aria-label="Kembali">
+        <button
+          type="button"
+          className="hd-back-btn"
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+          aria-label="Kembali"
+        >
           <ArrowLeft size={20} />
         </button>
         <div>

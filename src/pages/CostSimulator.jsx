@@ -5,14 +5,13 @@ import {
   Coins,
   Sparkles,
   ShieldCheck,
-  Building2,
   TrendingUp,
   AlertCircle,
   PiggyBank,
   Check,
   Save,
 } from 'lucide-react';
-import { useApp } from '../App';
+import { useApp } from '../context/AppContext';
 import {
   LABOR_METHODS,
   HOSPITAL_CLASSES,
@@ -96,7 +95,12 @@ function CostSimulator() {
     <div className="page-content cost-sim-page" id="cost-sim-page">
       {/* Header */}
       <header className="cs-header animate-fade-in-up">
-        <button className="cs-back-btn" onClick={() => navigate(-1)} aria-label="Kembali">
+        <button
+          type="button"
+          className="cs-back-btn"
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+          aria-label="Kembali"
+        >
           <ArrowLeft size={20} />
         </button>
         <div>

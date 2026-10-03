@@ -1,9 +1,6 @@
 import {
   getProfile,
-  getCompletedItems,
-  getUSGStatus,
   getHospitalBagItems,
-  getCustomBagItems,
   getDoctorVisits,
   getDoctorQuestions,
   STORAGE_KEYS,

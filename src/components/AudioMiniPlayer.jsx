@@ -1,4 +1,4 @@
-import { Square, Maximize2, Play, Volume2 } from 'lucide-react';
+import { Square, Maximize2, Play } from 'lucide-react';
 import { RELAXATION_SOUNDS } from '../data/audioSounds';
 import './AudioMiniPlayer.css';
 
@@ -8,6 +8,7 @@ export default function AudioMiniPlayer({
   onOpenModal,
   onStop,
   onTogglePlay,
+  hasBottomNav = true,
 }) {
   if (!isPlaying) return null;
 
@@ -16,7 +17,11 @@ export default function AudioMiniPlayer({
   const Icon = currentSound.icon;
 
   return (
-    <div className="audio-mini-player animate-fade-in-up" role="region" aria-label="Pemutar Audio Mini">
+    <div
+      className={`audio-mini-player animate-fade-in-up ${!hasBottomNav ? 'audio-mini-player--subpage' : ''}`}
+      role="region"
+      aria-label="Pemutar Audio Mini"
+    >
       <div
         className="mini-player-body"
         onClick={onOpenModal}

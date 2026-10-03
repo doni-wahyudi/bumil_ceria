@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Heart, Calendar, Shield, ChevronRight, Baby } from 'lucide-react';
+import { Heart, Calendar, Shield, ChevronRight } from 'lucide-react';
 import { saveProfile, setOnboardingDone } from '../utils/storage';
-import { useApp } from '../App';
+import { useApp } from '../context/AppContext';
 import './Onboarding.css';
 
 const insuranceOptions = [
