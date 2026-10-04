@@ -18,7 +18,7 @@ export default function AudioMiniPlayer({
 
   return (
     <div
-      className={`audio-mini-player animate-fade-in-up ${!hasBottomNav ? 'audio-mini-player--subpage' : ''}`}
+      className={`audio-mini-player ${!hasBottomNav ? 'audio-mini-player--subpage' : ''}`}
       role="region"
       aria-label="Pemutar Audio Mini"
     >

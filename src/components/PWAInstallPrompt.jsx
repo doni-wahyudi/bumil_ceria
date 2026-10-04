@@ -7,8 +7,10 @@ export default function PWAInstallPrompt({ hasMiniPlayer = false, hasBottomNav =
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
-    // Check if dismissed before
-    const isDismissed = sessionStorage.getItem('bumpbuddy_pwa_dismissed');
+    // Check if dismissed before in localStorage or sessionStorage
+    const isDismissed =
+      localStorage.getItem('bumilceria_pwa_dismissed') ||
+      sessionStorage.getItem('bumilceria_pwa_dismissed');
     if (isDismissed) return;
 
     const handler = (e) => {
@@ -30,20 +32,22 @@ export default function PWAInstallPrompt({ hasMiniPlayer = false, hasBottomNav =
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
       setShowPrompt(false);
+      localStorage.setItem('bumilceria_pwa_dismissed', 'true');
     }
     setDeferredPrompt(null);
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    sessionStorage.setItem('bumpbuddy_pwa_dismissed', 'true');
+    sessionStorage.setItem('bumilceria_pwa_dismissed', 'true');
+    localStorage.setItem('bumilceria_pwa_dismissed', 'true');
   };
 
   if (!showPrompt) return null;
 
   return (
     <aside
-      className={`pwa-prompt-banner card animate-fade-in-up ${hasMiniPlayer ? 'pwa-prompt-banner--lifted' : ''} ${!hasBottomNav ? 'pwa-prompt-banner--subpage' : ''}`}
+      className={`pwa-prompt-banner card ${hasMiniPlayer ? 'pwa-prompt-banner--lifted' : ''} ${!hasBottomNav ? 'pwa-prompt-banner--subpage' : ''}`}
       role="region"
       aria-label="Instalasi Aplikasi"
     >
@@ -68,9 +72,10 @@ export default function PWAInstallPrompt({ hasMiniPlayer = false, hasBottomNav =
           type="button"
           className="pwa-btn-close"
           onClick={handleDismiss}
-          aria-label="Tutup"
+          aria-label="Tutup Banner Instalasi"
+          title="Tutup"
         >
-          <X size={16} />
+          <X size={18} />
         </button>
       </div>
     </aside>

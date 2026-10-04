@@ -15,8 +15,12 @@
 .profile-saved {
   position: fixed;
   top: var(--space-4);
-  left: 50%;
-  transform: translateX(-50%);
+  left: 16px;
+  right: 16px;
+  margin-left: auto;
+  margin-right: auto;
+  width: fit-content;
+  max-width: 90%;
   background: var(--color-success);
   color: white;
   padding: var(--space-2) var(--space-5);
