@@ -29,6 +29,19 @@ import { AppContext } from './context/AppContext';
 
 const MAIN_ROUTES = ['/', '/timeline', '/checklist', '/profile'];
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(
+    typeof window !== 'undefined' ? window.innerWidth >= 1024 : false
+  );
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)');
+    const onChange = (e) => setIsDesktop(e.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+  return isDesktop;
+}
+
 function AuthenticatedAppLayout({
   showAudioModal,
   setShowAudioModal,
@@ -41,6 +54,7 @@ function AuthenticatedAppLayout({
 }) {
   const location = useLocation();
   const isMainRoute = MAIN_ROUTES.includes(location.pathname);
+  const isDesktop = useIsDesktop();
 
   // Enforce zero horizontal scroll and scroll to top on every page change
   useEffect(() => {
@@ -52,7 +66,7 @@ function AuthenticatedAppLayout({
 
   return (
     <div className="desktop-layout-wrapper">
-      <DesktopCompanionSidebar onOpenAudio={() => setShowAudioModal(true)} />
+      {isDesktop && <DesktopCompanionSidebar onOpenAudio={() => setShowAudioModal(true)} />}
 
       <div className={`app-container ${!isMainRoute ? 'app-container--subpage' : ''}`}>
         <Routes>
