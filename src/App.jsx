@@ -42,6 +42,14 @@ function AuthenticatedAppLayout({
   const location = useLocation();
   const isMainRoute = MAIN_ROUTES.includes(location.pathname);
 
+  // Enforce zero horizontal scroll and scroll to top on every page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    if (document.scrollingElement) {
+      document.scrollingElement.scrollLeft = 0;
+    }
+  }, [location.pathname]);
+
   return (
     <div className="desktop-layout-wrapper">
       <DesktopCompanionSidebar onOpenAudio={() => setShowAudioModal(true)} />
@@ -80,8 +88,8 @@ function AuthenticatedAppLayout({
           hasBottomNav={isMainRoute}
         />
 
-        {/* Mobile Floating Audio Pill: only on main tabs when audio is not playing */}
-        {!isPlayingAudio && isMainRoute && (
+        {/* Mobile Floating Audio Pill: only on Home tab when audio is not playing (avoids blocking reading cards) */}
+        {!isPlayingAudio && location.pathname === '/' && (
           <button
             type="button"
             className="mobile-audio-fab"

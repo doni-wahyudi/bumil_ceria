@@ -5,13 +5,27 @@ function WeekSelector({ currentWeek, selectedWeek, onSelectWeek, totalWeeks = 40
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      const activeBtn = scrollRef.current.querySelector('.week-pill--current');
-      if (activeBtn) {
-        activeBtn.scrollIntoView({ inline: 'center', behavior: 'smooth', block: 'nearest' });
-      }
+    const container = scrollRef.current;
+    if (!container) return;
+
+    // Target the currently selected week or fall back to current pregnancy week
+    const targetWeek = selectedWeek || currentWeek;
+    const targetBtn = container.querySelector(`[data-week="${targetWeek}"]`);
+
+    if (targetBtn) {
+      // Calculate scroll position strictly inside the container
+      const pillLeft = targetBtn.offsetLeft;
+      const pillWidth = targetBtn.offsetWidth;
+      const containerWidth = container.clientWidth;
+      const targetScrollLeft = pillLeft - (containerWidth / 2) + (pillWidth / 2);
+
+      // container.scrollTo only scrolls .week-selector__scroll without affecting window/body
+      container.scrollTo({
+        left: Math.max(0, targetScrollLeft),
+        behavior: 'smooth',
+      });
     }
-  }, [currentWeek]);
+  }, [currentWeek, selectedWeek]);
 
   const weeks = Array.from({ length: totalWeeks }, (_, i) => i + 1);
 
@@ -25,6 +39,7 @@ function WeekSelector({ currentWeek, selectedWeek, onSelectWeek, totalWeeks = 40
           return (
             <button
               key={w}
+              data-week={w}
               className={`week-pill ${isCurrent ? 'week-pill--current' : ''} ${isSelected && !isCurrent ? 'week-pill--selected' : ''} ${isPast ? 'week-pill--past' : ''}`}
               onClick={() => onSelectWeek(w)}
               aria-label={`Minggu ${w}`}
