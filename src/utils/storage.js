@@ -36,6 +36,8 @@ const STORAGE_KEYS = {
   KICK_SESSIONS: 'bumpbuddy_kick_sessions',
   CONTRACTION_RECORDS: 'bumpbuddy_contraction_records',
   LABOR_BUDGET: 'bumpbuddy_labor_budget',
+  USG_RECORDS: 'bumpbuddy_usg_records',
+  MATERNAL_VITALS: 'bumpbuddy_maternal_vitals',
 };
 
 // ---- Profile ----
@@ -521,9 +523,96 @@ export async function syncLocalToSupabase() {
       }
     }
 
+    // 9. Sync Kick Sessions (Cardiff 10)
+    const kickSessions = await getKickSessions();
+    if (kickSessions.length > 0) {
+      await supabase.from('kick_sessions').delete().eq('user_id', userId);
+      const records = kickSessions.map((k) => ({
+        user_id: userId,
+        date: k.date,
+        kicks: k.kicks,
+        duration_seconds: k.durationSeconds || 0,
+        notes: k.notes || '',
+        created_at: k.createdAt || new Date().toISOString(),
+      }));
+      await supabase.from('kick_sessions').insert(records);
+    }
+
+    // 10. Sync Contraction Records (5-1-1)
+    const contractions = await getContractionRecords();
+    if (contractions.length > 0) {
+      await supabase.from('contraction_records').delete().eq('user_id', userId);
+      const records = contractions.map((c) => ({
+        user_id: userId,
+        start_time: c.startTime,
+        duration_seconds: c.durationSeconds,
+        interval_minutes: c.intervalMinutes,
+        intensity: c.intensity || 'sedang',
+      }));
+      await supabase.from('contraction_records').insert(records);
+    }
+
+    // 11. Sync Labor Budget
+    const laborBudget = await getLaborBudget();
+    if (laborBudget) {
+      await supabase.from('labor_budget').upsert({
+        user_id: userId,
+        current_savings: laborBudget.currentSavings || 0,
+        target_override: laborBudget.targetOverride || null,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' });
+    }
+
+    // 12. Sync USG Records (Biometri Janin)
+    const usgRecords = await getUSGRecords();
+    if (usgRecords.length > 0) {
+      await supabase.from('usg_records').delete().eq('user_id', userId);
+      const records = usgRecords.map((u) => ({
+        user_id: userId,
+        date: u.date,
+        week: u.week,
+        doctor_name: u.doctorName || '',
+        clinic_name: u.clinicName || '',
+        crl: u.crl ? parseFloat(u.crl) : null,
+        bpd: u.bpd ? parseFloat(u.bpd) : null,
+        hc: u.hc ? parseFloat(u.hc) : null,
+        ac: u.ac ? parseFloat(u.ac) : null,
+        fl: u.fl ? parseFloat(u.fl) : null,
+        efw: u.efw ? parseInt(u.efw, 10) : null,
+        djj: u.djj ? parseInt(u.djj, 10) : null,
+        afi: u.afi ? parseFloat(u.afi) : null,
+        placenta: u.placenta || '',
+        gender: u.gender || '',
+        notes: u.notes || '',
+        created_at: u.createdAt || new Date().toISOString(),
+      }));
+      await supabase.from('usg_records').insert(records);
+    }
+
+    // 13. Sync Maternal Vitals (Buku KIA)
+    const vitals = await getMaternalVitals();
+    if (vitals.length > 0) {
+      await supabase.from('maternal_vitals').delete().eq('user_id', userId);
+      const records = vitals.map((v) => ({
+        user_id: userId,
+        date: v.date,
+        week: v.week,
+        systolic: v.systolic ? parseInt(v.systolic, 10) : null,
+        diastolic: v.diastolic ? parseInt(v.diastolic, 10) : null,
+        weight: v.weight ? parseFloat(v.weight) : null,
+        lila: v.lila ? parseFloat(v.lila) : null,
+        hemoglobin: v.hemoglobin ? parseFloat(v.hemoglobin) : null,
+        blood_sugar: v.bloodSugar ? parseInt(v.bloodSugar, 10) : null,
+        symptoms: v.symptoms || '',
+        notes: v.notes || '',
+        created_at: v.createdAt || new Date().toISOString(),
+      }));
+      await supabase.from('maternal_vitals').insert(records);
+    }
+
     return {
       success: true,
-      message: 'Semua data lokal berhasil disinkronkan ke cloud Supabase!',
+      message: 'Seluruh data lokal & progres medis berhasil disinkronkan ke cloud Supabase!',
     };
   } catch (err) {
     return {
@@ -632,9 +721,90 @@ export async function fetchSupabaseToLocal() {
       localStorage.setItem(STORAGE_KEYS.DAILY_LOGS, JSON.stringify(dailyMap));
     }
 
+    // 9. Fetch Kick Sessions
+    const { data: kickData } = await supabase.from('kick_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false });
+    if (kickData && kickData.length > 0) {
+      const formatted = kickData.map((k) => ({
+        id: k.id || `kick_${Date.now()}`,
+        date: k.date,
+        kicks: k.kicks,
+        durationSeconds: k.duration_seconds,
+        notes: k.notes,
+        createdAt: k.created_at,
+      }));
+      localStorage.setItem(STORAGE_KEYS.KICK_SESSIONS, JSON.stringify(formatted));
+    }
+
+    // 10. Fetch Contraction Records
+    const { data: contData } = await supabase.from('contraction_records').select('*').eq('user_id', userId).order('created_at', { ascending: false });
+    if (contData && contData.length > 0) {
+      const formatted = contData.map((c) => ({
+        id: c.id || `cont_${Date.now()}`,
+        startTime: c.start_time,
+        durationSeconds: c.duration_seconds,
+        intervalMinutes: c.interval_minutes,
+        intensity: c.intensity,
+      }));
+      localStorage.setItem(STORAGE_KEYS.CONTRACTION_RECORDS, JSON.stringify(formatted));
+    }
+
+    // 11. Fetch Labor Budget
+    const { data: budgetData } = await supabase.from('labor_budget').select('*').eq('user_id', userId).maybeSingle();
+    if (budgetData) {
+      localStorage.setItem(STORAGE_KEYS.LABOR_BUDGET, JSON.stringify({
+        currentSavings: budgetData.current_savings || 0,
+        targetOverride: budgetData.target_override || null,
+      }));
+    }
+
+    // 12. Fetch USG Records
+    const { data: usgRecData } = await supabase.from('usg_records').select('*').eq('user_id', userId).order('date', { ascending: false });
+    if (usgRecData && usgRecData.length > 0) {
+      const formatted = usgRecData.map((u) => ({
+        id: u.id,
+        date: u.date,
+        week: u.week,
+        doctorName: u.doctor_name,
+        clinicName: u.clinic_name,
+        crl: u.crl,
+        bpd: u.bpd,
+        hc: u.hc,
+        ac: u.ac,
+        fl: u.fl,
+        efw: u.efw,
+        djj: u.djj,
+        afi: u.afi,
+        placenta: u.placenta,
+        gender: u.gender,
+        notes: u.notes,
+        createdAt: u.created_at,
+      }));
+      localStorage.setItem(STORAGE_KEYS.USG_RECORDS, JSON.stringify(formatted));
+    }
+
+    // 13. Fetch Maternal Vitals
+    const { data: vitalData } = await supabase.from('maternal_vitals').select('*').eq('user_id', userId).order('date', { ascending: false });
+    if (vitalData && vitalData.length > 0) {
+      const formatted = vitalData.map((v) => ({
+        id: v.id,
+        date: v.date,
+        week: v.week,
+        systolic: v.systolic,
+        diastolic: v.diastolic,
+        weight: v.weight,
+        lila: v.lila,
+        hemoglobin: v.hemoglobin,
+        bloodSugar: v.blood_sugar,
+        symptoms: v.symptoms,
+        notes: v.notes,
+        createdAt: v.created_at,
+      }));
+      localStorage.setItem(STORAGE_KEYS.MATERNAL_VITALS, JSON.stringify(formatted));
+    }
+
     return {
       success: true,
-      message: 'Data dari cloud Supabase berhasil dimuat ke penyimpanan lokal!',
+      message: 'Seluruh data cloud Supabase berhasil dimuat ke penyimpanan lokal!',
     };
   } catch (err) {
     return {
@@ -715,6 +885,67 @@ export async function getLaborBudget() {
 export async function saveLaborBudget(budget) {
   localStorage.setItem(STORAGE_KEYS.LABOR_BUDGET, JSON.stringify(budget));
   return budget;
+}
+
+// ---- USG Records (Biometri & Hasil Pemeriksaan Janin) ----
+
+export async function getUSGRecords() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.USG_RECORDS);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function saveUSGRecord(record) {
+  const records = await getUSGRecords();
+  const newRecord = {
+    ...record,
+    id: record.id || `usg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    createdAt: new Date().toISOString(),
+  };
+  // Prepend so latest visit is first
+  records.unshift(newRecord);
+  localStorage.setItem(STORAGE_KEYS.USG_RECORDS, JSON.stringify(records));
+  return newRecord;
+}
+
+export async function deleteUSGRecord(id) {
+  const records = await getUSGRecords();
+  const filtered = records.filter((r) => r.id !== id);
+  localStorage.setItem(STORAGE_KEYS.USG_RECORDS, JSON.stringify(filtered));
+  return filtered;
+}
+
+// ---- Maternal Vitals (Kondisi Kesehatan Ibu / Buku KIA) ----
+
+export async function getMaternalVitals() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.MATERNAL_VITALS);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function saveMaternalVital(vital) {
+  const vitals = await getMaternalVitals();
+  const newVital = {
+    ...vital,
+    id: vital.id || `vital_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    createdAt: new Date().toISOString(),
+  };
+  vitals.unshift(newVital);
+  localStorage.setItem(STORAGE_KEYS.MATERNAL_VITALS, JSON.stringify(vitals));
+  return newVital;
+}
+
+export async function deleteMaternalVital(id) {
+  const vitals = await getMaternalVitals();
+  const filtered = vitals.filter((v) => v.id !== id);
+  localStorage.setItem(STORAGE_KEYS.MATERNAL_VITALS, JSON.stringify(filtered));
+  return filtered;
 }
 
 // ---- Reset ----

@@ -92,6 +92,76 @@ create table if not exists public.daily_logs (
   unique(user_id, date)
 );
 
+-- 9. Cardiff Kick Counter Sessions
+create table if not exists public.kick_sessions (
+  id uuid primary key default uuid_generate_v4(),
+  user_id text not null,
+  date date not null,
+  kicks integer not null default 10,
+  duration_seconds integer default 0,
+  notes text default '',
+  created_at timestamptz default now()
+);
+
+-- 10. Contraction Timer Records (5-1-1)
+create table if not exists public.contraction_records (
+  id uuid primary key default uuid_generate_v4(),
+  user_id text not null,
+  start_time timestamptz not null,
+  duration_seconds integer not null,
+  interval_minutes numeric(5,2),
+  intensity text default 'sedang',
+  created_at timestamptz default now()
+);
+
+-- 11. Labor Savings Budget
+create table if not exists public.labor_budget (
+  id uuid primary key default uuid_generate_v4(),
+  user_id text not null unique,
+  current_savings numeric(12,2) default 0,
+  target_override numeric(12,2),
+  updated_at timestamptz default now()
+);
+
+-- 12. USG Progress & Fetal Biometry Records
+create table if not exists public.usg_records (
+  id uuid primary key default uuid_generate_v4(),
+  user_id text not null,
+  date date not null,
+  week integer not null,
+  doctor_name text,
+  clinic_name text,
+  crl numeric(6,2),          -- Crown-Rump Length (mm)
+  bpd numeric(6,2),          -- Biparietal Diameter (mm)
+  hc numeric(6,2),           -- Head Circumference (mm)
+  ac numeric(6,2),           -- Abdominal Circumference (mm)
+  fl numeric(6,2),           -- Femur Length (mm)
+  efw integer,               -- Estimated Fetal Weight / TBJ (gram)
+  djj integer,               -- Denyut Jantung Janin / FHR (bpm)
+  afi numeric(5,2),          -- Amniotic Fluid Index (cm)
+  placenta text,             -- Letak & Maturitas Plasenta
+  gender text,               -- Jenis Kelamin
+  notes text,                -- Catatan Tambahan Dokter
+  created_at timestamptz default now()
+);
+
+-- 13. Maternal Vitals & Health Indicators (Buku KIA)
+create table if not exists public.maternal_vitals (
+  id uuid primary key default uuid_generate_v4(),
+  user_id text not null,
+  date date not null,
+  week integer not null,
+  systolic integer,          -- Tensi Sistolik (mmHg)
+  diastolic integer,         -- Tensi Diastolik (mmHg)
+  weight numeric(5,2),       -- Berat Badan Ibu (kg)
+  lila numeric(5,2),         -- Lingkar Lengan Atas (cm) - Standar KIA ≥23.5cm
+  hemoglobin numeric(4,2),   -- Kadar Hb (g/dL) - Standar KIA ≥11.0g/dL
+  blood_sugar integer,       -- Gula Darah Sewaktu (mg/dL)
+  symptoms text,             -- Keluhan Fisik
+  notes text,                -- Catatan Khusus
+  created_at timestamptz default now()
+);
+
 -- ====================================================================
 -- Indices for High Performance
 -- ====================================================================
@@ -103,10 +173,15 @@ create index if not exists idx_custom_bag_user on public.custom_bag_items(user_i
 create index if not exists idx_doctor_visits_user on public.doctor_visits(user_id);
 create index if not exists idx_doctor_questions_user on public.doctor_questions(user_id);
 create index if not exists idx_daily_logs_user on public.daily_logs(user_id, date);
+create index if not exists idx_kick_sessions_user on public.kick_sessions(user_id);
+create index if not exists idx_contraction_records_user on public.contraction_records(user_id);
+create index if not exists idx_labor_budget_user on public.labor_budget(user_id);
+create index if not exists idx_usg_records_user on public.usg_records(user_id, date);
+create index if not exists idx_maternal_vitals_user on public.maternal_vitals(user_id, date);
 
 -- ====================================================================
 -- Row Level Security (RLS)
--- Enables secure public access via anon key or authenticated users
+-- Enables secure access via anon key or authenticated users
 -- ====================================================================
 alter table public.profiles enable row level security;
 alter table public.checklist_completions enable row level security;
@@ -116,6 +191,11 @@ alter table public.custom_bag_items enable row level security;
 alter table public.doctor_visits enable row level security;
 alter table public.doctor_questions enable row level security;
 alter table public.daily_logs enable row level security;
+alter table public.kick_sessions enable row level security;
+alter table public.contraction_records enable row level security;
+alter table public.labor_budget enable row level security;
+alter table public.usg_records enable row level security;
+alter table public.maternal_vitals enable row level security;
 
 -- Permissive policies for web client sync (anon or authenticated)
 create policy "Allow all operations for anon client on profiles" on public.profiles for all using (true) with check (true);
@@ -126,3 +206,8 @@ create policy "Allow all operations for anon client on custom_bag_items" on publ
 create policy "Allow all operations for anon client on doctor_visits" on public.doctor_visits for all using (true) with check (true);
 create policy "Allow all operations for anon client on doctor_questions" on public.doctor_questions for all using (true) with check (true);
 create policy "Allow all operations for anon client on daily_logs" on public.daily_logs for all using (true) with check (true);
+create policy "Allow all operations for anon client on kick_sessions" on public.kick_sessions for all using (true) with check (true);
+create policy "Allow all operations for anon client on contraction_records" on public.contraction_records for all using (true) with check (true);
+create policy "Allow all operations for anon client on labor_budget" on public.labor_budget for all using (true) with check (true);
+create policy "Allow all operations for anon client on usg_records" on public.usg_records for all using (true) with check (true);
+create policy "Allow all operations for anon client on maternal_vitals" on public.maternal_vitals for all using (true) with check (true);

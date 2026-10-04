@@ -10,11 +10,8 @@
  */
 export function calculateDueDate(hpht) {
   const date = new Date(hpht);
-  const dueDate = new Date(date);
-  dueDate.setDate(dueDate.getDate() + 7);
-  dueDate.setMonth(dueDate.getMonth() - 3);
-  dueDate.setFullYear(dueDate.getFullYear() + 1);
-  return dueDate;
+  // Standard obstetric formula: HPHT + 280 days (40 gestational weeks)
+  return new Date(date.getTime() + 280 * 24 * 60 * 60 * 1000);
 }
 
 /**

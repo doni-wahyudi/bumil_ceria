@@ -116,8 +116,8 @@ function Home() {
             <Stethoscope size={20} />
           </div>
           <div className="home-qa-info">
-            <span className="home-qa-title">Catatan Kontrol</span>
-            <span className="home-qa-sub">Tensi & Tanya Dokter</span>
+            <span className="home-qa-title">Catatan Medis & USG</span>
+            <span className="home-qa-sub">Biometri, Tensi & Ibu</span>
           </div>
         </div>
 
@@ -187,7 +187,7 @@ function Home() {
         <section
           className="home-usg card animate-fade-in-up"
           style={{ animationDelay: '120ms' }}
-          onClick={() => navigate('/timeline')}
+          onClick={() => navigate('/usg-tracker')}
           role="button"
           tabIndex={0}
         >
@@ -198,7 +198,7 @@ function Home() {
           <div className="home-usg__content">
             <div>
               <h4>{nextUSG.title}</h4>
-              <p className="text-secondary text-sm">{nextUSG.weekLabel}</p>
+              <p className="text-secondary text-sm">{nextUSG.weekLabel} • Ketuk untuk catat hasil</p>
             </div>
             <ChevronRight size={20} color="var(--color-text-tertiary)" />
           </div>

@@ -55,6 +55,8 @@ function AuthenticatedAppLayout({
           {/* Phase 2 Enhanced Feature Routes */}
           <Route path="/hospital-bag" element={<HospitalBag />} />
           <Route path="/doctor-notes" element={<DoctorNotes />} />
+          <Route path="/usg-tracker" element={<DoctorNotes initialTab="usg" />} />
+          <Route path="/maternal-vitals" element={<DoctorNotes initialTab="mother" />} />
           <Route path="/nutrition" element={<NutritionGuide />} />
           <Route path="/calculator" element={<PregnancyCalc />} />
           {/* Phase 3 Hospital Directory Route */}
