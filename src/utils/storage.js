@@ -51,6 +51,8 @@ const STORAGE_KEYS = {
  * @property {string} hospitalName - User-input hospital name
  * @property {string} hospitalAddress - Optional hospital address
  * @property {string} doctorName - Optional doctor name
+ * @property {number|string} [heightCm] - Maternal height in cm
+ * @property {number|string} [prePregnancyWeight] - Pre-pregnancy weight in kg
  */
 
 export async function getProfile() {
@@ -426,6 +428,8 @@ export async function syncLocalToSupabase() {
         hospital_name: profile.hospitalName || '',
         hospital_address: profile.hospitalAddress || '',
         doctor_name: profile.doctorName || '',
+        height_cm: profile.heightCm ? parseFloat(profile.heightCm) : null,
+        pre_pregnancy_weight: profile.prePregnancyWeight ? parseFloat(profile.prePregnancyWeight) : null,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' });
     }
@@ -642,6 +646,8 @@ export async function fetchSupabaseToLocal() {
         hospitalName: profData.hospital_name,
         hospitalAddress: profData.hospital_address,
         doctorName: profData.doctor_name,
+        heightCm: profData.height_cm || null,
+        prePregnancyWeight: profData.pre_pregnancy_weight || null,
       });
     }
 

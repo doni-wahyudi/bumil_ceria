@@ -36,7 +36,9 @@ import {
   getMaternalVitals,
   saveMaternalVital,
   deleteMaternalVital,
+  updateProfile,
 } from '../utils/storage';
+import WeightGainChart from '../components/WeightGainChart';
 import { formatDateID } from '../utils/pregnancyCalc';
 import {
   USG_INDICATORS,
@@ -52,7 +54,7 @@ import './DoctorNotes.css';
 export default function DoctorNotes({ initialTab = null }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { profile, pregnancyData } = useApp();
+  const { profile, refreshProfile, pregnancyData } = useApp();
 
   // Determine starting tab (from props, location state, query string, or default 'usg')
   const defaultTab = initialTab || (location.state?.tab) || 'usg';
@@ -148,6 +150,13 @@ export default function DoctorNotes({ initialTab = null }) {
     if (!window.confirm('Hapus catatan vital ibu ini?')) return;
     const updated = await deleteMaternalVital(id);
     setMaternalVitals(updated);
+  };
+
+  const handleUpdateBaseline = async (data) => {
+    await updateProfile(data);
+    if (refreshProfile) {
+      await refreshProfile();
+    }
   };
 
   // ---- Questions Handlers ----
@@ -640,6 +649,14 @@ export default function DoctorNotes({ initialTab = null }) {
           ======================================================== */}
       {activeTab === 'mother' && (
         <div className="dn-section animate-fade-in-up" style={{ animationDelay: '90ms' }}>
+          {/* Visual Gestational Weight Gain Trajectory & IMT Tracker */}
+          <WeightGainChart
+            maternalVitals={maternalVitals}
+            profile={profile}
+            currentWeek={pregnancyData?.currentWeek || 12}
+            onUpdateBaseline={handleUpdateBaseline}
+          />
+
           {/* Latest Maternal Health Vitals Card */}
           {latestVital && (
             <div className="dn-quick-glance card">

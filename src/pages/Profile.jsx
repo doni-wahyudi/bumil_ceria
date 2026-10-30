@@ -13,6 +13,7 @@ import {
   importDataFromJSON,
 } from '../utils/exportData';
 import { formatDateID, calculateDueDate } from '../utils/pregnancyCalc';
+import { calculateBMI, classifyBMI } from '../utils/bmiTracker';
 import {
   Save,
   RotateCcw,
@@ -20,6 +21,7 @@ import {
   User,
   Baby,
   Shield,
+  Scale,
   ChevronRight,
   Sun,
   Moon,
@@ -81,6 +83,11 @@ function Profile() {
       });
     } else if (section === 'insurance') {
       setForm({ insuranceType: profile.insuranceType });
+    } else if (section === 'bodyStats') {
+      setForm({
+        heightCm: profile.heightCm || '',
+        prePregnancyWeight: profile.prePregnancyWeight || '',
+      });
     }
   };
 
@@ -283,6 +290,53 @@ function Profile() {
                   value={form.hpht || ''}
                   onChange={(e) => setForm((f) => ({ ...f, hpht: e.target.value }))}
                   max={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+              <button className="btn btn-primary btn-full" onClick={handleSave}>
+                <Save size={16} /> Simpan
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Physical Baseline & BMI */}
+        <div className="profile-section card">
+          <button className="profile-section__header" onClick={() => startEdit('bodyStats')}>
+            <div className="profile-section__title">
+              <Scale size={18} color="var(--color-text-secondary)" />
+              <div>
+                <span className="eyebrow">Fisik & IMT Pra-Hamil</span>
+                <p>
+                  {profile.heightCm && profile.prePregnancyWeight
+                    ? `TB: ${profile.heightCm} cm • BB: ${profile.prePregnancyWeight} kg (IMT ${calculateBMI(profile.prePregnancyWeight, profile.heightCm)} - ${classifyBMI(calculateBMI(profile.prePregnancyWeight, profile.heightCm)).label})`
+                    : 'Belum diisi (Klik untuk atur)'}
+                </p>
+              </div>
+            </div>
+            <ChevronRight size={18} color="var(--color-text-tertiary)" />
+          </button>
+          {editing === 'bodyStats' && (
+            <div className="profile-section__form animate-fade-in-up">
+              <div className="input-group">
+                <label>Tinggi Badan Ibu (cm)</label>
+                <input
+                  type="number"
+                  step="0.5"
+                  className="input-field"
+                  placeholder="Contoh: 158"
+                  value={form.heightCm || ''}
+                  onChange={(e) => setForm((f) => ({ ...f, heightCm: e.target.value }))}
+                />
+              </div>
+              <div className="input-group">
+                <label>Berat Badan Sebelum Hamil (kg)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  className="input-field"
+                  placeholder="Contoh: 52.0"
+                  value={form.prePregnancyWeight || ''}
+                  onChange={(e) => setForm((f) => ({ ...f, prePregnancyWeight: e.target.value }))}
                 />
               </div>
               <button className="btn btn-primary btn-full" onClick={handleSave}>

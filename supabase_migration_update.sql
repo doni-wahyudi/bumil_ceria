@@ -114,3 +114,9 @@ create policy "Allow all operations for anon client on usg_records"
 
 create policy "Allow all operations for anon client on maternal_vitals" 
   on public.maternal_vitals for all using (true) with check (true);
+
+-- ====================================================================
+-- 6. Tambahan Kolom IMT Pra-Hamil pada Tabel Profiles
+-- ====================================================================
+alter table public.profiles add column if not exists height_cm numeric(5,1);
+alter table public.profiles add column if not exists pre_pregnancy_weight numeric(5,1);

@@ -17,6 +17,8 @@ create table if not exists public.profiles (
   hospital_name text,
   hospital_address text,
   doctor_name text,
+  height_cm numeric(5,1),
+  pre_pregnancy_weight numeric(5,1),
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

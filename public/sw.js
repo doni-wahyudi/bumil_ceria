@@ -1,5 +1,5 @@
 // Bumil Ceria PWA Service Worker
-const CACHE_NAME = 'bumilceria-cache-v6';
+const CACHE_NAME = 'bumilceria-cache-v7';
 const BASE = '/bumil_ceria';
 const STATIC_ASSETS = [
   `${BASE}/`,
