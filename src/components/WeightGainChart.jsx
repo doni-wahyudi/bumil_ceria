@@ -8,6 +8,7 @@ import {
   Info,
   Calendar,
   Sparkles,
+  Plus,
 } from 'lucide-react';
 import {
   calculateBMI,
@@ -24,6 +25,7 @@ export default function WeightGainChart({
   profile = {},
   currentWeek = 12,
   onUpdateBaseline,
+  onOpenAddVital,
 }) {
   const [viewMode, setViewMode] = useState('gain'); // 'gain' (+kg) | 'absolute' (kg)
   const [showModal, setShowModal] = useState(false);
@@ -228,19 +230,33 @@ export default function WeightGainChart({
           </div>
         </div>
 
-        <button
-          type="button"
-          className="wgc-settings-btn"
-          onClick={() => {
-            setHeightInput(profile?.heightCm || '');
-            setWeightInput(profile?.prePregnancyWeight || '');
-            setShowModal(true);
-          }}
-          title="Atur Tinggi & Berat Badan Pra-Hamil"
-        >
-          <Settings size={15} />
-          <span>{hasBaseline ? 'Ubah IMT' : 'Atur IMT'}</span>
-        </button>
+        <div className="wgc-header-actions">
+          {onOpenAddVital && (
+            <button
+              type="button"
+              className="wgc-add-weight-btn"
+              onClick={onOpenAddVital}
+              title="Catat Berat Badan & Vital Baru"
+            >
+              <Plus size={14} />
+              <span>+ Catat BB</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            className="wgc-settings-btn"
+            onClick={() => {
+              setHeightInput(profile?.heightCm || '');
+              setWeightInput(profile?.prePregnancyWeight || '');
+              setShowModal(true);
+            }}
+            title="Atur Tinggi & Berat Badan Pra-Hamil"
+          >
+            <Settings size={14} />
+            <span>{hasBaseline ? 'Ubah IMT' : 'Atur IMT'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Baseline Prompt if not configured */}

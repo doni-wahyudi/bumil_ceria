@@ -655,6 +655,16 @@ export default function DoctorNotes({ initialTab = null }) {
             profile={profile}
             currentWeek={pregnancyData?.currentWeek || 12}
             onUpdateBaseline={handleUpdateBaseline}
+            onOpenAddVital={() => {
+              setShowVitalForm(true);
+              setTimeout(() => {
+                const el = document.getElementById('vital-weight-input');
+                if (el) {
+                  el.focus();
+                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }, 120);
+            }}
           />
 
           {/* Latest Maternal Health Vitals Card */}
@@ -698,7 +708,7 @@ export default function DoctorNotes({ initialTab = null }) {
                   <span className="dn-qg-label">Berat Badan</span>
                   <strong className="dn-qg-val">{latestVital.weight ? `${latestVital.weight} kg` : '-'}</strong>
                   <span className="text-xs text-secondary">
-                    {latestVital.bloodSugar ? `Gula: ${latestVital.bloodSugar} mg/dL` : ''}
+                    {profile?.prePregnancyWeight ? `Awal: ${profile.prePregnancyWeight} kg` : (latestVital.bloodSugar ? `Gula: ${latestVital.bloodSugar} mg/dL` : '')}
                   </span>
                 </div>
               </div>
@@ -713,13 +723,13 @@ export default function DoctorNotes({ initialTab = null }) {
               onClick={() => setShowVitalForm(!showVitalForm)}
             >
               <Plus size={16} />
-              {showVitalForm ? 'Tutup Formulir Vital' : 'Catat Tensi & Vital Ibu Baru'}
+              {showVitalForm ? 'Tutup Formulir' : '+ Catat Berat Badan & Tensi Baru'}
             </button>
           </div>
 
           {/* Vital Form */}
           {showVitalForm && (
-            <form className="dn-form card animate-fade-in-up" onSubmit={handleSaveVital}>
+            <form id="maternal-vital-form" className="dn-form card animate-fade-in-up" onSubmit={handleSaveVital}>
               <div className="dn-form-header">
                 <h4>Pencatatan Kesehatan Ibu (Standar Buku KIA)</h4>
                 <span className="text-xs text-secondary">Data saat kontrol ke Bidan / Puskesmas / RS</span>
@@ -781,6 +791,7 @@ export default function DoctorNotes({ initialTab = null }) {
                   <div className="input-group">
                     <label>Berat Badan (kg)</label>
                     <input
+                      id="vital-weight-input"
                       type="number"
                       step="0.1"
                       className="input-field"
