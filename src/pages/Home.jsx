@@ -22,6 +22,7 @@ import { getNextUSG } from '../data/usgSchedule';
 import ProgressRing from '../components/ProgressRing';
 import RoleToggle from '../components/RoleToggle';
 import ChecklistItem from '../components/ChecklistItem';
+import FetalWombVisualizer from '../components/FetalWombVisualizer';
 import './Home.css';
 
 function Home() {
@@ -88,6 +89,15 @@ function Home() {
           </p>
         )}
       </section>
+
+      {/* Interactive Proportional Baby & Womb Visualizer */}
+      <div className="animate-fade-in-up" style={{ animationDelay: '60ms' }}>
+        <FetalWombVisualizer
+          week={pregnancyData.currentWeek}
+          currentWeek={pregnancyData.currentWeek}
+          weekData={weekData}
+        />
+      </div>
 
       {/* Quick Actions Grid */}
       <section className="home-quick-actions-wrap animate-fade-in-up" style={{ animationDelay: '80ms' }} aria-labelledby="home-qa-heading">

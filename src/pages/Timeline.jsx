@@ -4,6 +4,7 @@ import { getWeekData } from '../data/weeklyData';
 import { hasUSGInWeek, getUSGForWeek } from '../data/usgSchedule';
 import WeekSelector from '../components/WeekSelector';
 import USGTimeline from '../components/USGTimeline';
+import FetalWombVisualizer from '../components/FetalWombVisualizer';
 import { ChevronDown, ChevronUp, Stethoscope } from 'lucide-react';
 import './Timeline.css';
 
@@ -73,13 +74,20 @@ function Timeline() {
           {/* Week Detail */}
           {weekData && (
             <div className="timeline-week-detail animate-fade-in-up" style={{ animationDelay: '120ms' }}>
+              <FetalWombVisualizer
+                week={selectedWeek}
+                currentWeek={currentWeek}
+                weekData={weekData}
+                onWeekChange={setSelectedWeek}
+              />
+
               <section className="timeline-week-card card">
                 <div className="timeline-week-card__header">
                   <div>
                     <span className="eyebrow tabular-nums">
                       Minggu {selectedWeek} · {weekData.trimester === 1 ? 'Trimester 1' : weekData.trimester === 2 ? 'Trimester 2' : 'Trimester 3'}
                     </span>
-                    <h2>Perkembangan Bayi</h2>
+                    <h2>Ringkasan Perkembangan Bayi</h2>
                   </div>
                   <span className="timeline-week-card__size-emoji" aria-hidden="true">{weekData.babySizeEmoji}</span>
                 </div>

@@ -23,7 +23,6 @@ import AudioRelaxationModal from './components/AudioRelaxationModal';
 import AudioMiniPlayer from './components/AudioMiniPlayer';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import { audioSynth } from './utils/audioSynth';
-import { Headphones } from 'lucide-react';
 
 import { AppContext } from './context/AppContext';
 
@@ -105,20 +104,6 @@ function AuthenticatedAppLayout({
           onTogglePlay={handleToggleMiniPlay}
           hasBottomNav={isMainRoute}
         />
-
-        {/* Mobile Floating Audio Pill: only on Home tab when no audio session is active */}
-        {!hasAudioSession && location.pathname === '/' && (
-          <button
-            type="button"
-            className="mobile-audio-fab"
-            onClick={() => setShowAudioModal(true)}
-            aria-label="Buka Audio Relaksasi"
-            title="Audio Relaksasi Rahim & Meditasi"
-          >
-            <Headphones size={18} aria-hidden="true" />
-            <span>Relaksasi</span>
-          </button>
-        )}
 
         <PWAInstallPrompt
           hasBottomNav={isMainRoute}

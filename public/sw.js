@@ -1,5 +1,5 @@
 // Bumil Ceria PWA Service Worker
-const CACHE_NAME = 'bumilceria-cache-v7';
+const CACHE_NAME = 'bumilceria-cache-v8';
 const BASE = '/bumil_ceria';
 const STATIC_ASSETS = [
   `${BASE}/`,
@@ -32,41 +32,45 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Ignore non-GET requests
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
 
-  // Only handle requests within our base scope
   if (!url.pathname.startsWith(BASE)) return;
 
-  // Network-first for navigation (HTML), fall back to index.html for SPA
-  if (event.request.mode === 'navigate') {
+  // Network-first for HTML navigations and bundled assets so updated builds propagate immediately
+  if (event.request.mode === 'navigate' || url.pathname.startsWith(`${BASE}/assets/`)) {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(`${BASE}/index.html`) || caches.match(`${BASE}/`);
-      })
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          if (event.request.mode === 'navigate') {
+            return caches.match(`${BASE}/index.html`) || caches.match(`${BASE}/`);
+          }
+          return caches.match(event.request);
+        })
     );
     return;
   }
 
-  // Cache-first for static assets (scripts, styles, fonts, images)
+  // Stale-while-revalidate for icons/manifests/images
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(event.request).then((networkResponse) => {
-        if (
-          !networkResponse ||
-          networkResponse.status !== 200 ||
-          networkResponse.type !== 'basic'
-        ) {
+      const fetchPromise = fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          }
           return networkResponse;
-        }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
-        return networkResponse;
-      });
+        })
+        .catch(() => cachedResponse);
+      return cachedResponse || fetchPromise;
     })
   );
 });
