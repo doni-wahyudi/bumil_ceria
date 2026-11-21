@@ -10,21 +10,26 @@
   max-width: 420px;
   background: var(--color-surface);
   border: 1.5px solid var(--color-primary);
-  box-shadow: var(--shadow-lg), 0 0 20px rgba(216, 142, 170, 0.2);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(184, 82, 122, 0.16);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  gap: 8px;
+  padding: 6px 8px 6px 12px;
   border-radius: var(--radius-full);
   z-index: 140;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   box-sizing: border-box;
   transition: bottom var(--duration-normal) var(--ease-spring);
 }
 
 .audio-mini-player--subpage {
   bottom: calc(var(--safe-area-bottom) + 16px);
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .audio-mini-player {
+    max-width: 460px;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -46,6 +51,12 @@
   cursor: pointer;
   flex: 1;
   min-width: 0;
+  min-height: 44px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font-family: inherit;
 }
 
 .mini-player-icon {
@@ -68,6 +79,7 @@
 .mini-player-title {
   font-size: 0.82rem;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -87,6 +99,12 @@
   background: var(--color-primary);
   border-radius: 2px;
   animation: wave-bounce 1s ease-in-out infinite;
+}
+
+.mini-player-wave--paused .wave-bar {
+  animation: none;
+  transform: scaleY(0.45);
+  opacity: 0.6;
 }
 
 .bar-1 {
@@ -116,13 +134,13 @@
 .mini-player-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   flex-shrink: 0;
 }
 
 .mini-player-btn {
-  width: 28px;
-  height: 28px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--color-surface-hover);
   border: 1px solid var(--color-border);
@@ -141,19 +159,25 @@
 
 .mini-player-btn--play {
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   border-color: var(--color-primary);
 }
 
 .mini-player-btn--play:hover {
   background: var(--color-primary-dark);
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 .mini-player-btn--close {
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
 }
 
 .mini-player-btn--close:hover {
-  color: #e5484d;
+  color: var(--color-danger);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave-bar {
+    animation: none;
+  }
 }

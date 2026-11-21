@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
   Coins,
-  Sparkles,
   ShieldCheck,
   TrendingUp,
   AlertCircle,
@@ -32,7 +31,6 @@ function CostSimulator() {
   const [currentSavings, setCurrentSavings] = useState(0);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  // Load saved budget data
   useEffect(() => {
     async function loadBudget() {
       const b = await getLaborBudget();
@@ -41,7 +39,6 @@ function CostSimulator() {
     loadBudget();
   }, []);
 
-  // Format IDR Rupiah
   const formatIDR = (num) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -50,10 +47,8 @@ function CostSimulator() {
     }).format(num);
   };
 
-  // Calculate costs
   const baselineCost = LAMPUNG_COST_ESTIMATES[method][hospitalClass] || { min: 5000000, max: 8000000, avg: 6500000 };
 
-  // Calculate Out-of-pocket estimated cost
   let outOfPocketMin = baselineCost.min;
   let outOfPocketMax = baselineCost.max;
   let outOfPocketAvg = baselineCost.avg;
@@ -63,23 +58,19 @@ function CostSimulator() {
     outOfPocketMax = 0;
     outOfPocketAvg = 0;
   } else if (insurance === 'bpjs_upgrade') {
-    // Pay difference of room upgrade (~35% of total)
     outOfPocketMin = Math.round(baselineCost.min * 0.35);
     outOfPocketMax = Math.round(baselineCost.max * 0.45);
     outOfPocketAvg = Math.round(baselineCost.avg * 0.4);
   } else if (insurance === 'asuransi_swasta') {
-    // Assuming standard maternity cap covers ~Rp 12.000.000
     const cap = 12000000;
     outOfPocketMin = Math.max(0, baselineCost.min - cap);
     outOfPocketMax = Math.max(0, baselineCost.max - cap);
     outOfPocketAvg = Math.max(0, baselineCost.avg - cap);
   }
 
-  // Monthly savings calculation
   const daysRemaining = pregnancyData?.daysRemaining || 180;
   const monthsRemaining = Math.max(1, Math.ceil(daysRemaining / 30));
 
-  // Add buffer of Rp 2.000.000 for newborn vaccines & emergency buffer
   const totalTargetWithBuffer = outOfPocketAvg + 2000000;
   const remainingToSave = Math.max(0, totalTargetWithBuffer - currentSavings);
   const monthlySavingsTarget = Math.round(remainingToSave / monthsRemaining);
@@ -101,44 +92,46 @@ function CostSimulator() {
           onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
           aria-label="Kembali"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} aria-hidden="true" />
         </button>
         <div>
           <div className="cs-header-badge">
-            <Coins size={14} /> Perencanaan Keuangan
+            <Coins size={14} aria-hidden="true" />
+            <span>Perencanaan Keuangan</span>
           </div>
-          <h2>Simulasi Biaya Persalinan</h2>
+          <h1>Simulasi Biaya Persalinan</h1>
         </div>
       </header>
 
       {savedSuccess && (
-        <div className="cs-saved-toast animate-scale-in">
-          <Check size={16} /> Data tabungan tersimpan!
+        <div className="cs-saved-toast animate-scale-in" role="status">
+          <Check size={16} aria-hidden="true" />
+          <span>Data tabungan tersimpan.</span>
         </div>
       )}
 
       {/* 1. Choose Labor Method */}
       <section className="cs-section animate-fade-in-up" style={{ animationDelay: '40ms' }}>
-        <span className="eyebrow" style={{ display: 'block', marginBottom: '8px' }}>
+        <h2 className="eyebrow cs-section-heading">
           1. Rencana Metode Persalinan
-        </span>
+        </h2>
         <div className="cs-methods-grid">
           {LABOR_METHODS.map((m) => {
             const isSelected = method === m.id;
             return (
-              <div
+              <button
                 key={m.id}
+                type="button"
+                aria-pressed={isSelected}
                 className={`cs-method-card card ${isSelected ? 'cs-method-card--active' : ''}`}
                 onClick={() => setMethod(m.id)}
-                role="button"
-                tabIndex={0}
               >
                 <div className="cs-method-top">
-                  <span className="cs-method-emoji">{m.emoji}</span>
+                  <span className="cs-method-emoji" aria-hidden="true">{m.emoji}</span>
                   <strong>{m.shortName}</strong>
                 </div>
                 <p className="cs-method-sub">{m.stayDuration}</p>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -146,27 +139,27 @@ function CostSimulator() {
 
       {/* 2. Choose Insurance Mode */}
       <section className="cs-section animate-fade-in-up" style={{ animationDelay: '80ms' }}>
-        <span className="eyebrow" style={{ display: 'block', marginBottom: '8px' }}>
+        <h2 className="eyebrow cs-section-heading">
           2. Skema Penjaminan / Pembayaran
-        </span>
+        </h2>
         <div className="cs-insurance-grid">
           {INSURANCE_MODES.map((ins) => {
             const isSelected = insurance === ins.id;
             return (
-              <div
+              <button
                 key={ins.id}
+                type="button"
+                aria-pressed={isSelected}
                 className={`cs-insurance-card card ${isSelected ? 'cs-insurance-card--active' : ''}`}
                 onClick={() => setInsurance(ins.id)}
-                role="button"
-                tabIndex={0}
               >
                 <div className="cs-ins-header">
-                  <span>{ins.emoji}</span>
+                  <span aria-hidden="true">{ins.emoji}</span>
                   <strong>{ins.label}</strong>
                   <span className="cs-ins-badge">{ins.badge}</span>
                 </div>
                 <p className="cs-ins-desc">{ins.desc}</p>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -175,9 +168,9 @@ function CostSimulator() {
       {/* 3. Choose Room Class */}
       {insurance !== 'bpjs_full' && (
         <section className="cs-section animate-fade-in-up" style={{ animationDelay: '120ms' }}>
-          <span className="eyebrow" style={{ display: 'block', marginBottom: '8px' }}>
+          <h2 className="eyebrow cs-section-heading">
             3. Pilihan Kelas Kamar Rawat Inap
-          </span>
+          </h2>
           <div className="cs-classes-grid">
             {HOSPITAL_CLASSES.map((cls) => {
               const isSelected = hospitalClass === cls.id;
@@ -185,6 +178,7 @@ function CostSimulator() {
                 <button
                   key={cls.id}
                   type="button"
+                  aria-pressed={isSelected}
                   className={`cs-class-btn ${isSelected ? 'cs-class-btn--active' : ''}`}
                   onClick={() => setHospitalClass(cls.id)}
                 >
@@ -200,13 +194,13 @@ function CostSimulator() {
       {/* Estimated Cost Summary Card */}
       <section className="cs-summary-card card animate-fade-in-up" style={{ animationDelay: '160ms' }}>
         <div className="cs-sum-header">
-          <Sparkles size={16} color="var(--color-primary)" />
+          <Coins size={16} color="var(--color-primary-dark)" aria-hidden="true" />
           <span>Perkiraan Biaya Persalinan di Bandar Lampung</span>
         </div>
 
         {insurance === 'bpjs_full' ? (
           <div className="cs-bpjs-zero-card">
-            <ShieldCheck size={32} color="var(--color-secondary)" />
+            <ShieldCheck size={32} color="var(--color-secondary-dark)" aria-hidden="true" />
             <div>
               <h3>Rp 0 (Ditanggung BPJS 100%)</h3>
               <p className="text-xs text-secondary">
@@ -216,10 +210,10 @@ function CostSimulator() {
           </div>
         ) : (
           <div className="cs-sum-amount">
-            <h3 className="cs-amount-main">
-              {formatIDR(outOfPocketMin)} — {formatIDR(outOfPocketMax)}
+            <h3 className="cs-amount-main tabular-nums">
+              {formatIDR(outOfPocketMin)} s/d {formatIDR(outOfPocketMax)}
             </h3>
-            <p className="cs-amount-sub">
+            <p className="cs-amount-sub tabular-nums">
               Estimasi pengeluaran pribadi (rata-rata <strong>{formatIDR(outOfPocketAvg)}</strong>)
             </p>
           </div>
@@ -227,30 +221,30 @@ function CostSimulator() {
 
         <div className="cs-sum-note">
           <p className="text-xs text-secondary">
-            💡 Estimasi dirangkum dari rentang tarif umum RSIA Bunda, RSIA Belleza, RS Advent, dan RS Urip Sumoharjo di Bandar Lampung.
+            Estimasi dirangkum dari rentang tarif umum RSIA Bunda, RSIA Belleza, RS Advent, dan RS Urip Sumoharjo di Bandar Lampung.
           </p>
         </div>
       </section>
 
-      {/* 4. Monthly Savings Calculator (Target Tabungan Papa) */}
+      {/* 4. Monthly Savings Calculator */}
       <section className="cs-savings-card card animate-fade-in-up" style={{ animationDelay: '200ms' }}>
         <div className="cs-savings-header">
-          <PiggyBank size={20} color="var(--color-accent-dark)" />
+          <PiggyBank size={20} color="var(--color-accent-dark)" aria-hidden="true" />
           <div>
-            <h4>Kalkulator Tabungan Menuju HPL</h4>
-            <p className="text-xs text-secondary">
+            <h2>Kalkulator Tabungan Menuju HPL</h2>
+            <p className="text-xs text-secondary tabular-nums">
               Sisa <strong>{daysRemaining} hari</strong> (~{monthsRemaining} bulan) menjelang perkiraan lahir
             </p>
           </div>
         </div>
 
-        {/* Current Savings Input */}
         <div className="input-group" style={{ margin: '14px 0 10px 0' }}>
-          <label>Tabungan yang Sudah Disiapkan (Rp):</label>
+          <label htmlFor="cs-savings-input">Tabungan yang Sudah Disiapkan (Rp):</label>
           <div className="cs-savings-input-row">
             <input
+              id="cs-savings-input"
               type="number"
-              className="input-field cs-savings-input"
+              className="input-field cs-savings-input tabular-nums"
               value={currentSavings}
               onChange={(e) => setCurrentSavings(Number(e.target.value) || 0)}
               step="500000"
@@ -260,18 +254,18 @@ function CostSimulator() {
               className="btn btn-primary cs-save-budget-btn"
               onClick={handleSaveBudget}
             >
-              <Save size={16} /> Simpan
+              <Save size={16} aria-hidden="true" />
+              <span>Simpan</span>
             </button>
           </div>
         </div>
 
-        {/* Progress Bar of Savings */}
         <div className="cs-progress-wrap">
-          <div className="cs-progress-labels">
+          <div className="cs-progress-labels tabular-nums">
             <span>Terkumpul: <strong>{formatIDR(currentSavings)}</strong></span>
             <span>Target: <strong>{formatIDR(totalTargetWithBuffer)}</strong></span>
           </div>
-          <div className="cs-savings-bar">
+          <div className="cs-savings-bar" role="progressbar" aria-valuenow={savingsProgressPct} aria-valuemin={0} aria-valuemax={100}>
             <div
               className="cs-savings-bar-fill"
               style={{ width: `${savingsProgressPct}%` }}
@@ -279,16 +273,15 @@ function CostSimulator() {
           </div>
         </div>
 
-        {/* Monthly Target Alert */}
         <div className="cs-monthly-target-box">
-          <TrendingUp size={20} color="var(--color-primary)" />
+          <TrendingUp size={20} color="var(--color-primary)" aria-hidden="true" />
           <div>
-            <span className="cs-target-label">Target Nabung Papa per Bulan:</span>
-            <h3 className="cs-target-amount">
-              {remainingToSave === 0 ? 'Target Sudah Terpenuhi! 🎉' : `${formatIDR(monthlySavingsTarget)} / bulan`}
+            <span className="cs-target-label">Target Tabungan per Bulan:</span>
+            <h3 className="cs-target-amount tabular-nums">
+              {remainingToSave === 0 ? 'Target Sudah Terpenuhi' : `${formatIDR(monthlySavingsTarget)} / bulan`}
             </h3>
             {remainingToSave > 0 && (
-              <p className="text-xs text-secondary">
+              <p className="text-xs text-secondary tabular-nums">
                 Sisa dana yang perlu dicicil: {formatIDR(remainingToSave)} (termasuk dana cadangan darurat Rp 2jt).
               </p>
             )}
@@ -298,17 +291,17 @@ function CostSimulator() {
 
       {/* 5. Hidden Costs Checklist */}
       <section className="cs-hidden-costs animate-fade-in-up" style={{ animationDelay: '240ms' }}>
-        <h4 className="cs-hc-title">
-          <AlertCircle size={16} color="var(--color-warning)" />
+        <h2 className="cs-hc-title">
+          <AlertCircle size={16} color="var(--color-warning)" aria-hidden="true" />
           <span>Biaya Tambahan yang Sering Terlewat</span>
-        </h4>
+        </h2>
 
         <div className="cs-hc-list stagger-children">
           {HIDDEN_COSTS_CHECKLIST.map((item) => (
             <div key={item.id} className="cs-hc-card card">
               <div className="cs-hc-top">
                 <strong>{item.title}</strong>
-                <span className="cs-hc-cost">~{formatIDR(item.estCost)}</span>
+                <span className="cs-hc-cost tabular-nums">~{formatIDR(item.estCost)}</span>
               </div>
               <p className="cs-hc-desc">{item.desc}</p>
             </div>

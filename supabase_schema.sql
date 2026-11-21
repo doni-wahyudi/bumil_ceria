@@ -1,5 +1,5 @@
 -- ====================================================================
--- BumpBuddy — Supabase Production Database Schema
+-- BumpBuddy - Supabase Production Database Schema
 -- Run this SQL in your Supabase SQL Editor (Dashboard > SQL Editor)
 -- ====================================================================
 
@@ -182,9 +182,26 @@ create index if not exists idx_usg_records_user on public.usg_records(user_id, d
 create index if not exists idx_maternal_vitals_user on public.maternal_vitals(user_id, date);
 
 -- ====================================================================
--- Row Level Security (RLS)
--- Enables secure access via anon key or authenticated users
+-- Row Level Security (RLS) & Explicit Data API Grants
+-- Scoped by authenticated auth.uid() OR anonymous device prefix 'user_%'
 -- ====================================================================
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on
+  public.profiles,
+  public.checklist_completions,
+  public.usg_completions,
+  public.hospital_bag_completions,
+  public.custom_bag_items,
+  public.doctor_visits,
+  public.doctor_questions,
+  public.daily_logs,
+  public.kick_sessions,
+  public.contraction_records,
+  public.labor_budget,
+  public.usg_records,
+  public.maternal_vitals
+  to anon, authenticated;
+
 alter table public.profiles enable row level security;
 alter table public.checklist_completions enable row level security;
 alter table public.usg_completions enable row level security;
@@ -199,17 +216,68 @@ alter table public.labor_budget enable row level security;
 alter table public.usg_records enable row level security;
 alter table public.maternal_vitals enable row level security;
 
--- Permissive policies for web client sync (anon or authenticated)
-create policy "Allow all operations for anon client on profiles" on public.profiles for all using (true) with check (true);
-create policy "Allow all operations for anon client on checklist_completions" on public.checklist_completions for all using (true) with check (true);
-create policy "Allow all operations for anon client on usg_completions" on public.usg_completions for all using (true) with check (true);
-create policy "Allow all operations for anon client on hospital_bag_completions" on public.hospital_bag_completions for all using (true) with check (true);
-create policy "Allow all operations for anon client on custom_bag_items" on public.custom_bag_items for all using (true) with check (true);
-create policy "Allow all operations for anon client on doctor_visits" on public.doctor_visits for all using (true) with check (true);
-create policy "Allow all operations for anon client on doctor_questions" on public.doctor_questions for all using (true) with check (true);
-create policy "Allow all operations for anon client on daily_logs" on public.daily_logs for all using (true) with check (true);
-create policy "Allow all operations for anon client on kick_sessions" on public.kick_sessions for all using (true) with check (true);
-create policy "Allow all operations for anon client on contraction_records" on public.contraction_records for all using (true) with check (true);
-create policy "Allow all operations for anon client on labor_budget" on public.labor_budget for all using (true) with check (true);
-create policy "Allow all operations for anon client on usg_records" on public.usg_records for all using (true) with check (true);
-create policy "Allow all operations for anon client on maternal_vitals" on public.maternal_vitals for all using (true) with check (true);
+-- Scoped ownership policies with cached (select auth.uid()) initplan
+create policy "Scoped access on profiles" on public.profiles
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on checklist_completions" on public.checklist_completions
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on usg_completions" on public.usg_completions
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on hospital_bag_completions" on public.hospital_bag_completions
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on custom_bag_items" on public.custom_bag_items
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on doctor_visits" on public.doctor_visits
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on doctor_questions" on public.doctor_questions
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on daily_logs" on public.daily_logs
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on kick_sessions" on public.kick_sessions
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on contraction_records" on public.contraction_records
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on labor_budget" on public.labor_budget
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on usg_records" on public.usg_records
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
+
+create policy "Scoped access on maternal_vitals" on public.maternal_vitals
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));

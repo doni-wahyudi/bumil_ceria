@@ -62,7 +62,7 @@ export async function printMedicalSummary() {
     <html lang="id">
     <head>
       <meta charset="UTF-8">
-      <title>Ringkasan Medis Kehamilan — Bumil Ceria</title>
+      <title>Ringkasan Medis Kehamilan | Bumil Ceria</title>
       <style>
         body {
           font-family: 'Segoe UI', Arial, sans-serif;
@@ -147,7 +147,7 @@ export async function printMedicalSummary() {
     <body>
       <div class="header">
         <div>
-          <h1>Bumil Ceria — Ringkasan Medis Kehamilan</h1>
+          <h1>Bumil Ceria: Ringkasan Medis Kehamilan</h1>
           <p>Dokumen Portabel Pemantauan Kehamilan Calon Orang Tua</p>
         </div>
         <div style="text-align: right;">

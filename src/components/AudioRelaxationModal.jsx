@@ -155,24 +155,39 @@ export default function AudioRelaxationModal({
     };
   }, []);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
     <div className="audio-modal-backdrop animate-fade-in" onClick={onClose}>
-      <div className="audio-modal-dialog animate-scale-in" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="audio-modal-dialog animate-scale-in"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="audio-modal-title"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
         <div className="audio-modal-header">
           <div className="audio-modal-title">
-            <div className="audio-title-icon">
+            <div className="audio-title-icon" aria-hidden="true">
               <Headphones size={20} />
             </div>
             <div>
-              <h3>Audio Relaksasi & Meditasi</h3>
-              <p className="text-xs text-secondary">Suara penenang janin & pereda kecemasan</p>
+              <h2 id="audio-modal-title">Audio Relaksasi &amp; Meditasi</h2>
+              <p className="text-xs text-secondary">Suara penenang janin &amp; pereda kecemasan</p>
             </div>
           </div>
-          <button className="audio-close-btn" onClick={onClose} aria-label="Tutup">
-            <X size={20} />
+          <button type="button" className="audio-close-btn" onClick={onClose} aria-label="Tutup modal audio">
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
 
@@ -203,34 +218,35 @@ export default function AudioRelaxationModal({
             const isThisPlaying = isThisActive && isPlaying;
 
             return (
-              <div
+              <button
                 key={sound.id}
+                type="button"
                 className={`audio-sound-card card ${isThisActive ? 'audio-sound-card--active' : ''}`}
                 onClick={() => handleTogglePlay(sound.id)}
-                role="button"
-                tabIndex={0}
+                aria-pressed={isThisActive}
               >
-                <div
+                <span
                   className="audio-sound-icon"
                   style={{
                     backgroundColor: `${sound.color}22`,
                     color: sound.color,
                   }}
+                  aria-hidden="true"
                 >
-                  <Icon size={24} className={isThisPlaying ? 'animate-pulse' : ''} />
-                </div>
-                <div className="audio-sound-info">
-                  <div className="audio-sound-top">
+                  <Icon size={24} />
+                </span>
+                <span className="audio-sound-info">
+                  <span className="audio-sound-top">
                     <strong>{sound.title}</strong>
                     {isThisPlaying && (
                       <span className="audio-live-indicator">
-                        <span className="audio-live-dot" /> Aktif
+                        <span className="audio-live-dot" aria-hidden="true" /> Aktif
                       </span>
                     )}
-                  </div>
-                  <p className="text-xs text-secondary">{sound.desc}</p>
-                </div>
-              </div>
+                  </span>
+                  <span className="audio-sound-desc text-xs text-secondary">{sound.desc}</span>
+                </span>
+              </button>
             );
           })}
         </div>
@@ -245,11 +261,11 @@ export default function AudioRelaxationModal({
             >
               {isPlaying ? (
                 <>
-                  <Square size={16} fill="currentColor" /> Berhenti
+                  <Square size={16} fill="currentColor" aria-hidden="true" /> Berhenti
                 </>
               ) : (
                 <>
-                  <Play size={16} fill="currentColor" /> Putar Suara
+                  <Play size={16} fill="currentColor" aria-hidden="true" /> Putar Suara
                 </>
               )}
             </button>
@@ -260,9 +276,9 @@ export default function AudioRelaxationModal({
                 type="button"
                 className="audio-mute-btn"
                 onClick={() => setIsMuted(!isMuted)}
-                aria-label={isMuted ? 'Unmute' : 'Mute'}
+                aria-label={isMuted ? 'Nyalakan suara' : 'Bisukan suara'}
               >
-                {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                {isMuted || volume === 0 ? <VolumeX size={18} aria-hidden="true" /> : <Volume2 size={18} aria-hidden="true" />}
               </button>
               <input
                 type="range"
@@ -273,6 +289,7 @@ export default function AudioRelaxationModal({
                   setVolume(Number(e.target.value));
                   if (isMuted) setIsMuted(false);
                 }}
+                aria-label="Volume audio"
                 className="audio-volume-slider"
               />
             </div>
@@ -281,7 +298,7 @@ export default function AudioRelaxationModal({
           {/* Sleep Timer Bar */}
           <div className="audio-sleep-timer">
             <div className="audio-sleep-label">
-              <Clock size={14} />
+              <Clock size={14} aria-hidden="true" />
               <span>Timer Tidur:</span>
               {sleepTimerSecondsLeft && (
                 <span className="audio-timer-countdown">
@@ -296,6 +313,7 @@ export default function AudioRelaxationModal({
                   type="button"
                   className={`audio-sleep-pill ${sleepTimerMinutes === mins ? 'audio-sleep-pill--active' : ''}`}
                   onClick={() => handleSelectSleepTimer(mins)}
+                  aria-pressed={sleepTimerMinutes === mins}
                 >
                   {mins ? `${mins}m` : 'Mati'}
                 </button>

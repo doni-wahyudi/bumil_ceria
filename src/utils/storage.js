@@ -407,6 +407,13 @@ export async function isCloudConnected() {
   return !!supabase;
 }
 
+function assertNoSupabaseError(response, tableName) {
+  if (response?.error) {
+    throw new Error(`[${tableName}] ${response.error.message}`);
+  }
+  return response?.data;
+}
+
 export async function syncLocalToSupabase() {
   const supabase = getSupabase();
   if (!supabase) {
@@ -419,19 +426,22 @@ export async function syncLocalToSupabase() {
     // 1. Sync Profile
     const profile = await getProfile();
     if (profile) {
-      await supabase.from('profiles').upsert({
-        user_id: userId,
-        mama_name: profile.mamaName || 'Mama',
-        papa_name: profile.papaName || 'Papa',
-        hpht: profile.hpht,
-        insurance_type: profile.insuranceType || 'bpjs',
-        hospital_name: profile.hospitalName || '',
-        hospital_address: profile.hospitalAddress || '',
-        doctor_name: profile.doctorName || '',
-        height_cm: profile.heightCm ? parseFloat(profile.heightCm) : null,
-        pre_pregnancy_weight: profile.prePregnancyWeight ? parseFloat(profile.prePregnancyWeight) : null,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' });
+      assertNoSupabaseError(
+        await supabase.from('profiles').upsert({
+          user_id: userId,
+          mama_name: profile.mamaName || 'Mama',
+          papa_name: profile.papaName || 'Papa',
+          hpht: profile.hpht,
+          insurance_type: profile.insuranceType || 'bpjs',
+          hospital_name: profile.hospitalName || '',
+          hospital_address: profile.hospitalAddress || '',
+          doctor_name: profile.doctorName || '',
+          height_cm: profile.heightCm ? parseFloat(profile.heightCm) : null,
+          pre_pregnancy_weight: profile.prePregnancyWeight ? parseFloat(profile.prePregnancyWeight) : null,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' }),
+        'profiles',
+      );
     }
 
     // 2. Sync Weekly Checklist
@@ -441,7 +451,10 @@ export async function syncLocalToSupabase() {
         user_id: userId,
         item_id: itemId,
       }));
-      await supabase.from('checklist_completions').upsert(records, { onConflict: 'user_id,item_id' });
+      assertNoSupabaseError(
+        await supabase.from('checklist_completions').upsert(records, { onConflict: 'user_id,item_id' }),
+        'checklist_completions',
+      );
     }
 
     // 3. Sync USG Milestones
@@ -452,7 +465,10 @@ export async function syncLocalToSupabase() {
         user_id: userId,
         usg_id: usgId,
       }));
-      await supabase.from('usg_completions').upsert(records, { onConflict: 'user_id,usg_id' });
+      assertNoSupabaseError(
+        await supabase.from('usg_completions').upsert(records, { onConflict: 'user_id,usg_id' }),
+        'usg_completions',
+      );
     }
 
     // 4. Sync Hospital Bag Packed Status
@@ -462,25 +478,37 @@ export async function syncLocalToSupabase() {
         user_id: userId,
         item_id: itemId,
       }));
-      await supabase.from('hospital_bag_completions').upsert(records, { onConflict: 'user_id,item_id' });
+      assertNoSupabaseError(
+        await supabase.from('hospital_bag_completions').upsert(records, { onConflict: 'user_id,item_id' }),
+        'hospital_bag_completions',
+      );
     }
 
     // 5. Sync Custom Bag Items (clean replace to avoid duplicates)
     const customBag = await getCustomBagItems();
     if (customBag.length > 0) {
-      await supabase.from('custom_bag_items').delete().eq('user_id', userId);
+      assertNoSupabaseError(
+        await supabase.from('custom_bag_items').delete().eq('user_id', userId),
+        'custom_bag_items',
+      );
       const records = customBag.map((ci) => ({
         user_id: userId,
         category: ci.category,
         title: ci.text,
       }));
-      await supabase.from('custom_bag_items').insert(records);
+      assertNoSupabaseError(
+        await supabase.from('custom_bag_items').insert(records),
+        'custom_bag_items',
+      );
     }
 
     // 6. Sync Doctor Visits (clean replace to avoid duplicates)
     const visits = await getDoctorVisits();
     if (visits.length > 0) {
-      await supabase.from('doctor_visits').delete().eq('user_id', userId);
+      assertNoSupabaseError(
+        await supabase.from('doctor_visits').delete().eq('user_id', userId),
+        'doctor_visits',
+      );
       const records = visits.map((v) => ({
         user_id: userId,
         date: v.date,
@@ -491,20 +519,29 @@ export async function syncLocalToSupabase() {
         doctor_notes: v.doctorNotes,
         doctor_name: v.doctorName,
       }));
-      await supabase.from('doctor_visits').insert(records);
+      assertNoSupabaseError(
+        await supabase.from('doctor_visits').insert(records),
+        'doctor_visits',
+      );
     }
 
     // 7. Sync Doctor Questions (clean replace to avoid duplicates)
     const questions = await getDoctorQuestions();
     if (questions.length > 0) {
-      await supabase.from('doctor_questions').delete().eq('user_id', userId);
+      assertNoSupabaseError(
+        await supabase.from('doctor_questions').delete().eq('user_id', userId),
+        'doctor_questions',
+      );
       const records = questions.map((q) => ({
         user_id: userId,
         text: q.text,
         is_answered: q.isAnswered,
         note: q.note || '',
       }));
-      await supabase.from('doctor_questions').insert(records);
+      assertNoSupabaseError(
+        await supabase.from('doctor_questions').insert(records),
+        'doctor_questions',
+      );
     }
 
     // 8. Sync Daily Logs (Hydration & Vitamin)
@@ -520,17 +557,25 @@ export async function syncLocalToSupabase() {
             water_glasses: val.waterGlasses || 0,
             took_vitamin: !!val.tookVitamin,
           }));
-          await supabase.from('daily_logs').upsert(records, { onConflict: 'user_id,date' });
+          assertNoSupabaseError(
+            await supabase.from('daily_logs').upsert(records, { onConflict: 'user_id,date' }),
+            'daily_logs',
+          );
         }
-      } catch {
-        // ignore parse error
+      } catch (err) {
+        if (err instanceof Error && err.message.startsWith('[daily_logs]')) {
+          throw err;
+        }
       }
     }
 
     // 9. Sync Kick Sessions (Cardiff 10)
     const kickSessions = await getKickSessions();
     if (kickSessions.length > 0) {
-      await supabase.from('kick_sessions').delete().eq('user_id', userId);
+      assertNoSupabaseError(
+        await supabase.from('kick_sessions').delete().eq('user_id', userId),
+        'kick_sessions',
+      );
       const records = kickSessions.map((k) => ({
         user_id: userId,
         date: k.date,
@@ -539,13 +584,19 @@ export async function syncLocalToSupabase() {
         notes: k.notes || '',
         created_at: k.createdAt || new Date().toISOString(),
       }));
-      await supabase.from('kick_sessions').insert(records);
+      assertNoSupabaseError(
+        await supabase.from('kick_sessions').insert(records),
+        'kick_sessions',
+      );
     }
 
     // 10. Sync Contraction Records (5-1-1)
     const contractions = await getContractionRecords();
     if (contractions.length > 0) {
-      await supabase.from('contraction_records').delete().eq('user_id', userId);
+      assertNoSupabaseError(
+        await supabase.from('contraction_records').delete().eq('user_id', userId),
+        'contraction_records',
+      );
       const records = contractions.map((c) => ({
         user_id: userId,
         start_time: c.startTime,
@@ -553,24 +604,33 @@ export async function syncLocalToSupabase() {
         interval_minutes: c.intervalMinutes,
         intensity: c.intensity || 'sedang',
       }));
-      await supabase.from('contraction_records').insert(records);
+      assertNoSupabaseError(
+        await supabase.from('contraction_records').insert(records),
+        'contraction_records',
+      );
     }
 
     // 11. Sync Labor Budget
     const laborBudget = await getLaborBudget();
     if (laborBudget) {
-      await supabase.from('labor_budget').upsert({
-        user_id: userId,
-        current_savings: laborBudget.currentSavings || 0,
-        target_override: laborBudget.targetOverride || null,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' });
+      assertNoSupabaseError(
+        await supabase.from('labor_budget').upsert({
+          user_id: userId,
+          current_savings: laborBudget.currentSavings || 0,
+          target_override: laborBudget.targetOverride || null,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' }),
+        'labor_budget',
+      );
     }
 
     // 12. Sync USG Records (Biometri Janin)
     const usgRecords = await getUSGRecords();
     if (usgRecords.length > 0) {
-      await supabase.from('usg_records').delete().eq('user_id', userId);
+      assertNoSupabaseError(
+        await supabase.from('usg_records').delete().eq('user_id', userId),
+        'usg_records',
+      );
       const records = usgRecords.map((u) => ({
         user_id: userId,
         date: u.date,
@@ -590,13 +650,19 @@ export async function syncLocalToSupabase() {
         notes: u.notes || '',
         created_at: u.createdAt || new Date().toISOString(),
       }));
-      await supabase.from('usg_records').insert(records);
+      assertNoSupabaseError(
+        await supabase.from('usg_records').insert(records),
+        'usg_records',
+      );
     }
 
     // 13. Sync Maternal Vitals (Buku KIA)
     const vitals = await getMaternalVitals();
     if (vitals.length > 0) {
-      await supabase.from('maternal_vitals').delete().eq('user_id', userId);
+      assertNoSupabaseError(
+        await supabase.from('maternal_vitals').delete().eq('user_id', userId),
+        'maternal_vitals',
+      );
       const records = vitals.map((v) => ({
         user_id: userId,
         date: v.date,
@@ -611,7 +677,10 @@ export async function syncLocalToSupabase() {
         notes: v.notes || '',
         created_at: v.createdAt || new Date().toISOString(),
       }));
-      await supabase.from('maternal_vitals').insert(records);
+      assertNoSupabaseError(
+        await supabase.from('maternal_vitals').insert(records),
+        'maternal_vitals',
+      );
     }
 
     return {
@@ -636,7 +705,10 @@ export async function fetchSupabaseToLocal() {
 
   try {
     // 1. Fetch Profile
-    const { data: profData } = await supabase.from('profiles').select('*').eq('user_id', userId).maybeSingle();
+    const profData = assertNoSupabaseError(
+      await supabase.from('profiles').select('*').eq('user_id', userId).maybeSingle(),
+      'profiles',
+    );
     if (profData) {
       await saveProfile({
         mamaName: profData.mama_name,
@@ -652,14 +724,20 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 2. Fetch Checklist
-    const { data: checkData } = await supabase.from('checklist_completions').select('item_id').eq('user_id', userId);
+    const checkData = assertNoSupabaseError(
+      await supabase.from('checklist_completions').select('item_id').eq('user_id', userId),
+      'checklist_completions',
+    );
     if (checkData) {
       const ids = checkData.map((r) => r.item_id);
       localStorage.setItem(STORAGE_KEYS.CHECKLIST, JSON.stringify(ids));
     }
 
     // 3. Fetch USG Milestones
-    const { data: usgData } = await supabase.from('usg_completions').select('usg_id').eq('user_id', userId);
+    const usgData = assertNoSupabaseError(
+      await supabase.from('usg_completions').select('usg_id').eq('user_id', userId),
+      'usg_completions',
+    );
     if (usgData) {
       const usgMap = {};
       usgData.forEach((r) => { usgMap[r.usg_id] = true; });
@@ -667,14 +745,20 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 4. Fetch Hospital Bag
-    const { data: bagData } = await supabase.from('hospital_bag_completions').select('item_id').eq('user_id', userId);
+    const bagData = assertNoSupabaseError(
+      await supabase.from('hospital_bag_completions').select('item_id').eq('user_id', userId),
+      'hospital_bag_completions',
+    );
     if (bagData) {
       const ids = bagData.map((r) => r.item_id);
       localStorage.setItem(STORAGE_KEYS.HOSPITAL_BAG, JSON.stringify(ids));
     }
 
     // 5. Fetch Custom Bag Items
-    const { data: customBagData } = await supabase.from('custom_bag_items').select('*').eq('user_id', userId);
+    const customBagData = assertNoSupabaseError(
+      await supabase.from('custom_bag_items').select('*').eq('user_id', userId),
+      'custom_bag_items',
+    );
     if (customBagData && customBagData.length > 0) {
       const formattedBag = customBagData.map((ci) => ({
         id: ci.id || `custom_hb_${Date.now()}`,
@@ -687,7 +771,10 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 6. Fetch Doctor Visits
-    const { data: visitData } = await supabase.from('doctor_visits').select('*').eq('user_id', userId).order('date', { ascending: false });
+    const visitData = assertNoSupabaseError(
+      await supabase.from('doctor_visits').select('*').eq('user_id', userId).order('date', { ascending: false }),
+      'doctor_visits',
+    );
     if (visitData) {
       const formatted = visitData.map((v) => ({
         id: v.id,
@@ -703,7 +790,10 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 7. Fetch Doctor Questions
-    const { data: qData } = await supabase.from('doctor_questions').select('*').eq('user_id', userId);
+    const qData = assertNoSupabaseError(
+      await supabase.from('doctor_questions').select('*').eq('user_id', userId),
+      'doctor_questions',
+    );
     if (qData && qData.length > 0) {
       const formattedQ = qData.map((q) => ({
         id: q.id || `q_${Date.now()}`,
@@ -715,7 +805,10 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 8. Fetch Daily Logs
-    const { data: dailyData } = await supabase.from('daily_logs').select('*').eq('user_id', userId);
+    const dailyData = assertNoSupabaseError(
+      await supabase.from('daily_logs').select('*').eq('user_id', userId),
+      'daily_logs',
+    );
     if (dailyData && dailyData.length > 0) {
       const dailyMap = {};
       dailyData.forEach((row) => {
@@ -728,7 +821,10 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 9. Fetch Kick Sessions
-    const { data: kickData } = await supabase.from('kick_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false });
+    const kickData = assertNoSupabaseError(
+      await supabase.from('kick_sessions').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+      'kick_sessions',
+    );
     if (kickData && kickData.length > 0) {
       const formatted = kickData.map((k) => ({
         id: k.id || `kick_${Date.now()}`,
@@ -742,7 +838,10 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 10. Fetch Contraction Records
-    const { data: contData } = await supabase.from('contraction_records').select('*').eq('user_id', userId).order('created_at', { ascending: false });
+    const contData = assertNoSupabaseError(
+      await supabase.from('contraction_records').select('*').eq('user_id', userId).order('created_at', { ascending: false }),
+      'contraction_records',
+    );
     if (contData && contData.length > 0) {
       const formatted = contData.map((c) => ({
         id: c.id || `cont_${Date.now()}`,
@@ -755,7 +854,10 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 11. Fetch Labor Budget
-    const { data: budgetData } = await supabase.from('labor_budget').select('*').eq('user_id', userId).maybeSingle();
+    const budgetData = assertNoSupabaseError(
+      await supabase.from('labor_budget').select('*').eq('user_id', userId).maybeSingle(),
+      'labor_budget',
+    );
     if (budgetData) {
       localStorage.setItem(STORAGE_KEYS.LABOR_BUDGET, JSON.stringify({
         currentSavings: budgetData.current_savings || 0,
@@ -764,7 +866,10 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 12. Fetch USG Records
-    const { data: usgRecData } = await supabase.from('usg_records').select('*').eq('user_id', userId).order('date', { ascending: false });
+    const usgRecData = assertNoSupabaseError(
+      await supabase.from('usg_records').select('*').eq('user_id', userId).order('date', { ascending: false }),
+      'usg_records',
+    );
     if (usgRecData && usgRecData.length > 0) {
       const formatted = usgRecData.map((u) => ({
         id: u.id,
@@ -789,7 +894,10 @@ export async function fetchSupabaseToLocal() {
     }
 
     // 13. Fetch Maternal Vitals
-    const { data: vitalData } = await supabase.from('maternal_vitals').select('*').eq('user_id', userId).order('date', { ascending: false });
+    const vitalData = assertNoSupabaseError(
+      await supabase.from('maternal_vitals').select('*').eq('user_id', userId).order('date', { ascending: false }),
+      'maternal_vitals',
+    );
     if (vitalData && vitalData.length > 0) {
       const formatted = vitalData.map((v) => ({
         id: v.id,

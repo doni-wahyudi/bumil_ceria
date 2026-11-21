@@ -51,13 +51,13 @@ export default function PWAInstallPrompt({ hasMiniPlayer = false, hasBottomNav =
       role="region"
       aria-label="Instalasi Aplikasi"
     >
-      <div className="pwa-prompt-icon">
+      <div className="pwa-prompt-icon" aria-hidden="true">
         <Smartphone size={20} />
       </div>
       <div className="pwa-prompt-content">
         <strong>Pasang Aplikasi Bumil Ceria</strong>
         <p className="text-xs text-secondary">
-          Akses langsung dari layar beranda HP Mama & Papa, lebih cepat & praktis.
+          Akses langsung dari layar beranda HP Mama &amp; Papa, lebih cepat &amp; praktis.
         </p>
       </div>
       <div className="pwa-prompt-actions">
@@ -66,16 +66,16 @@ export default function PWAInstallPrompt({ hasMiniPlayer = false, hasBottomNav =
           className="btn btn-primary pwa-btn-install"
           onClick={handleInstall}
         >
-          <Download size={14} /> Pasang
+          <Download size={14} aria-hidden="true" /> Pasang
         </button>
         <button
           type="button"
           className="pwa-btn-close"
           onClick={handleDismiss}
-          aria-label="Tutup Banner Instalasi"
+          aria-label="Tutup banner instalasi"
           title="Tutup"
         >
-          <X size={18} />
+          <X size={18} aria-hidden="true" />
         </button>
       </div>
     </aside>

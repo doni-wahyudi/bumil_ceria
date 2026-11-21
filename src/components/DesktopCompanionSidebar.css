@@ -12,7 +12,7 @@
     width: 100%;
     max-width: 1380px;
     margin: 0 auto;
-    padding: 24px 20px;
+    padding: 20px;
     min-height: 100dvh;
   }
 
@@ -20,12 +20,15 @@
   .desktop-layout-wrapper .app-container {
     max-width: 460px;
     min-width: 440px;
+    min-height: 0;
+    margin-left: 0;
+    margin-right: 0;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04);
     border-radius: var(--radius-xl);
     border: 1px solid var(--color-border);
     overflow: hidden;
     position: relative;
-    height: calc(100vh - 48px);
+    height: calc(100dvh - 40px);
     overflow-y: auto;
   }
 
@@ -36,13 +39,14 @@
   .desktop-sidebar {
     display: flex;
     flex-direction: column;
-    width: 320px;
-    max-height: calc(100vh - 48px);
+    width: 310px;
+    max-height: calc(100dvh - 40px);
     overflow-y: auto;
     position: sticky;
-    top: 24px;
-    gap: 16px;
+    top: 20px;
+    gap: 8px;
     padding-right: 4px;
+    flex-shrink: 0;
   }
 
   .desktop-sidebar--left {
@@ -55,7 +59,7 @@
 
   .desktop-sidebar--right {
     order: 3;
-    width: 340px;
+    width: 330px;
   }
 
   /* Desktop Bottom Nav stays within mobile phone frame */
@@ -68,8 +72,7 @@
     left: auto;
     border-radius: 0 0 var(--radius-xl) var(--radius-xl);
     border-top: 1px solid var(--color-border);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: var(--color-surface);
   }
 }
 
@@ -86,13 +89,14 @@
   height: 44px;
   border-radius: var(--radius-lg);
   background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-  color: #ffffff;
+  color: var(--color-text-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(216, 142, 170, 0.35);
+  box-shadow: 0 4px 12px rgba(184, 82, 122, 0.28);
 }
 
+.desk-brand-title,
 .desk-brand h3 {
   font-size: 1.25rem;
   font-weight: 800;
@@ -102,7 +106,7 @@
 
 /* Profile Card */
 .desk-profile-card {
-  padding: 14px;
+  padding: 10px 12px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
 }
@@ -111,6 +115,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
@@ -120,9 +126,10 @@
 }
 
 .desk-role-toggle {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  padding: 3px 8px;
+  min-height: 44px;
+  padding: 6px 12px;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
   cursor: pointer;
@@ -131,24 +138,24 @@
 }
 
 .desk-role--mama {
-  color: var(--color-primary-dark);
-  background: var(--color-primary-subtle);
+  color: var(--color-mama-dark);
+  background: var(--color-mama-surface);
   border-color: var(--color-primary);
 }
 
 .desk-role--papa {
-  color: var(--color-papa);
-  background: rgba(107, 142, 168, 0.15);
+  color: var(--color-papa-dark);
+  background: var(--color-papa-surface);
   border-color: var(--color-papa);
 }
 
 .desk-week-pill {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--color-primary-dark);
+  color: var(--color-mama-dark);
   background: var(--color-primary-subtle);
   display: inline-block;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
 }
 
@@ -156,9 +163,13 @@
 .desk-audio-card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: linear-gradient(135deg, rgba(216, 142, 170, 0.12), rgba(126, 174, 178, 0.12));
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  padding: 8px 12px;
+  text-align: left;
+  font-family: inherit;
+  background: linear-gradient(135deg, var(--color-primary-subtle), var(--color-secondary-subtle));
   border: 1.5px solid var(--color-primary);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -170,15 +181,25 @@
 }
 
 .desk-audio-icon {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-md);
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.desk-audio-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.desk-audio-desc {
+  display: block;
 }
 
 .desk-audio-info strong {
@@ -191,7 +212,7 @@
 .desk-nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .desk-menu-title {
@@ -199,7 +220,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   padding: 4px 8px;
 }
 
@@ -207,11 +228,12 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 9px 12px;
+  min-height: 36px;
+  padding: 6px 12px;
   border-radius: var(--radius-md);
   background: transparent;
   border: none;
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   font-weight: 600;
   color: var(--color-text-secondary);
   cursor: pointer;
@@ -226,14 +248,14 @@
 
 .desk-nav-btn--active {
   background: var(--color-primary-subtle);
-  color: var(--color-primary-dark);
+  color: var(--color-mama-dark);
   font-weight: 700;
 }
 
 /* Right Sidebar Cards */
 .desk-alert-card {
   padding: 14px;
-  border-left: 4px solid #e5484d;
+  border-left: 4px solid var(--color-danger);
 }
 
 .desk-alert-header {
@@ -241,7 +263,7 @@
   align-items: center;
   gap: 8px;
   font-size: 0.92rem;
-  color: #e5484d;
+  color: var(--color-danger);
   margin-bottom: 6px;
 }
 
@@ -255,6 +277,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  min-height: 48px;
   padding: 8px 10px;
   background: var(--color-surface-hover);
   border-radius: var(--radius-md);
@@ -264,13 +288,14 @@
 }
 
 .desk-emergency-item:hover {
-  border-color: #e5484d;
-  background: rgba(229, 72, 77, 0.08);
+  border-color: var(--color-danger);
+  background: rgba(180, 35, 44, 0.08);
 }
 
 .desk-em-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .desk-em-info strong {
@@ -284,10 +309,12 @@
   gap: 4px;
   font-size: 0.72rem;
   font-weight: 700;
-  background: #e5484d;
+  background: #B4232C;
   color: #ffffff;
-  padding: 4px 8px;
+  padding: 6px 10px;
   border-radius: var(--radius-full);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* Red Flags Card */
@@ -301,7 +328,7 @@
   align-items: center;
   gap: 8px;
   font-size: 0.88rem;
-  color: #d97706;
+  color: var(--color-warning);
   margin-bottom: 8px;
 }
 
@@ -309,7 +336,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  list-style: none;
+  padding-left: 16px;
+  margin: 0;
   color: var(--color-text-secondary);
-  line-height: 1.35;
+  line-height: 1.4;
 }

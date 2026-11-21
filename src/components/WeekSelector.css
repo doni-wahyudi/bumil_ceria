@@ -25,43 +25,49 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   border: 1.5px solid var(--color-border);
   background: var(--color-surface);
   cursor: pointer;
   font-family: var(--font-display);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-text-secondary);
-  transition: all var(--duration-fast) var(--ease-spring);
+  transition: background-color var(--duration-fast) var(--ease-smooth),
+              border-color var(--duration-fast) var(--ease-smooth),
+              color var(--duration-fast) var(--ease-smooth),
+              transform var(--duration-fast) var(--ease-spring);
   scroll-snap-align: center;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
+.week-pill:hover {
+  border-color: var(--color-primary);
+}
+
 .week-pill:active {
-  transform: scale(0.92);
+  transform: scale(0.94);
 }
 
 .week-pill--past {
   color: var(--color-text-tertiary);
-  background: var(--color-bg);
+  background: var(--color-bg-secondary);
   border-color: var(--color-border-light);
 }
 
 .week-pill--current {
   background: var(--color-primary);
   border-color: var(--color-primary);
-  color: white;
-  box-shadow: 0 2px 8px rgba(var(--color-primary-rgb), 0.3);
-  animation: pulseGlow 2s infinite;
+  color: var(--color-text-inverse);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.22);
 }
 
 .week-pill--selected {
   border-color: var(--color-secondary);
-  color: var(--color-secondary);
+  color: var(--color-secondary-dark);
   background: var(--color-secondary-light);
 }
 

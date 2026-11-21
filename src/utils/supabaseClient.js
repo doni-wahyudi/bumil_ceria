@@ -37,7 +37,7 @@ export async function getSession() {
   return supabase.auth.getSession();
 }
 
-/** Subscribe to auth state changes — returns unsubscribe fn */
+/** Subscribe to auth state changes (returns unsubscribe fn) */
 export function onAuthStateChange(callback) {
   const supabase = getSupabase();
   if (!supabase) return () => {};

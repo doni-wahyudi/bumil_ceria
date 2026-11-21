@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Calculator,
   Calendar,
-  Sparkles,
   Check,
   Baby,
   Clock,
@@ -24,14 +23,12 @@ function PregnancyCalc() {
   const [hphtDate, setHphtDate] = useState(profile?.hpht || new Date().toISOString().split('T')[0]);
   const [cycleLength, setCycleLength] = useState(28); // 21 - 35 days
 
-  // USG method inputs
   const [usgDate, setUsgDate] = useState(new Date().toISOString().split('T')[0]);
   const [usgWeeks, setUsgWeeks] = useState(8);
   const [usgDays, setUsgDays] = useState(0);
 
   const [appliedSuccess, setAppliedSuccess] = useState(false);
 
-  // Calculation logic
   let calculatedDueDate = null;
   let calculatedHpht = null;
   let currentGestationalDays = 0;
@@ -49,19 +46,15 @@ function PregnancyCalc() {
     hpht.setHours(0, 0, 0, 0);
     calculatedHpht = hphtDate;
 
-    // Adjusted Naegele rule: 280 days + (cycleLength - 28)
     const cycleAdjustment = (Number(cycleLength) || 28) - 28;
     const dueTime = hpht.getTime() + (280 + cycleAdjustment) * 24 * 60 * 60 * 1000;
     calculatedDueDate = new Date(dueTime);
 
-    // Current days
     currentGestationalDays = Math.floor((today - hpht) / (24 * 60 * 60 * 1000));
 
-    // Conception date: HPHT + (cycleLength - 14) days
     const conceptionTime = hpht.getTime() + (Number(cycleLength) - 14) * 24 * 60 * 60 * 1000;
     estimatedConception = new Date(conceptionTime);
 
-    // Trimester milestones
     trimester2Date = new Date(hpht.getTime() + 14 * 7 * 24 * 60 * 60 * 1000);
     trimester3Date = new Date(hpht.getTime() + 28 * 7 * 24 * 60 * 60 * 1000);
     fullTermStartDate = new Date(hpht.getTime() + 37 * 7 * 24 * 60 * 60 * 1000);
@@ -71,21 +64,14 @@ function PregnancyCalc() {
     uDate.setHours(0, 0, 0, 0);
     const totalUsgDays = Number(usgWeeks) * 7 + Number(usgDays);
 
-    // Equivalent HPHT = usgDate - totalUsgDays
     const equivHphtTime = uDate.getTime() - totalUsgDays * 24 * 60 * 60 * 1000;
     const equivHpht = new Date(equivHphtTime);
     calculatedHpht = equivHpht.toISOString().split('T')[0];
 
-    // Due Date = equivHpht + 280 days
     calculatedDueDate = new Date(equivHphtTime + 280 * 24 * 60 * 60 * 1000);
-
-    // Current days
     currentGestationalDays = Math.floor((today - equivHpht) / (24 * 60 * 60 * 1000));
-
-    // Conception
     estimatedConception = new Date(equivHphtTime + 14 * 24 * 60 * 60 * 1000);
 
-    // Milestones
     trimester2Date = new Date(equivHphtTime + 14 * 7 * 24 * 60 * 60 * 1000);
     trimester3Date = new Date(equivHphtTime + 28 * 7 * 24 * 60 * 60 * 1000);
     fullTermStartDate = new Date(equivHphtTime + 37 * 7 * 24 * 60 * 60 * 1000);
@@ -95,7 +81,6 @@ function PregnancyCalc() {
   const currentWeeks = Math.max(1, Math.min(42, Math.floor(currentGestationalDays / 7)));
   const currentRemainingDays = Math.max(0, currentGestationalDays % 7);
 
-  // Save to profile
   const handleApplyToProfile = async () => {
     if (!calculatedHpht) return;
     await updateProfile({ hpht: calculatedHpht });
@@ -114,47 +99,54 @@ function PregnancyCalc() {
           onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
           aria-label="Kembali"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} aria-hidden="true" />
         </button>
         <div>
           <div className="calc-header-badge">
-            <Calculator size={14} /> Alat Medis
+            <Calculator size={14} aria-hidden="true" />
+            <span>Alat Medis</span>
           </div>
-          <h2>Kalkulator HPL & Usia Janin</h2>
+          <h1>Kalkulator HPL &amp; Usia Janin</h1>
         </div>
       </header>
 
       {appliedSuccess && (
-        <div className="calc-alert-success animate-scale-in">
-          <Check size={16} /> Berhasil disimpan ke profil Bumil Ceria Anda!
+        <div className="calc-alert-success animate-scale-in" role="status">
+          <Check size={16} aria-hidden="true" />
+          <span>Berhasil disimpan ke profil Bumil Ceria Anda.</span>
         </div>
       )}
 
       {/* Method Switcher */}
-      <div className="calc-methods animate-fade-in-up" style={{ animationDelay: '60ms' }}>
+      <div className="calc-methods animate-fade-in-up" style={{ animationDelay: '40ms' }} role="group" aria-label="Metode perhitungan HPL">
         <button
+          type="button"
+          aria-pressed={calcMethod === 'hpht'}
           className={`calc-method-btn ${calcMethod === 'hpht' ? 'calc-method-btn--active' : ''}`}
           onClick={() => setCalcMethod('hpht')}
         >
-          <Calendar size={16} />
+          <Calendar size={16} aria-hidden="true" />
           <span>Dari HPHT (Haid Terakhir)</span>
         </button>
         <button
+          type="button"
+          aria-pressed={calcMethod === 'usg'}
           className={`calc-method-btn ${calcMethod === 'usg' ? 'calc-method-btn--active' : ''}`}
           onClick={() => setCalcMethod('usg')}
         >
-          <Baby size={16} />
+          <Baby size={16} aria-hidden="true" />
           <span>Dari Hasil USG T1</span>
         </button>
       </div>
 
       {/* Input Form Card */}
-      <section className="calc-input-card card animate-fade-in-up" style={{ animationDelay: '120ms' }}>
+      <section className="calc-input-card card animate-fade-in-up" style={{ animationDelay: '80ms' }}>
         {calcMethod === 'hpht' ? (
           <div>
             <div className="input-group">
-              <label>Hari Pertama Haid Terakhir (HPHT)</label>
+              <label htmlFor="calc-hpht-date">Hari Pertama Haid Terakhir (HPHT)</label>
               <input
+                id="calc-hpht-date"
                 type="date"
                 className="input-field"
                 value={hphtDate}
@@ -163,12 +155,13 @@ function PregnancyCalc() {
               />
             </div>
 
-            <div className="input-group" style={{ marginTop: '12px' }}>
+            <div className="input-group" style={{ marginTop: '16px' }}>
               <div className="calc-cycle-label">
-                <label>Panjang Rata-rata Siklus Haid</label>
-                <span className="calc-cycle-value">{cycleLength} hari</span>
+                <label htmlFor="calc-cycle-length">Panjang Rata-rata Siklus Haid</label>
+                <span className="calc-cycle-value tabular-nums">{cycleLength} hari</span>
               </div>
               <input
+                id="calc-cycle-length"
                 type="range"
                 min="21"
                 max="35"
@@ -177,7 +170,7 @@ function PregnancyCalc() {
                 onChange={(e) => setCycleLength(Number(e.target.value))}
                 className="calc-range-slider"
               />
-              <div className="calc-slider-hints">
+              <div className="calc-slider-hints tabular-nums">
                 <span>Pendek (21 hari)</span>
                 <span>Standar (28 hari)</span>
                 <span>Panjang (35 hari)</span>
@@ -187,8 +180,9 @@ function PregnancyCalc() {
         ) : (
           <div>
             <div className="input-group">
-              <label>Tanggal Pemeriksaan USG</label>
+              <label htmlFor="calc-usg-date">Tanggal Pemeriksaan USG</label>
               <input
+                id="calc-usg-date"
                 type="date"
                 className="input-field"
                 value={usgDate}
@@ -197,32 +191,34 @@ function PregnancyCalc() {
               />
             </div>
 
-            <div className="calc-usg-row" style={{ marginTop: '12px' }}>
+            <div className="calc-usg-row" style={{ marginTop: '14px' }}>
               <div className="input-group">
-                <label>Usia Janin Saat USG (Minggu)</label>
+                <label htmlFor="calc-usg-weeks">Usia Janin Saat USG (Minggu)</label>
                 <input
+                  id="calc-usg-weeks"
                   type="number"
                   min="4"
                   max="14"
-                  className="input-field"
+                  className="input-field tabular-nums"
                   value={usgWeeks}
                   onChange={(e) => setUsgWeeks(e.target.value)}
                 />
               </div>
               <div className="input-group">
-                <label>+ Hari</label>
+                <label htmlFor="calc-usg-days">+ Hari</label>
                 <input
+                  id="calc-usg-days"
                   type="number"
                   min="0"
                   max="6"
-                  className="input-field"
+                  className="input-field tabular-nums"
                   value={usgDays}
                   onChange={(e) => setUsgDays(e.target.value)}
                 />
               </div>
             </div>
-            <p className="text-xs text-secondary" style={{ marginTop: '8px' }}>
-              💡 USG Trimester 1 (usia 8–12 minggu) berdasarkan panjang CRL adalah metode paling akurat untuk menentukan HPL.
+            <p className="text-xs text-secondary" style={{ marginTop: '10px' }}>
+              USG Trimester 1 (usia 8–12 minggu) berdasarkan panjang CRL adalah metode paling akurat untuk menentukan HPL.
             </p>
           </div>
         )}
@@ -230,13 +226,14 @@ function PregnancyCalc() {
 
       {/* Calculation Results Card */}
       {calculatedDueDate && (
-        <section className="calc-results-section animate-fade-in-up" style={{ animationDelay: '180ms' }}>
+        <section className="calc-results-section animate-fade-in-up" style={{ animationDelay: '120ms' }}>
           <div className="calc-hpl-card card">
             <div className="calc-hpl-badge">
-              <Sparkles size={14} /> Hari Perkiraan Lahir (HPL)
+              <Calendar size={14} aria-hidden="true" />
+              <span>Hari Perkiraan Lahir (HPL)</span>
             </div>
-            <h3 className="calc-hpl-date">{formatDateID(calculatedDueDate)}</h3>
-            <p className="calc-hpl-sub">
+            <h2 className="calc-hpl-date tabular-nums">{formatDateID(calculatedDueDate)}</h2>
+            <p className="calc-hpl-sub tabular-nums">
               Usia Kehamilan Saat Ini: <strong>{currentWeeks} Minggu {currentRemainingDays} Hari</strong>
             </p>
 
@@ -245,53 +242,53 @@ function PregnancyCalc() {
               className="btn btn-primary btn-full calc-apply-btn"
               onClick={handleApplyToProfile}
             >
-              <Save size={16} /> Terapkan ke Profil Saya
+              <Save size={16} aria-hidden="true" />
+              <span>Terapkan ke Profil Saya</span>
             </button>
           </div>
 
-          {/* Timeline Milestones Table */}
           <div className="calc-milestones card">
-            <h4 className="calc-milestones-title">
-              <Clock size={16} color="var(--color-secondary-dark)" />
+            <h3 className="calc-milestones-title">
+              <Clock size={16} color="var(--color-secondary-dark)" aria-hidden="true" />
               <span>Milestone Penting Kehamilan</span>
-            </h4>
+            </h3>
 
             <div className="calc-milestone-rows">
               {estimatedConception && (
                 <div className="calc-milestone-row">
                   <div className="calc-ms-label">
-                    <Heart size={14} color="var(--color-primary)" />
+                    <Heart size={14} color="var(--color-primary)" aria-hidden="true" />
                     <span>Perkiraan Konsepsi (Pembuahan)</span>
                   </div>
-                  <strong>{formatDateID(estimatedConception)}</strong>
+                  <strong className="tabular-nums">{formatDateID(estimatedConception)}</strong>
                 </div>
               )}
 
               {trimester2Date && (
                 <div className="calc-milestone-row">
                   <div className="calc-ms-label">
-                    <span>🌱 Masuk Trimester 2 (Minggu 14)</span>
+                    <span>Masuk Trimester 2 (Minggu 14)</span>
                   </div>
-                  <strong>{formatDateID(trimester2Date)}</strong>
+                  <strong className="tabular-nums">{formatDateID(trimester2Date)}</strong>
                 </div>
               )}
 
               {trimester3Date && (
                 <div className="calc-milestone-row">
                   <div className="calc-ms-label">
-                    <span>🌟 Masuk Trimester 3 (Minggu 28)</span>
+                    <span>Masuk Trimester 3 (Minggu 28)</span>
                   </div>
-                  <strong>{formatDateID(trimester3Date)}</strong>
+                  <strong className="tabular-nums">{formatDateID(trimester3Date)}</strong>
                 </div>
               )}
 
               {fullTermStartDate && fullTermEndDate && (
                 <div className="calc-milestone-row calc-ms-aterm">
                   <div className="calc-ms-label">
-                    <span>👶 Rentang Siap Lahir (Aterm 37–42 Minggu)</span>
+                    <span>Rentang Siap Lahir (Aterm 37–42 Minggu)</span>
                   </div>
-                  <strong>
-                    {formatDateID(fullTermStartDate)} — {formatDateID(fullTermEndDate)}
+                  <strong className="tabular-nums">
+                    {formatDateID(fullTermStartDate)} s/d {formatDateID(fullTermEndDate)}
                   </strong>
                 </div>
               )}

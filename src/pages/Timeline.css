@@ -6,7 +6,7 @@
   margin-bottom: var(--space-4);
 }
 
-.timeline-header h2 {
+.timeline-header h1 {
   font-size: var(--text-2xl);
 }
 
@@ -15,9 +15,9 @@
   display: flex;
   gap: var(--space-1);
   background: var(--color-surface);
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  padding: 3px;
+  padding: 4px;
   margin-bottom: var(--space-4);
 }
 
@@ -26,7 +26,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   border: none;
   border-radius: var(--radius-full);
@@ -35,16 +35,17 @@
   font-family: var(--font-display);
   font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--color-text-tertiary);
-  transition: all var(--duration-fast) var(--ease-spring);
-  min-height: 40px;
+  color: var(--color-text-secondary);
+  transition: background-color var(--duration-fast) var(--ease-smooth), color var(--duration-fast) var(--ease-smooth);
+  min-height: 44px;
   touch-action: manipulation;
 }
 
 .timeline-tab--active {
   background: var(--color-primary);
-  color: white;
+  color: var(--color-text-inverse);
   box-shadow: var(--shadow-sm);
+  font-weight: 700;
 }
 
 /* Week Detail */
@@ -68,13 +69,14 @@
   display: block;
 }
 
-.timeline-week-card__header h3 {
+.timeline-week-card__header h2 {
   font-size: var(--text-lg);
 }
 
 .timeline-week-card__size-emoji {
   font-size: 36px;
   flex-shrink: 0;
+  line-height: 1;
 }
 
 .timeline-week-card__size {
@@ -84,7 +86,7 @@
 .timeline-week-card__dev {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .timeline-week-card__usg {
@@ -96,16 +98,22 @@
 /* Expandable sections */
 .timeline-section-toggle {
   width: 100%;
+  min-height: 48px;
   cursor: pointer;
-  border: 1px solid var(--color-border-light);
+  border: 1px solid var(--color-border);
   background: var(--color-surface);
   font-family: var(--font-body);
+  text-align: left;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
+.timeline-section-toggle:hover {
+  border-color: var(--color-border-hover);
+}
+
 .timeline-section-toggle:active {
-  background: var(--color-bg);
+  background: var(--color-bg-secondary);
 }
 
 .timeline-section-toggle__header {
@@ -122,7 +130,7 @@
   border-top: none;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  margin-top: -4px;
+  margin-top: -10px;
 }
 
 .timeline-info-block {
@@ -133,7 +141,7 @@
   margin-bottom: 0;
 }
 
-.timeline-info-block h5 {
+.timeline-info-block h3 {
   font-family: var(--font-display);
   font-size: var(--text-sm);
   font-weight: 700;
@@ -162,7 +170,7 @@
   gap: var(--space-2);
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .timeline-priority {
@@ -170,7 +178,7 @@
   width: 8px;
   height: 8px;
   border-radius: var(--radius-full);
-  margin-top: 5px;
+  margin-top: 6px;
 }
 
 .timeline-priority--high {
@@ -182,5 +190,5 @@
 }
 
 .timeline-priority--low {
-  background: var(--color-border);
+  background: var(--color-border-hover);
 }

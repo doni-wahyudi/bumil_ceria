@@ -31,7 +31,7 @@ const weeklyData = [
       { id: 'w1-m3', text: 'Hindari konsumsi alkohol, rokok, dan obat tanpa resep', category: 'kesehatan', priority: 'high' },
     ],
     papaChecklist: [
-      { id: 'w1-p1', text: 'Dukung istri untuk hidup sehat — berhenti merokok di sekitar istri', category: 'support', priority: 'high' },
+      { id: 'w1-p1', text: 'Dukung istri untuk hidup sehat: berhenti merokok di sekitar istri', category: 'support', priority: 'high' },
       { id: 'w1-p2', text: 'Mulai diskusi perencanaan keuangan untuk kehamilan', category: 'keuangan', priority: 'medium' },
     ],
   },
@@ -111,14 +111,14 @@ const weeklyData = [
     babySizeEmoji: '🫛',
     babyDevelopment: 'Hidung, mulut, dan telinga mulai terbentuk. Tangan dan kaki mulai berkembang sebagai tunas kecil.',
     mamaSymptoms: 'Mual dan muntah meningkat (morning sickness), perubahan mood, sensitive terhadap bau.',
-    mamaTips: 'Jahe bisa membantu meredakan mual — coba wedang jahe hangat. Istirahat cukup.',
+    mamaTips: 'Jahe bisa membantu meredakan mual, coba wedang jahe hangat. Istirahat cukup.',
     mamaChecklist: [
       { id: 'w6-m1', text: '📋 USG: Check perkembangan & detak jantung bayi', category: 'pemeriksaan', priority: 'high' },
       { id: 'w6-m2', text: 'Konsumsi jahe untuk mengurangi mual (wedang jahe/permen jahe)', category: 'nutrisi', priority: 'medium' },
       { id: 'w6-m3', text: 'Daftarkan kehamilan di Puskesmas untuk dapat Buku KIA', category: 'dokumen', priority: 'high' },
     ],
     papaChecklist: [
-      { id: 'w6-p1', text: 'Pahami bahwa mood swing istri adalah normal — bersabar', category: 'support', priority: 'high' },
+      { id: 'w6-p1', text: 'Pahami bahwa mood swing istri adalah normal, bersabarlah', category: 'support', priority: 'high' },
       { id: 'w6-p2', text: 'Bantu pekerjaan rumah lebih banyak', category: 'support', priority: 'medium' },
       { id: 'w6-p3', text: 'Antar istri ke Puskesmas untuk daftarkan kehamilan', category: 'support', priority: 'high' },
     ],
@@ -133,7 +133,7 @@ const weeklyData = [
     mamaTips: 'Pilih bra yang nyaman dan suportif. Hindari kafein berlebihan (max 200mg/hari).',
     mamaChecklist: [
       { id: 'w7-m1', text: 'Beli bra hamil yang nyaman dan suportif', category: 'persiapan_bayi', priority: 'medium' },
-      { id: 'w7-m2', text: 'Batasi kafein — maksimal 1 cangkir kopi/hari', category: 'nutrisi', priority: 'medium' },
+      { id: 'w7-m2', text: 'Batasi kafein: maksimal 1 cangkir kopi/hari', category: 'nutrisi', priority: 'medium' },
     ],
     papaChecklist: [
       { id: 'w7-p1', text: 'Mulai riset estimasi biaya persalinan (normal vs caesar)', category: 'keuangan', priority: 'medium' },
@@ -198,7 +198,7 @@ const weeklyData = [
     babySizeEmoji: '🥝',
     babyDevelopment: 'Wajah hampir lengkap terbentuk. Kuku jari mulai tumbuh. Bayi sudah bisa cegukan!',
     mamaSymptoms: 'Mual berkurang, lebih berenergi, mungkin ada gusi bengkak/berdarah saat sikat gigi.',
-    mamaTips: 'Perhatikan kesehatan gigi dan mulut — ke dokter gigi untuk pemeriksaan rutin.',
+    mamaTips: 'Perhatikan kesehatan gigi dan mulut, ke dokter gigi untuk pemeriksaan rutin.',
     mamaChecklist: [
       { id: 'w11-m1', text: '📋 USG: Screening Down Syndrome & NIPT', category: 'pemeriksaan', priority: 'high' },
       { id: 'w11-m2', text: 'Check darah lengkap ibu', category: 'pemeriksaan', priority: 'high' },
@@ -214,7 +214,7 @@ const weeklyData = [
     trimester: 1,
     babySize: 'Sebesar buah jeruk nipis',
     babySizeEmoji: '🍋',
-    babyDevelopment: 'Refleks mulai berkembang — bayi bisa mengepalkan tangan. Organ reproduksi mulai terbentuk.',
+    babyDevelopment: 'Refleks mulai berkembang: bayi bisa mengepalkan tangan. Organ reproduksi mulai terbentuk.',
     mamaSymptoms: 'Mual umumnya mulai mereda. Muncul garis gelap di perut (linea nigra).',
     mamaTips: 'Aman untuk mulai memberi tahu orang terdekat tentang kehamilan setelah screening trimester 1 selesai.',
     mamaChecklist: [
@@ -301,13 +301,13 @@ const weeklyData = [
     babySizeEmoji: '🥭',
     babyDevelopment: 'Lemak mulai terbentuk di bawah kulit. Tali pusar semakin kuat. Bayi bisa mendengar suara dari luar.',
     mamaSymptoms: 'Nafsu makan meningkat, perubahan pigmentasi kulit, mungkin ada mimisan.',
-    mamaTips: 'Mulai ajak bayi bicara — dia sudah bisa mendengar suara Mama dan Papa!',
+    mamaTips: 'Mulai ajak bayi bicara, dia sudah bisa mendengar suara Mama dan Papa!',
     mamaChecklist: [
       { id: 'w17-m1', text: 'Mulai ajak bicara / cerita ke bayi dalam kandungan', category: 'kesehatan', priority: 'low' },
       { id: 'w17-m2', text: 'Perbanyak makanan kaya kalsium (susu, keju, ikan teri)', category: 'nutrisi', priority: 'medium' },
     ],
     papaChecklist: [
-      { id: 'w17-p1', text: 'Ajak ngobrol bayi lewat perut istri — dia bisa dengar!', category: 'support', priority: 'low' },
+      { id: 'w17-p1', text: 'Ajak ngobrol bayi lewat perut istri, dia bisa dengar!', category: 'support', priority: 'low' },
       { id: 'w17-p2', text: 'Mulai sisihkan tabungan rutin khusus persiapan bayi', category: 'keuangan', priority: 'high' },
     ],
   },
@@ -354,10 +354,10 @@ const weeklyData = [
     mamaChecklist: [
       { id: 'w20-m1', text: '📋 USG 4D: Fetal screening kelengkapan organ (anomaly scan)', category: 'pemeriksaan', priority: 'high' },
       { id: 'w20-m2', text: 'Makan sedikit tapi sering untuk mengurangi heartburn', category: 'nutrisi', priority: 'medium' },
-      { id: 'w20-m3', text: 'Kontrol berat badan — target kenaikan 0.5kg/minggu', category: 'kesehatan', priority: 'medium' },
+      { id: 'w20-m3', text: 'Kontrol berat badan: target kenaikan 0.5kg/minggu', category: 'kesehatan', priority: 'medium' },
     ],
     papaChecklist: [
-      { id: 'w20-p1', text: 'Temani istri USG 4D — momen melihat wajah bayi!', category: 'support', priority: 'high' },
+      { id: 'w20-p1', text: 'Temani istri USG 4D, momen melihat wajah bayi!', category: 'support', priority: 'high' },
       { id: 'w20-p2', text: 'Mulai riset perlengkapan bayi: stroller, car seat, box bayi', category: 'rumah', priority: 'medium' },
     ],
   },
@@ -366,7 +366,7 @@ const weeklyData = [
     trimester: 2,
     babySize: 'Sebesar wortel besar',
     babySizeEmoji: '🥕',
-    babyDevelopment: 'Indra perasa berkembang — bayi bisa merasakan rasa air ketuban. Alis dan kelopak mata terbentuk.',
+    babyDevelopment: 'Indra perasa berkembang: bayi bisa merasakan rasa air ketuban. Alis dan kelopak mata terbentuk.',
     mamaSymptoms: 'Stretch marks mungkin mulai muncul, varises, kram kaki terutama malam hari.',
     mamaTips: 'Makan makanan kaya magnesium (pisang, almond, bayam) untuk mengurangi kram kaki.',
     mamaChecklist: [
@@ -400,7 +400,7 @@ const weeklyData = [
     babySizeEmoji: '🥭',
     babyDevelopment: 'Paru-paru mulai memproduksi surfaktan untuk persiapan bernapas. Pendengaran semakin baik.',
     mamaSymptoms: 'Gusi lebih sensitif, bengkak di kaki dan tangan, sulit tidur malam.',
-    mamaTips: 'Coba dengarkan musik klasik atau murotal — baik untuk perkembangan otak bayi.',
+    mamaTips: 'Coba dengarkan musik klasik atau murotal, baik untuk perkembangan otak bayi.',
     mamaChecklist: [
       { id: 'w23-m1', text: 'Perdengarkan musik/murotal untuk stimulasi bayi', category: 'kesehatan', priority: 'low' },
       { id: 'w23-m2', text: 'Periksa gigi jika gusi sering berdarah', category: 'kesehatan', priority: 'medium' },
@@ -416,7 +416,7 @@ const weeklyData = [
     babySizeEmoji: '🌽',
     babyDevelopment: 'Bayi sudah memiliki siklus tidur-bangun. Wajah hampir seperti bayi baru lahir. Berat ±600 gram.',
     mamaSymptoms: 'Perut gatal karena kulit meregang, linea nigra semakin gelap, kelelahan meningkat.',
-    mamaTips: 'Cek apakah ada tanda diabetes gestasional — biasanya dokter akan tes gula darah sekitar minggu ini.',
+    mamaTips: 'Cek apakah ada tanda diabetes gestasional, biasanya dokter akan tes gula darah sekitar minggu ini.',
     mamaChecklist: [
       { id: 'w24-m1', text: 'Tes gula darah untuk screening diabetes gestasional', category: 'pemeriksaan', priority: 'high' },
       { id: 'w24-m2', text: 'Mulai siapkan daftar perlengkapan bayi baru lahir', category: 'persiapan_bayi', priority: 'medium' },
@@ -453,7 +453,7 @@ const weeklyData = [
     mamaTips: 'Hindari makan besar sebelum tidur. Tidur dengan posisi kepala lebih tinggi.',
     mamaChecklist: [
       { id: 'w26-m1', text: 'Jangan makan 2-3 jam sebelum tidur untuk kurangi heartburn', category: 'nutrisi', priority: 'medium' },
-      { id: 'w26-m2', text: 'Mulai hitung gerakan bayi — minimal 10 tendangan per 2 jam', category: 'kesehatan', priority: 'high' },
+      { id: 'w26-m2', text: 'Mulai hitung gerakan bayi: minimal 10 tendangan per 2 jam', category: 'kesehatan', priority: 'high' },
     ],
     papaChecklist: [
       { id: 'w26-p1', text: 'Bantu hitung gerakan bayi bersama istri', category: 'support', priority: 'medium' },
@@ -464,7 +464,7 @@ const weeklyData = [
     trimester: 2,
     babySize: 'Sebesar buah kembang kol',
     babySizeEmoji: '🥦',
-    babyDevelopment: 'Otak sangat aktif — bayi bermimpi! Paru-paru hampir matang. Berat ±900 gram.',
+    babyDevelopment: 'Otak sangat aktif: bayi bermimpi! Paru-paru hampir matang. Berat ±900 gram.',
     mamaSymptoms: 'Kaki bengkak, insomnia, kram kaki, gatal di perut.',
     mamaTips: 'Minggu depan masuk Trimester 3! Mulai pikirkan persiapan persalinan.',
     mamaChecklist: [
@@ -540,7 +540,7 @@ const weeklyData = [
     babySizeEmoji: '🍈',
     babyDevelopment: 'Semua indra berfungsi. Bayi merespons cahaya, suara, dan rasa. Berat ±1.5 kg.',
     mamaSymptoms: 'Payudara mengeluarkan kolostrum, sesak napas, kaki bengkak, sulit tidur.',
-    mamaTips: 'Kolostrum yang keluar itu normal — ini "emas cair" pertama untuk bayi. Jangan diperas paksa.',
+    mamaTips: 'Kolostrum yang keluar itu normal, ini "emas cair" pertama untuk bayi. Jangan diperas paksa.',
     mamaChecklist: [
       { id: 'w31-m1', text: 'Siapkan breast pad jika kolostrum sudah keluar', category: 'persiapan_bayi', priority: 'low' },
       { id: 'w31-m2', text: 'Pelajari teknik menyusui yang benar (tonton video/ikut kelas)', category: 'kesehatan', priority: 'medium' },
@@ -557,7 +557,7 @@ const weeklyData = [
     babySizeEmoji: '🍈',
     babyDevelopment: 'Tulang mengeras (kecuali tengkorak untuk proses lahir). Kuku jari sudah panjang. Berat ±1.8 kg.',
     mamaSymptoms: 'Kontraksi Braxton Hicks lebih sering, sesak, susah tidur, punggung sangat pegal.',
-    mamaTips: 'Kontrol rutin 2 minggu sekali. Perhatikan gerakan bayi — laporkan jika berkurang drastis.',
+    mamaTips: 'Kontrol rutin 2 minggu sekali. Perhatikan gerakan bayi, laporkan jika berkurang drastis.',
     mamaChecklist: [
       { id: 'w32-m1', text: '📋 USG: Kontrol kondisi janin, posisi & berat', category: 'pemeriksaan', priority: 'high' },
       { id: 'w32-m2', text: 'Pantau gerakan bayi setiap hari (kick count)', category: 'kesehatan', priority: 'high' },
@@ -593,14 +593,14 @@ const weeklyData = [
     babySizeEmoji: '🍈',
     babyDevelopment: 'Paru-paru hampir matang sepenuhnya. Lapisan vernix semakin tebal. Berat ±2.2 kg.',
     mamaSymptoms: 'Perut sangat besar, panggul terasa berat, sulit tidur, kontraksi palsu makin sering.',
-    mamaTips: 'Kontrol lebih sering mulai minggu ini — bisa seminggu sekali. Persiapkan birth plan.',
+    mamaTips: 'Kontrol lebih sering mulai minggu ini, bisa seminggu sekali. Persiapkan birth plan.',
     mamaChecklist: [
       { id: 'w34-m1', text: 'Buat birth plan (rencana persalinan) bersama dokter', category: 'pemeriksaan', priority: 'high' },
       { id: 'w34-m2', text: 'Kontrol setiap minggu mulai sekarang', category: 'pemeriksaan', priority: 'high' },
     ],
     papaChecklist: [
       { id: 'w34-p1', text: 'Diskusi birth plan bersama istri dan dokter', category: 'support', priority: 'high' },
-      { id: 'w34-p2', text: 'Pastikan jalur ke RS sudah familiar — latih rute saat macet', category: 'transportasi', priority: 'high' },
+      { id: 'w34-p2', text: 'Pastikan jalur ke RS sudah familiar, latih rute saat macet', category: 'transportasi', priority: 'high' },
     ],
   },
   {
@@ -610,9 +610,9 @@ const weeklyData = [
     babySizeEmoji: '🍉',
     babyDevelopment: 'Ginjal dan hati berfungsi penuh. Bayi sudah cukup matang meskipun lebih baik tunggu 37 minggu.',
     mamaSymptoms: 'Perut sangat penuh, sesak napas berkurang jika bayi sudah turun (lightening), sering BAK.',
-    mamaTips: 'Jika bayi sudah turun ke panggul, bernapas jadi lebih lega tapi BAK lebih sering — ini normal.',
+    mamaTips: 'Jika bayi sudah turun ke panggul, bernapas jadi lebih lega tapi BAK lebih sering. Ini normal.',
     mamaChecklist: [
-      { id: 'w35-m1', text: 'Cek kelengkapan tas persalinan — checklist final', category: 'persiapan_bayi', priority: 'high' },
+      { id: 'w35-m1', text: 'Cek kelengkapan tas persalinan (checklist final)', category: 'persiapan_bayi', priority: 'high' },
       { id: 'w35-m2', text: 'Lakukan tes GBS (Group B Streptococcus) jika dokter anjurkan', category: 'pemeriksaan', priority: 'medium' },
     ],
     papaChecklist: [
@@ -644,17 +644,17 @@ const weeklyData = [
     trimester: 3,
     babySize: 'Sebesar buah semangka besar',
     babySizeEmoji: '🍉',
-    babyDevelopment: 'Bayi dianggap "full term" — siap lahir! Berat ±2.9 kg. Paru-paru sudah matang sepenuhnya.',
+    babyDevelopment: 'Bayi dianggap "full term", siap lahir! Berat ±2.9 kg. Paru-paru sudah matang sepenuhnya.',
     mamaSymptoms: 'Kontraksi bisa terjadi kapan saja, lendir serviks keluar (bloody show), sangat tidak nyaman.',
     mamaTips: 'SIAP SIAGA! Bayi bisa lahir kapan saja mulai sekarang. Istirahat sebanyak mungkin.',
     mamaChecklist: [
       { id: 'w37-m1', text: 'Tas persalinan harus sudah siap 100% di dekat pintu', category: 'persiapan_bayi', priority: 'high' },
-      { id: 'w37-m2', text: 'Istirahat sebanyak mungkin — tidur siang jika bisa', category: 'kesehatan', priority: 'high' },
+      { id: 'w37-m2', text: 'Istirahat sebanyak mungkin, tidur siang jika bisa', category: 'kesehatan', priority: 'high' },
       { id: 'w37-m3', text: 'Kontrol mingguan ke dokter', category: 'pemeriksaan', priority: 'high' },
     ],
     papaChecklist: [
-      { id: 'w37-p1', text: 'HP selalu on & battery penuh — siap dihubungi kapan saja', category: 'support', priority: 'high' },
-      { id: 'w37-p2', text: 'Jangan pergi jauh dari istri — siap antar kapan saja', category: 'transportasi', priority: 'high' },
+      { id: 'w37-p1', text: 'HP selalu on & battery penuh, siap dihubungi kapan saja', category: 'support', priority: 'high' },
+      { id: 'w37-p2', text: 'Jangan pergi jauh dari istri, siap antar kapan saja', category: 'transportasi', priority: 'high' },
       { id: 'w37-p3', text: 'Bensin kendaraan selalu penuh', category: 'transportasi', priority: 'high' },
     ],
   },
@@ -686,11 +686,11 @@ const weeklyData = [
     mamaSymptoms: 'Kontraksi bisa kapan saja, lendir darah, perasaan tidak tenang (nesting instinct).',
     mamaTips: 'Nesting instinct (keinginan bersih-bersih/menata) adalah normal. Tapi jangan terlalu capek!',
     mamaChecklist: [
-      { id: 'w39-m1', text: 'Kontrol mingguan — cek pembukaan serviks', category: 'pemeriksaan', priority: 'high' },
+      { id: 'w39-m1', text: 'Kontrol mingguan: cek pembukaan serviks', category: 'pemeriksaan', priority: 'high' },
       { id: 'w39-m2', text: 'Jangan lakukan aktivitas berat', category: 'kesehatan', priority: 'high' },
     ],
     papaChecklist: [
-      { id: 'w39-p1', text: 'Stand by 24/7 — bayi bisa datang kapan saja!', category: 'support', priority: 'high' },
+      { id: 'w39-p1', text: 'Stand by 24/7, bayi bisa datang kapan saja!', category: 'support', priority: 'high' },
       { id: 'w39-p2', text: 'Persiapan dokumen untuk akta kelahiran nanti', category: 'dokumen', priority: 'medium' },
     ],
   },
@@ -700,16 +700,16 @@ const weeklyData = [
     babySize: 'Sebesar buah semangka besar 🎉',
     babySizeEmoji: '🎉',
     babyDevelopment: 'Hari Perkiraan Lahir! Bayi sempurna dan siap bertemu dunia. Berat rata-rata 3.0-3.5 kg, panjang ±50 cm.',
-    mamaSymptoms: 'Kontraksi bisa terjadi — tanda persalinan dimulai! Tenang, percaya pada tubuh Mama.',
-    mamaTips: 'Jika belum ada tanda persalinan, jangan khawatir — banyak bayi lahir di minggu 40-41. Diskusikan dengan dokter tentang induksi jika lewat HPL.',
+    mamaSymptoms: 'Kontraksi bisa terjadi, tanda persalinan dimulai! Tenang, percaya pada tubuh Mama.',
+    mamaTips: 'Jika belum ada tanda persalinan, jangan khawatir, banyak bayi lahir di minggu 40-41. Diskusikan dengan dokter tentang induksi jika lewat HPL.',
     mamaChecklist: [
-      { id: 'w40-m1', text: 'Kontrol ke dokter — diskusi induksi jika belum ada tanda persalinan', category: 'pemeriksaan', priority: 'high' },
+      { id: 'w40-m1', text: 'Kontrol ke dokter: diskusi induksi jika belum ada tanda persalinan', category: 'pemeriksaan', priority: 'high' },
       { id: 'w40-m2', text: 'Tetap pantau gerakan bayi', category: 'kesehatan', priority: 'high' },
       { id: 'w40-m3', text: 'Berdoa dan siapkan mental untuk persalinan 🤲', category: 'kesehatan', priority: 'high' },
     ],
     papaChecklist: [
-      { id: 'w40-p1', text: 'Dampingi istri setiap saat — berikan semangat dan ketenangan', category: 'support', priority: 'high' },
-      { id: 'w40-p2', text: 'Semua persiapan harus sudah FINAL — tinggal berangkat ke RS!', category: 'transportasi', priority: 'high' },
+      { id: 'w40-p1', text: 'Dampingi istri setiap saat, berikan semangat dan ketenangan', category: 'support', priority: 'high' },
+      { id: 'w40-p2', text: 'Semua persiapan harus sudah FINAL, tinggal berangkat ke RS!', category: 'transportasi', priority: 'high' },
       { id: 'w40-p3', text: 'Berdoa bersama untuk kelancaran persalinan 🤲', category: 'support', priority: 'high' },
     ],
   },

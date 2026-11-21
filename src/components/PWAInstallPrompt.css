@@ -10,7 +10,7 @@
   max-width: 440px;
   background: var(--color-surface);
   border: 1.5px solid var(--color-primary);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(216, 142, 170, 0.2);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(184, 82, 122, 0.16);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -18,8 +18,14 @@
   border-radius: var(--radius-lg);
   z-index: 150;
   box-sizing: border-box;
-  animation: pwaSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: pwaSlideUp var(--duration-normal) cubic-bezier(0.16, 1, 0.3, 1) both;
   transition: bottom var(--transition-normal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pwa-prompt-banner {
+    animation: none;
+  }
 }
 
 @keyframes pwaSlideUp {
@@ -84,7 +90,7 @@
 }
 
 .pwa-btn-install {
-  padding: 8px 12px;
+  padding: 10px 14px;
   font-size: 0.78rem;
   font-weight: 700;
   display: inline-flex;
@@ -92,7 +98,7 @@
   gap: 5px;
   border-radius: var(--radius-full);
   white-space: nowrap;
-  min-height: 36px;
+  min-height: 44px;
 }
 
 .pwa-btn-close {
@@ -100,8 +106,8 @@
   border: 1px solid var(--color-border);
   color: var(--color-text-secondary);
   cursor: pointer;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;

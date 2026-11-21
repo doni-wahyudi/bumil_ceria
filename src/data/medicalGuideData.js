@@ -1,5 +1,5 @@
 /**
- * BumpBuddy — Panduan Klinis & Ensiklopedia USG / Kesehatan Ibu
+ * BumpBuddy: Panduan Klinis & Ensiklopedia USG / Kesehatan Ibu
  * Berdasarkan Pedoman Buku KIA Kemenkes RI, POGI & Standar Obstetri Internasional (WHO / ISUOG)
  */
 

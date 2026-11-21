@@ -89,8 +89,17 @@ create index if not exists idx_usg_records_user on public.usg_records(user_id, d
 create index if not exists idx_maternal_vitals_user on public.maternal_vitals(user_id, date);
 
 -- ====================================================================
--- Row Level Security (RLS)
+-- Row Level Security (RLS) & Explicit Data API Grants
 -- ====================================================================
+grant usage on schema public to anon, authenticated;
+grant select, insert, update, delete on
+  public.kick_sessions,
+  public.contraction_records,
+  public.labor_budget,
+  public.usg_records,
+  public.maternal_vitals
+  to anon, authenticated;
+
 alter table public.kick_sessions enable row level security;
 alter table public.contraction_records enable row level security;
 alter table public.labor_budget enable row level security;
@@ -98,22 +107,42 @@ alter table public.usg_records enable row level security;
 alter table public.maternal_vitals enable row level security;
 
 -- ====================================================================
--- Policies (Kebijakan Akses Sync Client)
+-- Policies (Scoped client sync with cached initplan auth.uid())
 -- ====================================================================
-create policy "Allow all operations for anon client on kick_sessions" 
-  on public.kick_sessions for all using (true) with check (true);
+drop policy if exists "Allow all operations for anon client on kick_sessions" on public.kick_sessions;
+drop policy if exists "Scoped access on kick_sessions" on public.kick_sessions;
+create policy "Scoped access on kick_sessions" on public.kick_sessions
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
 
-create policy "Allow all operations for anon client on contraction_records" 
-  on public.contraction_records for all using (true) with check (true);
+drop policy if exists "Allow all operations for anon client on contraction_records" on public.contraction_records;
+drop policy if exists "Scoped access on contraction_records" on public.contraction_records;
+create policy "Scoped access on contraction_records" on public.contraction_records
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
 
-create policy "Allow all operations for anon client on labor_budget" 
-  on public.labor_budget for all using (true) with check (true);
+drop policy if exists "Allow all operations for anon client on labor_budget" on public.labor_budget;
+drop policy if exists "Scoped access on labor_budget" on public.labor_budget;
+create policy "Scoped access on labor_budget" on public.labor_budget
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
 
-create policy "Allow all operations for anon client on usg_records" 
-  on public.usg_records for all using (true) with check (true);
+drop policy if exists "Allow all operations for anon client on usg_records" on public.usg_records;
+drop policy if exists "Scoped access on usg_records" on public.usg_records;
+create policy "Scoped access on usg_records" on public.usg_records
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
 
-create policy "Allow all operations for anon client on maternal_vitals" 
-  on public.maternal_vitals for all using (true) with check (true);
+drop policy if exists "Allow all operations for anon client on maternal_vitals" on public.maternal_vitals;
+drop policy if exists "Scoped access on maternal_vitals" on public.maternal_vitals;
+create policy "Scoped access on maternal_vitals" on public.maternal_vitals
+  for all to authenticated, anon
+  using ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')))
+  with check ((((select auth.uid()) is not null and (select auth.uid())::text = user_id) or ((select auth.uid()) is null and left(user_id, 5) = 'user_')));
 
 -- ====================================================================
 -- 6. Tambahan Kolom IMT Pra-Hamil pada Tabel Profiles

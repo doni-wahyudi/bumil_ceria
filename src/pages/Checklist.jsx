@@ -10,7 +10,7 @@ import {
   Filter,
   ListChecks,
   Luggage,
-  Sparkles,
+  CheckCircle2,
   Layers,
   Maximize2,
   Minimize2,
@@ -46,13 +46,9 @@ function Checklist() {
   // Filter items by completion status and week scope
   const filteredItems = useMemo(() => {
     return allItems.filter((item) => {
-      // Status filter
       if (filter === 'pending' && completedItems.includes(item.id)) return false;
       if (filter === 'done' && !completedItems.includes(item.id)) return false;
-
-      // Scope filter: current week only vs all
       if (scopeFilter === 'currentWeek' && item.week !== currentWeek) return false;
-
       return true;
     });
   }, [allItems, completedItems, filter, scopeFilter, currentWeek]);
@@ -70,7 +66,6 @@ function Checklist() {
   const totalDone = allItems.filter((item) => completedItems.includes(item.id)).length;
   const progressPct = totalItems > 0 ? Math.round((totalDone / totalItems) * 100) : 0;
 
-  // Toggle individual category collapse
   const toggleCategory = (catId) => {
     setCollapsedCats((prev) => {
       const next = new Set(prev);
@@ -83,7 +78,6 @@ function Checklist() {
     });
   };
 
-  // Toggle full expansion (expand beyond max-height scroll)
   const toggleFullExpansion = (catId) => {
     setFullyExpandedCats((prev) => {
       const next = new Set(prev);
@@ -96,20 +90,16 @@ function Checklist() {
     });
   };
 
-  // Collapse or Expand All
   const handleToggleAll = () => {
     if (collapsedCats.size === categories.length) {
-      // All are collapsed, expand all
       setCollapsedCats(new Set());
     } else {
-      // Collapse all
       setCollapsedCats(new Set(categories.map((c) => c.id)));
     }
   };
 
   const allCollapsed = collapsedCats.size === categories.length;
 
-  // Visible categories based on activeCategoryFilter
   const visibleCategories = useMemo(() => {
     if (activeCategoryFilter === 'all') return categories;
     return categories.filter((cat) => cat.id === activeCategoryFilter);
@@ -118,33 +108,37 @@ function Checklist() {
   return (
     <div className="page-content checklist-page" id="checklist-page">
       {/* Sub-Tab Switcher between Weekly Tasks and Hospital Bag */}
-      <div className="checklist-subtabs animate-fade-in-up">
+      <div className="checklist-subtabs animate-fade-in-up" role="tablist" aria-label="Kategori checklist">
         <button
           type="button"
+          role="tab"
+          aria-selected={subTab === 'weekly'}
           className={`checklist-subtab-btn ${subTab === 'weekly' ? 'checklist-subtab-btn--active' : ''}`}
           onClick={() => setSubTab('weekly')}
         >
-          <ListChecks size={16} />
+          <ListChecks size={16} aria-hidden="true" />
           <span>Tugas Mingguan</span>
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={subTab === 'hospitalBag'}
           className={`checklist-subtab-btn ${subTab === 'hospitalBag' ? 'checklist-subtab-btn--active' : ''}`}
           onClick={() => setSubTab('hospitalBag')}
         >
-          <Luggage size={16} />
-          <span>Tas Bersalin 🎒</span>
+          <Luggage size={16} aria-hidden="true" />
+          <span>Tas Bersalin</span>
         </button>
       </div>
 
       {subTab === 'hospitalBag' ? (
-        <HospitalBag hideBackButton={true} />
+        <HospitalBag hideBackButton={true} isEmbedded={true} />
       ) : (
         <>
           <header className="checklist-header animate-fade-in-up">
             <div>
-              <h2>Checklist Tugas</h2>
-              <p className="text-secondary text-sm">
+              <h1>Checklist Tugas</h1>
+              <p className="text-secondary text-sm tabular-nums">
                 {totalDone} dari {totalItems} tugas selesai
               </p>
             </div>
@@ -155,12 +149,12 @@ function Checklist() {
           <div className="checklist-progress-card card animate-fade-in-up" style={{ animationDelay: '40ms' }}>
             <div className="checklist-progress-card__top">
               <div className="checklist-progress-card__label">
-                <Sparkles size={14} color="var(--color-primary)" />
+                <CheckCircle2 size={15} color="var(--color-primary)" aria-hidden="true" />
                 <span>Kesiapan Kehamilan {role === 'mama' ? 'Mama' : 'Papa'}</span>
               </div>
-              <span className="checklist-progress-card__pct">{progressPct}%</span>
+              <span className="checklist-progress-card__pct tabular-nums">{progressPct}%</span>
             </div>
-            <div className="checklist-progress__bar">
+            <div className="checklist-progress__bar" role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100}>
               <div
                 className="checklist-progress__fill"
                 style={{ width: `${progressPct}%` }}
@@ -170,27 +164,27 @@ function Checklist() {
 
           {/* Scope & Collapse Control Bar */}
           <div className="checklist-controls-bar animate-fade-in-up" style={{ animationDelay: '80ms' }}>
-            {/* Week Scope Switcher */}
-            <div className="checklist-scope-toggle">
+            <div className="checklist-scope-toggle" role="group" aria-label="Rentang minggu">
               <button
                 type="button"
+                aria-pressed={scopeFilter === 'all'}
                 className={`checklist-scope-btn ${scopeFilter === 'all' ? 'checklist-scope-btn--active' : ''}`}
                 onClick={() => setScopeFilter('all')}
               >
-                <Layers size={13} />
-                <span>Semua Minggu (1–40)</span>
+                <Layers size={14} aria-hidden="true" />
+                <span>Semua Minggu</span>
               </button>
               <button
                 type="button"
+                aria-pressed={scopeFilter === 'currentWeek'}
                 className={`checklist-scope-btn ${scopeFilter === 'currentWeek' ? 'checklist-scope-btn--active' : ''}`}
                 onClick={() => setScopeFilter('currentWeek')}
               >
-                <Calendar size={13} />
+                <Calendar size={14} aria-hidden="true" />
                 <span>Fokus Mg {currentWeek}</span>
               </button>
             </div>
 
-            {/* Collapse / Expand All button */}
             <button
               type="button"
               className="checklist-collapse-all-btn"
@@ -202,8 +196,8 @@ function Checklist() {
           </div>
 
           {/* Status Filter Chips */}
-          <div className="checklist-filters animate-fade-in-up" style={{ animationDelay: '120ms' }}>
-            <Filter size={15} color="var(--color-text-tertiary)" className="checklist-filter-icon" />
+          <div className="checklist-filters animate-fade-in-up" style={{ animationDelay: '100ms' }} role="group" aria-label="Filter status tugas">
+            <Filter size={15} color="var(--color-text-tertiary)" className="checklist-filter-icon" aria-hidden="true" />
             {[
               { value: 'all', label: 'Semua Status' },
               { value: 'pending', label: 'Belum Selesai' },
@@ -211,6 +205,8 @@ function Checklist() {
             ].map((f) => (
               <button
                 key={f.value}
+                type="button"
+                aria-pressed={filter === f.value}
                 className={`checklist-filter-btn ${filter === f.value ? 'checklist-filter-btn--active' : ''}`}
                 onClick={() => setFilter(f.value)}
               >
@@ -220,9 +216,10 @@ function Checklist() {
           </div>
 
           {/* Category Horizontal Pill Navigation Bar */}
-          <div className="checklist-cat-pills animate-fade-in-up" style={{ animationDelay: '140ms' }}>
+          <div className="checklist-cat-pills animate-fade-in-up" style={{ animationDelay: '120ms' }} role="group" aria-label="Filter kategori tugas">
             <button
               type="button"
+              aria-pressed={activeCategoryFilter === 'all'}
               className={`checklist-cat-pill ${activeCategoryFilter === 'all' ? 'checklist-cat-pill--active' : ''}`}
               onClick={() => setActiveCategoryFilter('all')}
             >
@@ -235,12 +232,13 @@ function Checklist() {
                 <button
                   key={cat.id}
                   type="button"
+                  aria-pressed={isActive}
                   className={`checklist-cat-pill ${isActive ? 'checklist-cat-pill--active' : ''}`}
                   onClick={() => setActiveCategoryFilter(cat.id)}
                 >
-                  <span className="checklist-cat-pill__emoji">{cat.emoji}</span>
+                  <span className="checklist-cat-pill__emoji" aria-hidden="true">{cat.emoji}</span>
                   <span>{cat.label}</span>
-                  {catTotal > 0 && <span className="checklist-cat-pill__badge">{catTotal}</span>}
+                  {catTotal > 0 && <span className="checklist-cat-pill__badge tabular-nums">{catTotal}</span>}
                 </button>
               );
             })}
@@ -251,16 +249,15 @@ function Checklist() {
             {visibleCategories.map((cat) => {
               const items = groupedItems[cat.id] || [];
               if (items.length === 0) {
-                // If filtered to this category but no items match status
                 if (activeCategoryFilter === cat.id) {
                   return (
                     <div key={cat.id} className="checklist-category-card card">
                       <div className="checklist-category__header-static">
-                        <span className="checklist-category__emoji">{cat.emoji}</span>
-                        <h4>{cat.label}</h4>
+                        <span className="checklist-category__emoji" aria-hidden="true">{cat.emoji}</span>
+                        <h2>{cat.label}</h2>
                       </div>
                       <p className="text-secondary text-xs" style={{ padding: '12px 0', textAlign: 'center' }}>
-                        Tidak ada tugas yang sesuai filter di kategori ini.
+                        Tidak ada tugas yang sesuai filter di kategori ini. Ubah status filter untuk melihat tugas lainnya.
                       </p>
                     </div>
                   );
@@ -273,8 +270,7 @@ function Checklist() {
               const isFullyExpanded = fullyExpandedCats.has(cat.id);
 
               return (
-                <div key={cat.id} className="checklist-category-card card">
-                  {/* Category Header */}
+                <section key={cat.id} className="checklist-category-card card">
                   <button
                     type="button"
                     className="checklist-category__header"
@@ -282,26 +278,25 @@ function Checklist() {
                     aria-expanded={!isCollapsed}
                   >
                     <div className="checklist-category__title">
-                      <span className="checklist-category__emoji">{cat.emoji}</span>
+                      <span className="checklist-category__emoji" aria-hidden="true">{cat.emoji}</span>
                       <div className="checklist-category__names">
-                        <h4>{cat.label}</h4>
-                        <span className="checklist-category__sub-meta">
+                        <h2>{cat.label}</h2>
+                        <span className="checklist-category__sub-meta tabular-nums">
                           {catDone} dari {items.length} selesai
                         </span>
                       </div>
                     </div>
 
                     <div className="checklist-category__header-right">
-                      <span className="checklist-category__count-badge">
+                      <span className="checklist-category__count-badge tabular-nums">
                         {Math.round((catDone / items.length) * 100)}%
                       </span>
-                      <div className={`checklist-category__chevron ${isCollapsed ? 'checklist-category__chevron--collapsed' : ''}`}>
+                      <div className={`checklist-category__chevron ${isCollapsed ? 'checklist-category__chevron--collapsed' : ''}`} aria-hidden="true">
                         <ChevronUp size={18} />
                       </div>
                     </div>
                   </button>
 
-                  {/* Category Progress Bar */}
                   <div className="checklist-category__progress">
                     <div
                       className="checklist-category__progress-fill"
@@ -309,13 +304,12 @@ function Checklist() {
                     />
                   </div>
 
-                  {/* Scrollable Category Items Box */}
                   {!isCollapsed && (
                     <div className="checklist-category__body">
                       <div
                         className={`checklist-category__items ${isFullyExpanded ? 'checklist-category__items--expanded' : 'checklist-category__items--scrollable'}`}
                       >
-                        {items
+                        {[...items]
                           .sort((a, b) => {
                             const aCompleted = completedItems.includes(a.id);
                             const bCompleted = completedItems.includes(b.id);
@@ -335,13 +329,12 @@ function Checklist() {
                           ))}
                       </div>
 
-                      {/* Section Scroll Cue / Full Expansion Footer */}
                       {items.length > 3 && (
                         <div className="checklist-category__footer">
-                          <span className="checklist-category__footer-hint">
+                          <span className="checklist-category__footer-hint tabular-nums">
                             {isFullyExpanded
                               ? `Menampilkan seluruh ${items.length} tugas`
-                              : `Scroll di dalam kotak (${items.length} tugas)`}
+                              : `${items.length} tugas tersedia`}
                           </span>
                           <button
                             type="button"
@@ -350,12 +343,12 @@ function Checklist() {
                           >
                             {isFullyExpanded ? (
                               <>
-                                <Minimize2 size={12} />
-                                <span>Mode Scroll</span>
+                                <Minimize2 size={13} aria-hidden="true" />
+                                <span>Ringkas</span>
                               </>
                             ) : (
                               <>
-                                <Maximize2 size={12} />
+                                <Maximize2 size={13} aria-hidden="true" />
                                 <span>Buka Penuh</span>
                               </>
                             )}
@@ -364,18 +357,17 @@ function Checklist() {
                       )}
                     </div>
                   )}
-                </div>
+                </section>
               );
             })}
           </div>
 
           {filteredItems.length === 0 && (
             <div className="checklist-empty card">
-              <span className="checklist-empty__emoji">{filter === 'done' ? '📋' : '🎉'}</span>
               <p>
                 {filter === 'done'
-                  ? 'Belum ada tugas yang diselesaikan dengan filter ini.'
-                  : 'Semua tugas pada filter ini sudah selesai!'}
+                  ? 'Belum ada tugas yang selesai pada filter ini. Tandai tugas mingguan yang sudah Anda selesaikan.'
+                  : 'Semua tugas pada filter ini sudah selesai.'}
               </p>
             </div>
           )}

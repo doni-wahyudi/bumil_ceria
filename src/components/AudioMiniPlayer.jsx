@@ -1,8 +1,9 @@
-import { Square, Maximize2, Play } from 'lucide-react';
+import { Pause, Maximize2, Play, X } from 'lucide-react';
 import { RELAXATION_SOUNDS } from '../data/audioSounds';
 import './AudioMiniPlayer.css';
 
 export default function AudioMiniPlayer({
+  isVisible,
   isPlaying,
   activeSound,
   onOpenModal,
@@ -10,7 +11,7 @@ export default function AudioMiniPlayer({
   onTogglePlay,
   hasBottomNav = true,
 }) {
-  if (!isPlaying) return null;
+  if (!isVisible) return null;
 
   const currentSound =
     RELAXATION_SOUNDS.find((s) => s.id === activeSound) || RELAXATION_SOUNDS[0];
@@ -22,61 +23,62 @@ export default function AudioMiniPlayer({
       role="region"
       aria-label="Pemutar Audio Mini"
     >
-      <div
+      <button
+        type="button"
         className="mini-player-body"
         onClick={onOpenModal}
-        role="button"
-        tabIndex={0}
+        aria-label={`Buka pemutar audio ${currentSound.shortName}`}
       >
-        <div
+        <span
           className="mini-player-icon"
           style={{
             backgroundColor: `${currentSound.color}22`,
             color: currentSound.color,
           }}
+          aria-hidden="true"
         >
-          <Icon size={16} className="animate-pulse" />
-        </div>
+          <Icon size={16} />
+        </span>
 
-        <div className="mini-player-info">
-          <div className="mini-player-wave">
+        <span className="mini-player-info">
+          <span className={`mini-player-wave ${!isPlaying ? 'mini-player-wave--paused' : ''}`} aria-hidden="true">
             <span className="wave-bar bar-1" />
             <span className="wave-bar bar-2" />
             <span className="wave-bar bar-3" />
-          </div>
+          </span>
           <span className="mini-player-title">{currentSound.shortName}</span>
-        </div>
-      </div>
+        </span>
+      </button>
 
       <div className="mini-player-actions">
         <button
           type="button"
           className="mini-player-btn mini-player-btn--play"
           onClick={onTogglePlay}
-          aria-label={isPlaying ? 'Jeda' : 'Putar'}
+          aria-label={isPlaying ? 'Jeda audio' : 'Putar audio'}
           title={isPlaying ? 'Jeda' : 'Putar'}
         >
-          {isPlaying ? <Square size={13} fill="currentColor" /> : <Play size={13} fill="currentColor" />}
+          {isPlaying ? <Pause size={15} fill="currentColor" aria-hidden="true" /> : <Play size={15} fill="currentColor" aria-hidden="true" />}
         </button>
 
         <button
           type="button"
           className="mini-player-btn"
           onClick={onOpenModal}
-          aria-label="Perbesar Pemutar"
+          aria-label="Perbesar pemutar audio"
           title="Buka Layar Penuh"
         >
-          <Maximize2 size={14} />
+          <Maximize2 size={15} aria-hidden="true" />
         </button>
 
         <button
           type="button"
           className="mini-player-btn mini-player-btn--close"
           onClick={onStop}
-          aria-label="Hentikan Audio"
+          aria-label="Hentikan audio"
           title="Tutup & Hentikan"
         >
-          <Square size={12} />
+          <X size={16} aria-hidden="true" />
         </button>
       </div>
     </div>

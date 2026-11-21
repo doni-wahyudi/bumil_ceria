@@ -1,5 +1,5 @@
 /**
- * USG Schedule — based on reference image from @newmommbaby.
+ * USG Schedule, based on reference image from @newmommbaby.
  * Contains all recommended ultrasound milestones during pregnancy.
  */
 
@@ -41,7 +41,7 @@ const usgSchedule = [
     trimester: 1,
     title: 'Screening Down Syndrome & NIPT',
     description: 'Screening Down Syndrome dan NIPT (Non-Invasive Prenatal Testing) untuk deteksi kelainan kromosom. Check darah lengkap ibu.',
-    whatToExpect: 'Pengukuran nuchal translucency (NT) — ketebalan cairan di belakang leher janin. Tes darah ibu untuk deteksi risiko kelainan kromosom.',
+    whatToExpect: 'Pengukuran nuchal translucency (NT): ketebalan cairan di belakang leher janin. Tes darah ibu untuk deteksi risiko kelainan kromosom.',
     questionsToAsk: [
       'Berapa hasil pengukuran NT?',
       'Apakah perlu tes NIPT tambahan?',

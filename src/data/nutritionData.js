@@ -186,7 +186,7 @@ export const MYTHS_AND_FACTS = [
     isMyth: true,
     verdict: 'MITOS (Makan untuk dua orang, bukan porsi dua orang)',
     explanation:
-      'Tambahan kalori yang dibutuhkan janin tidak sebanyak yang dibayangkan: Trimester 1 (hampir 0 kkal tambahan), Trimester 2 (+300 kkal), dan Trimester 3 (+450 kkal) — setara 1 mangkuk oatmeal + telur rebus. Yang terpenting adalah kepadatan gizi (kualitas), bukan kuantitas berlebih yang memicu diabetes kehamilan.',
+      'Tambahan kalori yang dibutuhkan janin tidak sebanyak yang dibayangkan: Trimester 1 (hampir 0 kkal tambahan), Trimester 2 (+300 kkal), dan Trimester 3 (+450 kkal), setara 1 mangkuk oatmeal + telur rebus. Yang terpenting adalah kepadatan gizi (kualitas), bukan kuantitas berlebih yang memicu diabetes kehamilan.',
     tag: 'Pola Makan',
   },
   {

@@ -1,13 +1,13 @@
 /* ========================================================
-   Weight Gain Chart & IMT Tracker Styles (Responsive & Modern)
+   Weight Gain Chart & IMT Tracker Styles (Theme-Aware & Accessible)
    ======================================================== */
 
 .wgc-container {
-  margin-bottom: 20px;
-  padding: 16px;
-  background: var(--color-bg-card, #ffffff);
-  border: 1px solid var(--color-border, #e5e7eb);
-  border-radius: var(--radius-lg, 16px);
+  margin-bottom: var(--space-5);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   box-sizing: border-box;
   width: 100%;
   max-width: 100%;
@@ -19,23 +19,24 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
 }
 
 .wgc-title-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
 .wgc-badge-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  background: rgba(225, 29, 72, 0.1);
-  color: var(--color-primary, #e11d48);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,16 +45,16 @@
 
 .wgc-title {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 700;
-  color: var(--color-text, #111827);
-  line-height: 1.3;
+  color: var(--color-text-primary);
+  line-height: 1.25;
 }
 
 .wgc-subtitle {
   display: block;
-  font-size: 0.72rem;
-  color: var(--color-text-secondary, #6b7280);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
 }
 
 .wgc-header-actions {
@@ -67,21 +68,21 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 11px;
-  border-radius: 8px;
+  min-height: 40px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
   border: none;
-  background: var(--color-primary, #e11d48);
-  color: #ffffff;
-  font-size: 0.75rem;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  font-size: var(--text-xs);
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(225, 29, 72, 0.25);
+  transition: filter var(--transition-fast), transform var(--transition-fast);
   white-space: nowrap;
 }
 
 .wgc-add-weight-btn:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.06);
   transform: translateY(-1px);
 }
 
@@ -89,92 +90,89 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 6px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border, #e5e7eb);
-  background: var(--color-bg-secondary, #f9fafb);
-  color: var(--color-text, #374151);
-  font-size: 0.75rem;
+  min-height: 40px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: var(--text-xs);
   font-weight: 600;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
 }
 
 .wgc-settings-btn:hover {
-  background: var(--color-bg, #ffffff);
-  border-color: var(--color-primary, #e11d48);
-  color: var(--color-primary, #e11d48);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }
 
 /* Empty Prompt Card */
 .wgc-empty-prompt {
   text-align: center;
-  padding: 24px 16px;
-  background: linear-gradient(135deg, rgba(225, 29, 72, 0.04) 0%, rgba(59, 130, 246, 0.04) 100%);
-  border: 1.5px dashed var(--color-border, #d1d5db);
-  border-radius: 14px;
+  padding: var(--space-6) var(--space-4);
+  background: var(--color-bg-secondary);
+  border: 1.5px dashed var(--color-border-hover);
+  border-radius: var(--radius-md);
 }
 
 .wgc-empty-icon {
   width: 52px;
   height: 52px;
-  border-radius: 50%;
-  background: rgba(225, 29, 72, 0.1);
-  color: var(--color-primary, #e11d48);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 12px;
+  margin: 0 auto var(--space-3);
 }
 
-.wgc-empty-text h4 {
+.wgc-empty-text h3 {
   margin: 0 0 6px;
-  font-size: 0.95rem;
+  font-size: var(--text-base);
   font-weight: 700;
-  color: var(--color-text, #111827);
+  color: var(--color-text-primary);
 }
 
 .wgc-empty-text p {
   margin: 0;
-  font-size: 0.8rem;
-  color: var(--color-text-secondary, #6b7280);
-  line-height: 1.45;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
 }
 
 /* Metrics Grid */
 .wgc-metrics-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 @media (max-width: 420px) {
   .wgc-metrics-grid {
-    grid-template-columns: repeat(3, 1fr);
     gap: 6px;
   }
 }
 
 .wgc-metric-item {
-  background: var(--color-bg-secondary, #f9fafb);
-  border: 1px solid var(--color-border, #f3f4f6);
-  border-radius: 10px;
-  padding: 8px 10px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  padding: 10px;
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
 .wgc-metric-label {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  color: var(--color-text-secondary, #6b7280);
-  margin-bottom: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--color-text-secondary);
+  margin-bottom: 3px;
+  line-height: 1.25;
 }
 
 .wgc-metric-val-wrap {
@@ -185,42 +183,44 @@
 }
 
 .wgc-metric-value {
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 800;
-  color: var(--color-text, #111827);
-  line-height: 1.2;
+  color: var(--color-text-primary);
+  line-height: 1.25;
 }
 
 .wgc-metric-hint {
-  font-size: 0.64rem;
-  color: var(--color-text-secondary, #9ca3af);
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
   margin-top: 3px;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 /* Pill Badges */
 .wgc-pill {
   display: inline-block;
-  padding: 1px 6px;
-  border-radius: 6px;
-  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  font-size: 0.7rem;
   font-weight: 700;
   line-height: 1.3;
+  align-self: flex-start;
+  margin-top: 2px;
 }
 
 .wgc-pill--success {
-  background: rgba(16, 185, 129, 0.12);
-  color: #059669;
+  background: var(--color-success-light);
+  color: var(--color-success);
 }
 
 .wgc-pill--warning {
-  background: rgba(245, 158, 11, 0.14);
-  color: #d97706;
+  background: var(--color-warning-light);
+  color: var(--color-warning);
 }
 
 .wgc-pill--danger {
-  background: rgba(239, 68, 68, 0.14);
-  color: #dc2626;
+  background: var(--color-danger-light);
+  color: var(--color-danger);
 }
 
 /* Controls Bar */
@@ -228,22 +228,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--color-border, #f3f4f6);
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border-light);
+  flex-wrap: wrap;
 }
 
 .wgc-controls-label {
-  font-size: 0.72rem;
+  font-size: var(--text-xs);
   font-weight: 600;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
 }
 
 .wgc-toggle-group {
   display: flex;
-  background: var(--color-bg-secondary, #f3f4f6);
-  border-radius: 8px;
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-sm);
   padding: 2px;
   gap: 2px;
 }
@@ -251,19 +252,20 @@
 .wgc-toggle-btn {
   border: none;
   background: transparent;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.72rem;
+  min-height: 36px;
+  padding: 4px 12px;
+  border-radius: var(--radius-xs);
+  font-size: var(--text-xs);
   font-weight: 600;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .wgc-toggle-btn--active {
-  background: #ffffff;
-  color: var(--color-primary, #e11d48);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-xs);
 }
 
 /* Chart Canvas Wrapper */
@@ -271,10 +273,10 @@
   position: relative;
   width: 100%;
   box-sizing: border-box;
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid var(--color-border, #f3f4f6);
-  padding: 4px;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  padding: 6px;
   overflow: hidden;
 }
 
@@ -289,13 +291,13 @@
 /* SVG Typography */
 .wgc-axis-tick {
   font-size: 10.5px;
-  fill: var(--color-text-secondary, #6b7280);
+  fill: var(--color-text-secondary);
   font-weight: 500;
 }
 
 .wgc-axis-zone-label {
   font-size: 10px;
-  fill: var(--color-text-secondary, #9ca3af);
+  fill: var(--color-text-tertiary);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -303,34 +305,14 @@
 
 .wgc-axis-caption {
   font-size: 10.5px;
-  fill: var(--color-text-secondary, #6b7280);
+  fill: var(--color-text-secondary);
   font-weight: 600;
 }
 
 .wgc-corridor-label {
-  font-size: 8.5px;
-  fill: #10b981;
+  font-size: 9px;
+  fill: var(--color-success);
   font-weight: 700;
-}
-
-/* Pulse animation for latest point */
-@keyframes wgcPulse {
-  0% {
-    r: 6;
-    opacity: 0.9;
-  }
-  70% {
-    r: 12;
-    opacity: 0;
-  }
-  100% {
-    r: 12;
-    opacity: 0;
-  }
-}
-
-.wgc-pulse-ring {
-  animation: wgcPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Legend */
@@ -339,17 +321,17 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 10px;
-  margin-bottom: 12px;
-  font-size: 0.72rem;
-  color: var(--color-text-secondary, #6b7280);
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
 }
 
 .wgc-legend-item {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .wgc-legend-swatch {
@@ -359,30 +341,30 @@
 }
 
 .wgc-legend-swatch--corridor {
-  background: rgba(16, 185, 129, 0.35);
-  border: 1px dashed #10b981;
+  background: var(--color-success-light);
+  border: 1.5px dashed var(--color-success);
 }
 
 .wgc-legend-swatch--actual {
-  background: #f43f5e;
+  background: var(--color-primary);
   border-radius: 50%;
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
 
 .wgc-legend-swatch--now {
-  background: #3b82f6;
+  background: var(--color-papa);
   width: 12px;
   height: 2px;
 }
 
 /* Inspection Detail Card */
 .wgc-detail-card {
-  background: var(--color-bg-secondary, #f8fafc);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 12px;
-  padding: 12px;
-  margin-bottom: 12px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
   box-sizing: border-box;
 }
 
@@ -390,29 +372,30 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .wgc-detail-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
 .wgc-detail-week-badge {
   padding: 2px 8px;
-  background: var(--color-primary, #e11d48);
-  color: #ffffff;
-  border-radius: 6px;
-  font-size: 0.72rem;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-xs);
   font-weight: 700;
 }
 
 .wgc-detail-date {
-  font-size: 0.72rem;
-  color: var(--color-text-secondary, #64748b);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -421,10 +404,10 @@
 .wgc-detail-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border-light);
 }
 
 .wgc-detail-stat {
@@ -433,30 +416,30 @@
 }
 
 .wgc-detail-stat-lbl {
-  font-size: 0.65rem;
-  color: var(--color-text-secondary, #64748b);
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
   margin-bottom: 2px;
 }
 
 .wgc-detail-stat strong {
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: 700;
-  color: var(--color-text, #0f172a);
+  color: var(--color-text-primary);
 }
 
 .wgc-detail-advice {
   display: flex;
   align-items: flex-start;
   gap: 6px;
-  font-size: 0.73rem;
-  color: var(--color-text-secondary, #334155);
-  line-height: 1.4;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.45;
 }
 
 .wgc-detail-advice-icon {
-  color: var(--color-primary, #e11d48);
+  color: var(--color-primary);
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .wgc-detail-advice p {
@@ -465,10 +448,10 @@
 
 /* Clinical Guidance Card */
 .wgc-guide-note {
-  background: var(--color-bg-secondary, #fdf8f6);
-  border: 1px solid #fed7aa;
-  border-radius: 12px;
-  padding: 12px;
+  background: var(--color-bg-warm);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
 }
 
 .wgc-guide-header {
@@ -478,57 +461,54 @@
   margin-bottom: 6px;
 }
 
-.wgc-guide-icon {
-  font-size: 1rem;
-}
-
-.wgc-guide-header h4 {
+.wgc-guide-header h3 {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: var(--text-xs);
   font-weight: 700;
-  color: #9a3412;
+  color: var(--color-accent-dark);
 }
 
 .wgc-guide-body {
   margin: 0 0 10px;
-  font-size: 0.74rem;
-  line-height: 1.45;
-  color: #7c2d12;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--color-text-primary);
 }
 
 .wgc-guide-table-wrap {
   width: 100%;
   overflow-x: auto;
-  border-radius: 8px;
-  border: 1px solid #fed7aa;
-  background: #ffffff;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
 }
 
 .wgc-guide-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   text-align: left;
 }
 
 .wgc-guide-table th {
-  background: #fff7ed;
-  padding: 6px 8px;
+  background: var(--color-accent-light);
+  padding: 7px 6px;
   font-weight: 700;
-  color: #9a3412;
-  border-bottom: 1px solid #fed7aa;
-  white-space: nowrap;
+  color: var(--color-accent-dark);
+  border-bottom: 1px solid var(--color-border);
+  line-height: 1.25;
 }
 
 .wgc-guide-table td {
-  padding: 6px 8px;
-  border-bottom: 1px solid #fef3c7;
-  color: #451a03;
-  white-space: nowrap;
+  padding: 7px 6px;
+  border-bottom: 1px solid var(--color-border-light);
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
 }
 
 .wgc-row--active {
-  background: rgba(234, 88, 12, 0.12) !important;
+  background: var(--color-primary-light) !important;
   font-weight: 700;
 }
 
@@ -536,23 +516,24 @@
 .wgc-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.52);
   backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: var(--space-4);
   box-sizing: border-box;
 }
 
 .wgc-modal {
   width: 100%;
   max-width: 400px;
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-xl);
   box-sizing: border-box;
 }
 
@@ -566,49 +547,60 @@
 .wgc-modal-title {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
-.wgc-modal-title h4 {
+.wgc-modal-title h3 {
   margin: 0;
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 700;
-  color: var(--color-text, #111827);
+  color: var(--color-text-primary);
 }
 
 .wgc-modal-close {
-  background: none;
+  background: transparent;
   border: none;
   font-size: 1.1rem;
-  color: var(--color-text-secondary, #9ca3af);
+  color: var(--color-text-secondary);
   cursor: pointer;
-  padding: 4px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+}
+
+.wgc-modal-close:hover {
+  background: var(--color-bg-secondary);
+  color: var(--color-text-primary);
 }
 
 .wgc-modal-desc {
-  margin: 0 0 14px;
-  line-height: 1.4;
+  margin: 0 0 var(--space-4);
+  line-height: 1.45;
 }
 
 .wgc-preview-box {
-  background: var(--color-bg-secondary, #f8fafc);
-  border: 1px solid var(--color-border, #e2e8f0);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 14px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin-top: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
 .wgc-preview-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.78rem;
+  font-size: var(--text-xs);
   margin-bottom: 4px;
 }
 
 .wgc-preview-header strong {
-  font-size: 1rem;
-  color: var(--color-primary, #e11d48);
+  font-size: var(--text-base);
+  color: var(--color-primary);
 }
 
 .wgc-preview-badge {
@@ -623,18 +615,18 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: rgba(16, 185, 129, 0.12);
-  color: #059669;
-  border-radius: 8px;
-  font-size: 0.75rem;
+  background: var(--color-success-light);
+  color: var(--color-success);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
   font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 
 .wgc-modal-footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 14px;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
 }

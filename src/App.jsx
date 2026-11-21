@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import './index.css';
 import { isOnboardingDone, getProfile } from './utils/storage';
 import { getSession, onAuthStateChange, signOut } from './utils/supabaseClient';
 import { getCurrentWeek, getCurrentDay, getTrimester, getDaysRemaining, getProgressPercentage, calculateDueDate } from './utils/pregnancyCalc';
@@ -23,7 +24,6 @@ import AudioMiniPlayer from './components/AudioMiniPlayer';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import { audioSynth } from './utils/audioSynth';
 import { Headphones } from 'lucide-react';
-import './index.css';
 
 import { AppContext } from './context/AppContext';
 
@@ -48,7 +48,8 @@ function AuthenticatedAppLayout({
   activeSound,
   setActiveSound,
   isPlayingAudio,
-  setIsPlayingAudio,
+  handleSetModalPlaying,
+  hasAudioSession,
   handleStopAudio,
   handleToggleMiniPlay,
 }) {
@@ -69,32 +70,35 @@ function AuthenticatedAppLayout({
       {isDesktop && <DesktopCompanionSidebar onOpenAudio={() => setShowAudioModal(true)} />}
 
       <div className={`app-container ${!isMainRoute ? 'app-container--subpage' : ''}`}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/timeline" element={<Timeline />} />
-          <Route path="/checklist" element={<Checklist />} />
-          <Route path="/profile" element={<Profile />} />
-          {/* Phase 2 Enhanced Feature Routes */}
-          <Route path="/hospital-bag" element={<HospitalBag />} />
-          <Route path="/doctor-notes" element={<DoctorNotes />} />
-          <Route path="/usg-tracker" element={<DoctorNotes initialTab="usg" />} />
-          <Route path="/maternal-vitals" element={<DoctorNotes initialTab="mother" />} />
-          <Route path="/nutrition" element={<NutritionGuide />} />
-          <Route path="/calculator" element={<PregnancyCalc />} />
-          {/* Phase 3 Hospital Directory Route */}
-          <Route path="/hospitals" element={<HospitalDirectory />} />
-          {/* Phase 4 Kick Counter, Contraction Timer & Cost Simulator */}
-          <Route path="/labor-tools" element={<LaborTools />} />
-          <Route path="/cost-simulator" element={<CostSimulator />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <main id="main-content" className="app-main">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/timeline" element={<Timeline />} />
+            <Route path="/checklist" element={<Checklist />} />
+            <Route path="/profile" element={<Profile />} />
+            {/* Phase 2 Enhanced Feature Routes */}
+            <Route path="/hospital-bag" element={<HospitalBag />} />
+            <Route path="/doctor-notes" element={<DoctorNotes />} />
+            <Route path="/usg-tracker" element={<DoctorNotes initialTab="usg" />} />
+            <Route path="/maternal-vitals" element={<DoctorNotes initialTab="mother" />} />
+            <Route path="/nutrition" element={<NutritionGuide />} />
+            <Route path="/calculator" element={<PregnancyCalc />} />
+            {/* Phase 3 Hospital Directory Route */}
+            <Route path="/hospitals" element={<HospitalDirectory />} />
+            {/* Phase 4 Kick Counter, Contraction Timer & Cost Simulator */}
+            <Route path="/labor-tools" element={<LaborTools />} />
+            <Route path="/cost-simulator" element={<CostSimulator />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </main>
 
         {/* Bottom Navigation is displayed exclusively on main tabs */}
         {isMainRoute && <BottomNav />}
 
-        {/* Persistent Mini Audio Player when audio is active */}
+        {/* Persistent Mini Audio Player when audio session is active */}
         <AudioMiniPlayer
-          isPlaying={isPlayingAudio && !showAudioModal}
+          isVisible={hasAudioSession && !showAudioModal}
+          isPlaying={isPlayingAudio}
           activeSound={activeSound}
           onOpenModal={() => setShowAudioModal(true)}
           onStop={handleStopAudio}
@@ -102,8 +106,8 @@ function AuthenticatedAppLayout({
           hasBottomNav={isMainRoute}
         />
 
-        {/* Mobile Floating Audio Pill: only on Home tab when audio is not playing (avoids blocking reading cards) */}
-        {!isPlayingAudio && location.pathname === '/' && (
+        {/* Mobile Floating Audio Pill: only on Home tab when no audio session is active */}
+        {!hasAudioSession && location.pathname === '/' && (
           <button
             type="button"
             className="mobile-audio-fab"
@@ -111,14 +115,14 @@ function AuthenticatedAppLayout({
             aria-label="Buka Audio Relaksasi"
             title="Audio Relaksasi Rahim & Meditasi"
           >
-            <Headphones size={18} />
+            <Headphones size={18} aria-hidden="true" />
             <span>Relaksasi</span>
           </button>
         )}
 
         <PWAInstallPrompt
           hasBottomNav={isMainRoute}
-          hasMiniPlayer={isPlayingAudio && !showAudioModal}
+          hasMiniPlayer={hasAudioSession && !showAudioModal}
         />
       </div>
 
@@ -128,7 +132,7 @@ function AuthenticatedAppLayout({
         activeSound={activeSound}
         setActiveSound={setActiveSound}
         isPlaying={isPlayingAudio}
-        setIsPlaying={setIsPlayingAudio}
+        setIsPlaying={handleSetModalPlaying}
       />
     </div>
   );
@@ -143,17 +147,26 @@ function App() {
   const [showAudioModal, setShowAudioModal] = useState(false);
   const [activeSound, setActiveSound] = useState('heartbeat');
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [hasAudioSession, setHasAudioSession] = useState(false);
+
+  const handleSetModalPlaying = (val) => {
+    setIsPlayingAudio(val);
+    setHasAudioSession(val);
+  };
 
   const handleStopAudio = () => {
     audioSynth.stop();
     setIsPlayingAudio(false);
+    setHasAudioSession(false);
   };
 
   const handleToggleMiniPlay = () => {
     if (isPlayingAudio) {
-      handleStopAudio();
+      audioSynth.stop();
+      setIsPlayingAudio(false);
     } else {
       setIsPlayingAudio(true);
+      setHasAudioSession(true);
       if (activeSound === 'heartbeat') audioSynth.playHeartbeat();
       else if (activeSound === 'waves') audioSynth.playWaves();
       else if (activeSound === 'rain') audioSynth.playRain();
@@ -250,17 +263,24 @@ function App() {
   // Loading splash
   if (!ready) {
     return (
-      <div className="login-page">
+      <main className="login-page" aria-busy="true">
         <div className="login-bg" aria-hidden="true" />
-        <div className="login-card animate-fade-in-up" style={{ maxWidth: 280, padding: '28px 20px' }}>
+        <div className="login-card animate-fade-in-up" style={{ maxWidth: 300, padding: '28px 20px' }}>
           <div className="login-logo" style={{ width: 64, height: 64, margin: '0 auto 12px' }}>
-            <img src={`${import.meta.env.BASE_URL}logo.jpg`} alt="Bumil Ceria" className="login-logo__img" />
+            <img
+              src={`${import.meta.env.BASE_URL}logo.jpg`}
+              alt="Logo Bumil Ceria"
+              width={64}
+              height={64}
+              fetchPriority="high"
+              className="login-logo__img"
+            />
           </div>
-          <h2 className="login-title" style={{ fontSize: '1.2rem', marginBottom: 2 }}>Bumil Ceria</h2>
-          <p className="login-subtitle" style={{ marginBottom: 14 }}>Memuat aplikasi...</p>
-          <div className="login-spinner" style={{ borderColor: 'rgba(255,107,138,0.25)', borderTopColor: 'var(--color-primary)' }} />
+          <h1 className="login-title" style={{ fontSize: '1.25rem', marginBottom: 4 }}>Bumil Ceria</h1>
+          <p className="login-subtitle" style={{ marginBottom: 16 }}>Memuat aplikasi dan data kehamilan...</p>
+          <div className="login-spinner" style={{ borderColor: 'rgba(var(--color-primary-rgb), 0.25)', borderTopColor: 'var(--color-primary)' }} />
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -295,9 +315,11 @@ function App() {
           </Routes>
         ) : !onboarded ? (
           <div className="app-container">
-            <Routes>
-              <Route path="*" element={<Onboarding />} />
-            </Routes>
+            <main id="main-content" className="app-main">
+              <Routes>
+                <Route path="*" element={<Onboarding />} />
+              </Routes>
+            </main>
           </div>
         ) : (
           <AuthenticatedAppLayout
@@ -306,7 +328,8 @@ function App() {
             activeSound={activeSound}
             setActiveSound={setActiveSound}
             isPlayingAudio={isPlayingAudio}
-            setIsPlayingAudio={setIsPlayingAudio}
+            handleSetModalPlaying={handleSetModalPlaying}
+            hasAudioSession={hasAudioSession}
             handleStopAudio={handleStopAudio}
             handleToggleMiniPlay={handleToggleMiniPlay}
           />

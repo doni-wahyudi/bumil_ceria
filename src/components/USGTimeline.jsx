@@ -20,7 +20,7 @@ function USGTimeline({ currentWeek }) {
 
   return (
     <div className="usg-timeline" id="usg-timeline">
-      <div className="usg-timeline__line" />
+      <div className="usg-timeline__line" aria-hidden="true" />
       {usgSchedule.map((usg, index) => {
         const isDone = statuses[usg.id];
         const isCurrent = nextUSG?.id === usg.id;
@@ -31,11 +31,11 @@ function USGTimeline({ currentWeek }) {
           <div
             key={usg.id}
             className={`usg-item ${isDone ? 'usg-item--done' : ''} ${isCurrent ? 'usg-item--current' : ''} ${isPast && !isDone ? 'usg-item--missed' : ''}`}
-            style={{ animationDelay: `${index * 60}ms` }}
+            style={{ animationDelay: `${index * 40}ms` }}
           >
-            <div className="usg-item__dot">
+            <div className="usg-item__dot" aria-hidden="true">
               {isDone ? (
-                <Check size={14} strokeWidth={3} color="white" />
+                <Check size={14} strokeWidth={3} color="var(--color-text-inverse)" />
               ) : (
                 <span className="usg-item__dot-inner">{usg.icon}</span>
               )}
@@ -43,16 +43,17 @@ function USGTimeline({ currentWeek }) {
 
             <div className="usg-item__card">
               <button
+                type="button"
                 className="usg-item__header"
                 onClick={() => setExpandedId(isExpanded ? null : usg.id)}
                 aria-expanded={isExpanded}
               >
                 <div className="usg-item__header-text">
-                  <span className="usg-item__week-label">{usg.weekLabel}</span>
-                  <h4 className="usg-item__title">{usg.title}</h4>
+                  <span className="usg-item__week-label tabular-nums">{usg.weekLabel}</span>
+                  <h2 className="usg-item__title">{usg.title}</h2>
                 </div>
                 {isCurrent && <span className="badge badge-usg">Selanjutnya</span>}
-                {isDone && <span className="badge badge-success">Sudah ✓</span>}
+                {isDone && <span className="badge badge-success">Sudah</span>}
               </button>
 
               {isExpanded && (
@@ -60,12 +61,12 @@ function USGTimeline({ currentWeek }) {
                   <p className="usg-item__desc">{usg.description}</p>
 
                   <div className="usg-item__section">
-                    <h5>Yang Akan Diperiksa</h5>
+                    <h3>Yang Akan Diperiksa</h3>
                     <p>{usg.whatToExpect}</p>
                   </div>
 
                   <div className="usg-item__section">
-                    <h5>Pertanyaan untuk Dokter</h5>
+                    <h3>Pertanyaan untuk Dokter</h3>
                     <ul>
                       {usg.questionsToAsk.map((q, i) => (
                         <li key={i}>{q}</li>
@@ -74,6 +75,7 @@ function USGTimeline({ currentWeek }) {
                   </div>
 
                   <button
+                    type="button"
                     className={`btn ${isDone ? 'btn-secondary' : 'btn-primary'} btn-full`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -81,7 +83,7 @@ function USGTimeline({ currentWeek }) {
                     }}
                     style={{ marginTop: 'var(--space-3)' }}
                   >
-                    {isDone ? 'Tandai Belum Dilakukan' : 'Tandai Sudah Dilakukan ✓'}
+                    {isDone ? 'Tandai Belum Dilakukan' : 'Tandai Sudah Dilakukan'}
                   </button>
                 </div>
               )}

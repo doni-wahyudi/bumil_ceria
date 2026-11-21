@@ -12,16 +12,16 @@ import {
   Activity,
   Coins,
   Headphones,
+  Lightbulb,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import { getCompletedItems } from '../utils/storage';
+import { getCompletedItems, toggleChecklistItem } from '../utils/storage';
 import { formatDateID } from '../utils/pregnancyCalc';
 import { getWeekData, getWeekChecklist } from '../data/weeklyData';
 import { getNextUSG } from '../data/usgSchedule';
 import ProgressRing from '../components/ProgressRing';
 import RoleToggle from '../components/RoleToggle';
 import ChecklistItem from '../components/ChecklistItem';
-import { toggleChecklistItem } from '../utils/storage';
 import './Home.css';
 
 function Home() {
@@ -53,17 +53,17 @@ function Home() {
       <header className="home-header animate-fade-in-up">
         <div className="home-header__greeting">
           <h1 className="home-header__title">
-            Hai, {displayName}! <span className="home-header__wave">👋</span>
+            Hai, {displayName}
           </h1>
-          <p className="home-header__subtitle text-secondary">
-            {pregnancyData.trimester.label} • {pregnancyData.daysRemaining} hari lagi
+          <p className="home-header__subtitle text-secondary tabular-nums">
+            {pregnancyData.trimester.label} · {pregnancyData.daysRemaining} hari menuju HPL
           </p>
         </div>
         <RoleToggle />
       </header>
 
-      {/* Progress Card */}
-      <section className="home-progress card animate-fade-in-up" style={{ animationDelay: '60ms' }}>
+      {/* Progress Hero Card */}
+      <section className="home-progress card animate-fade-in-up" style={{ animationDelay: '40ms' }} aria-label="Ringkasan kehamilan">
         <div className="home-progress__top">
           <ProgressRing
             progress={pregnancyData.progress}
@@ -72,10 +72,10 @@ function Home() {
           <div className="home-progress__info">
             <div className="home-progress__stat">
               <span className="home-progress__stat-label">HPL</span>
-              <span className="home-progress__stat-value">{formatDateID(pregnancyData.dueDate)}</span>
+              <span className="home-progress__stat-value tabular-nums">{formatDateID(pregnancyData.dueDate)}</span>
             </div>
             <div className="home-progress__stat">
-              <span className="home-progress__stat-label">Ukuran Bayi</span>
+              <span className="home-progress__stat-label">Ukuran Janin</span>
               <span className="home-progress__stat-value">
                 {weekData?.babySizeEmoji} {weekData?.babySize}
               </span>
@@ -89,183 +89,179 @@ function Home() {
         )}
       </section>
 
-      {/* Quick Actions Grid (Phase 2) */}
-      <section className="home-quick-actions animate-fade-in-up" style={{ animationDelay: '90ms' }}>
-        <div
-          className="home-qa-card card"
-          onClick={() => navigate('/hospital-bag')}
-          role="button"
-          tabIndex={0}
-        >
-          <div className="home-qa-icon-wrap home-qa-icon--pink">
-            <Luggage size={20} />
-          </div>
-          <div className="home-qa-info">
-            <span className="home-qa-title">Tas Bersalin</span>
-            <span className="home-qa-sub">Perlengkapan RS</span>
-          </div>
-        </div>
+      {/* Quick Actions Grid */}
+      <section className="home-quick-actions-wrap animate-fade-in-up" style={{ animationDelay: '80ms' }} aria-labelledby="home-qa-heading">
+        <h2 id="home-qa-heading" className="sr-only">Menu Akses Cepat</h2>
+        <div className="home-quick-actions">
+          <button
+            type="button"
+            className="home-qa-card card"
+            onClick={() => navigate('/hospital-bag')}
+          >
+            <div className="home-qa-icon-wrap home-qa-icon--pink">
+              <Luggage size={20} aria-hidden="true" />
+            </div>
+            <div className="home-qa-info">
+              <span className="home-qa-title">Tas Bersalin</span>
+              <span className="home-qa-sub">Perlengkapan RS</span>
+            </div>
+          </button>
 
-        <div
-          className="home-qa-card card"
-          onClick={() => navigate('/doctor-notes')}
-          role="button"
-          tabIndex={0}
-        >
-          <div className="home-qa-icon-wrap home-qa-icon--teal">
-            <Stethoscope size={20} />
-          </div>
-          <div className="home-qa-info">
-            <span className="home-qa-title">Catatan Medis & USG</span>
-            <span className="home-qa-sub">Biometri, Tensi & Ibu</span>
-          </div>
-        </div>
+          <button
+            type="button"
+            className="home-qa-card card"
+            onClick={() => navigate('/doctor-notes')}
+          >
+            <div className="home-qa-icon-wrap home-qa-icon--teal">
+              <Stethoscope size={20} aria-hidden="true" />
+            </div>
+            <div className="home-qa-info">
+              <span className="home-qa-title">Catatan &amp; USG</span>
+              <span className="home-qa-sub">Biometri &amp; Tensi</span>
+            </div>
+          </button>
 
-        <div
-          className="home-qa-card card"
-          onClick={() => navigate('/nutrition')}
-          role="button"
-          tabIndex={0}
-        >
-          <div className="home-qa-icon-wrap home-qa-icon--honey">
-            <Apple size={20} />
-          </div>
-          <div className="home-qa-info">
-            <span className="home-qa-title">Nutrisi & Mitos</span>
-            <span className="home-qa-sub">Isi Piring & Fakta</span>
-          </div>
-        </div>
+          <button
+            type="button"
+            className="home-qa-card card"
+            onClick={() => navigate('/nutrition')}
+          >
+            <div className="home-qa-icon-wrap home-qa-icon--honey">
+              <Apple size={20} aria-hidden="true" />
+            </div>
+            <div className="home-qa-info">
+              <span className="home-qa-title">Nutrisi &amp; Mitos</span>
+              <span className="home-qa-sub">Porsi &amp; Fakta Medis</span>
+            </div>
+          </button>
 
-        <div
-          className="home-qa-card card"
-          onClick={() => navigate('/calculator')}
-          role="button"
-          tabIndex={0}
-        >
-          <div className="home-qa-icon-wrap home-qa-icon--blue">
-            <Calculator size={20} />
-          </div>
-          <div className="home-qa-info">
-            <span className="home-qa-title">Kalkulator HPL</span>
-            <span className="home-qa-sub">Hitung Usia & HPL</span>
-          </div>
-        </div>
+          <button
+            type="button"
+            className="home-qa-card card"
+            onClick={() => navigate('/calculator')}
+          >
+            <div className="home-qa-icon-wrap home-qa-icon--blue">
+              <Calculator size={20} aria-hidden="true" />
+            </div>
+            <div className="home-qa-info">
+              <span className="home-qa-title">Kalkulator HPL</span>
+              <span className="home-qa-sub">Hitung Usia &amp; HPL</span>
+            </div>
+          </button>
 
-        <div
-          className="home-qa-card card"
-          onClick={() => navigate('/labor-tools')}
-          role="button"
-          tabIndex={0}
-        >
-          <div className="home-qa-icon-wrap home-qa-icon--coral">
-            <Activity size={20} />
-          </div>
-          <div className="home-qa-info">
-            <span className="home-qa-title">Alat Persalinan</span>
-            <span className="home-qa-sub">Tendangan & Kontraksi</span>
-          </div>
-        </div>
+          <button
+            type="button"
+            className="home-qa-card card"
+            onClick={() => navigate('/labor-tools')}
+          >
+            <div className="home-qa-icon-wrap home-qa-icon--coral">
+              <Activity size={20} aria-hidden="true" />
+            </div>
+            <div className="home-qa-info">
+              <span className="home-qa-title">Alat Persalinan</span>
+              <span className="home-qa-sub">Gerak &amp; Kontraksi</span>
+            </div>
+          </button>
 
-        <div
-          className="home-qa-card card"
-          onClick={() => navigate('/cost-simulator')}
-          role="button"
-          tabIndex={0}
-        >
-          <div className="home-qa-icon-wrap home-qa-icon--gold">
-            <Coins size={20} />
-          </div>
-          <div className="home-qa-info">
-            <span className="home-qa-title">Simulasi Biaya</span>
-            <span className="home-qa-sub">Dana Lahiran Lampung</span>
-          </div>
+          <button
+            type="button"
+            className="home-qa-card card"
+            onClick={() => navigate('/cost-simulator')}
+          >
+            <div className="home-qa-icon-wrap home-qa-icon--gold">
+              <Coins size={20} aria-hidden="true" />
+            </div>
+            <div className="home-qa-info">
+              <span className="home-qa-title">Simulasi Biaya</span>
+              <span className="home-qa-sub">Estimasi &amp; Tabungan</span>
+            </div>
+          </button>
         </div>
       </section>
 
       {/* USG Reminder */}
       {nextUSG && (
-        <section
-          className="home-usg card animate-fade-in-up"
-          style={{ animationDelay: '120ms' }}
-          onClick={() => navigate('/usg-tracker')}
-          role="button"
-          tabIndex={0}
-        >
-          <div className="home-usg__header">
-            <CalendarClock size={20} color="var(--color-accent-dark)" />
-            <span className="eyebrow" style={{ color: 'var(--color-accent-dark)' }}>USG Berikutnya</span>
-          </div>
-          <div className="home-usg__content">
-            <div>
-              <h4>{nextUSG.title}</h4>
-              <p className="text-secondary text-sm">{nextUSG.weekLabel} • Ketuk untuk catat hasil</p>
+        <section className="animate-fade-in-up" style={{ animationDelay: '120ms' }} aria-label="Jadwal USG Berikutnya">
+          <button
+            type="button"
+            className="home-usg card"
+            onClick={() => navigate('/usg-tracker')}
+          >
+            <div className="home-usg__header">
+              <CalendarClock size={18} color="var(--color-accent-dark)" aria-hidden="true" />
+              <span className="eyebrow" style={{ color: 'var(--color-accent-dark)' }}>USG Berikutnya</span>
             </div>
-            <ChevronRight size={20} color="var(--color-text-tertiary)" />
-          </div>
+            <div className="home-usg__content">
+              <div>
+                <h2 className="home-usg__title">{nextUSG.title}</h2>
+                <p className="text-secondary text-sm">{nextUSG.weekLabel} · Ketuk untuk catat hasil</p>
+              </div>
+              <ChevronRight size={20} color="var(--color-text-tertiary)" aria-hidden="true" />
+            </div>
+          </button>
         </section>
       )}
 
-      {/* Bandar Lampung Hospital Banner (Phase 3) */}
-      <section
-        className="home-hosp-banner card animate-fade-in-up"
-        style={{ animationDelay: '140ms' }}
-        onClick={() => navigate('/hospitals')}
-        role="button"
-        tabIndex={0}
-      >
-        <div className="home-hosp-banner__icon">
-          <Building2 size={20} color="var(--color-primary)" />
-        </div>
-        <div className="home-hosp-banner__content">
-          <h4>Faskes & RS Bandar Lampung</h4>
-          <p className="text-secondary text-xs">
-            {profile.hospitalName ? `Faskes Pilihan: ${profile.hospitalName}` : 'RSIA Bunda, Belleza, RS Advent, RSUDAM • Call IGD'}
-          </p>
-        </div>
-        <ChevronRight size={18} color="var(--color-text-tertiary)" />
+      {/* Bandar Lampung Hospital Banner */}
+      <section className="animate-fade-in-up" style={{ animationDelay: '140ms' }} aria-label="Faskes Bandar Lampung">
+        <button
+          type="button"
+          className="home-hosp-banner card"
+          onClick={() => navigate('/hospitals')}
+        >
+          <div className="home-hosp-banner__icon">
+            <Building2 size={20} color="var(--color-primary)" aria-hidden="true" />
+          </div>
+          <div className="home-hosp-banner__content">
+            <h2>Faskes &amp; RS Bandar Lampung</h2>
+            <p className="text-secondary text-xs">
+              {profile.hospitalName ? `Faskes Pilihan: ${profile.hospitalName}` : 'RSIA Bunda, Belleza, RS Advent, RSUDAM · Telepon IGD'}
+            </p>
+          </div>
+          <ChevronRight size={18} color="var(--color-text-tertiary)" aria-hidden="true" />
+        </button>
       </section>
 
-      {/* Audio Relaxation Banner (Phase 5) */}
-      <section
-        className="home-hosp-banner home-audio-banner card animate-fade-in-up"
-        style={{ animationDelay: '160ms' }}
-        onClick={openAudioModal}
-        role="button"
-        tabIndex={0}
-      >
-        <div className="home-hosp-banner__icon" style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }}>
-          <Headphones size={20} />
-        </div>
-        <div className="home-hosp-banner__content">
-          <h4>Audio Relaksasi & Meditasi</h4>
-          <p className="text-secondary text-xs">
-            Denyut rahim alami, deburan ombak & panduan pernapasan 4-7-8
-          </p>
-        </div>
-        <ChevronRight size={18} color="var(--color-text-tertiary)" />
+      {/* Audio Relaxation Banner */}
+      <section className="animate-fade-in-up" style={{ animationDelay: '160ms' }} aria-label="Audio Relaksasi">
+        <button
+          type="button"
+          className="home-hosp-banner home-audio-banner card"
+          onClick={openAudioModal}
+        >
+          <div className="home-hosp-banner__icon" style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }}>
+            <Headphones size={20} aria-hidden="true" />
+          </div>
+          <div className="home-hosp-banner__content">
+            <h2>Audio Relaksasi &amp; Meditasi</h2>
+            <p className="text-secondary text-xs">
+              Denyut rahim, ombak tenang, dan panduan napas 4-7-8
+            </p>
+          </div>
+          <ChevronRight size={18} color="var(--color-text-tertiary)" aria-hidden="true" />
+        </button>
       </section>
 
       {/* This Week's Checklist */}
       <section className="section animate-fade-in-up" style={{ animationDelay: '180ms' }}>
         <div className="section-header">
-          <h3 className="section-title">
-            <ListChecks size={20} style={{ verticalAlign: 'text-bottom', marginRight: '6px' }} />
-            Minggu Ini
-          </h3>
-          <button className="btn btn-ghost text-sm" onClick={() => navigate('/checklist')}>
-            Semua <ChevronRight size={16} />
+          <h2 className="section-title">
+            <ListChecks size={20} aria-hidden="true" />
+            <span>Minggu Ini</span>
+          </h2>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={() => navigate('/checklist')}>
+            <span>Semua</span>
+            <ChevronRight size={16} aria-hidden="true" />
           </button>
         </div>
 
         {incompleteThisWeek.length === 0 && weekChecklist.length > 0 ? (
           <div className="home-empty-state card">
-            <span className="home-empty-state__emoji">🎉</span>
-            <p>Semua tugas minggu ini sudah selesai!</p>
+            <p>Semua tugas untuk minggu ke-{pregnancyData.currentWeek} sudah selesai.</p>
           </div>
         ) : incompleteThisWeek.length === 0 ? (
           <div className="home-empty-state card">
-            <span className="home-empty-state__emoji">📋</span>
-            <p>Tidak ada tugas khusus minggu ini. Tetap semangat!</p>
+            <p>Belum ada tugas khusus minggu ini. Buka semua daftar di menu Checklist.</p>
           </div>
         ) : (
           <div className="home-checklist stagger-children">
@@ -278,7 +274,7 @@ function Home() {
               />
             ))}
             {incompleteThisWeek.length > 4 && (
-              <button className="btn btn-secondary btn-full" onClick={() => navigate('/checklist')}>
+              <button type="button" className="btn btn-secondary btn-full" onClick={() => navigate('/checklist')}>
                 +{incompleteThisWeek.length - 4} tugas lainnya
               </button>
             )}
@@ -288,11 +284,12 @@ function Home() {
 
       {/* Tips */}
       {weekData && (
-        <section className="section animate-fade-in-up" style={{ animationDelay: '240ms' }}>
+        <section className="section animate-fade-in-up" style={{ animationDelay: '220ms' }}>
           <div className="section-header">
-            <h3 className="section-title">
-              {role === 'mama' ? '💡' : '💪'} Tips Minggu Ini
-            </h3>
+            <h2 className="section-title">
+              <Lightbulb size={20} color="var(--color-accent-dark)" aria-hidden="true" />
+              <span>Tips Minggu Ini</span>
+            </h2>
           </div>
           <div className="card home-tips-card">
             <p>{role === 'mama' ? weekData.mamaTips : (weekData.papaTips || weekData.mamaTips)}</p>

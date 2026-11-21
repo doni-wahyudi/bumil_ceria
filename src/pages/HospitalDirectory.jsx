@@ -11,7 +11,7 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
-  Sparkles,
+  Award,
 } from 'lucide-react';
 import { LAMPUNG_HOSPITALS, EMERGENCY_RED_FLAGS } from '../data/lampungHospitals';
 import './HospitalDirectory.css';
@@ -46,34 +46,36 @@ function HospitalDirectory() {
           onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
           aria-label="Kembali"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} aria-hidden="true" />
         </button>
         <div>
           <div className="hd-header-badge">
-            <Building2 size={14} /> Faskes Maternal Bandar Lampung
+            <Building2 size={14} aria-hidden="true" />
+            <span>Faskes Maternal Bandar Lampung</span>
           </div>
-          <h2>Direktori RS & Rujukan</h2>
+          <h1>Direktori RS &amp; Rujukan</h1>
         </div>
       </header>
 
       {/* Emergency Protocol & Red Flags Alert */}
-      <section className="hd-emergency-card card animate-fade-in-up" style={{ animationDelay: '60ms' }}>
+      <section className="hd-emergency-card card animate-fade-in-up" style={{ animationDelay: '40ms' }} aria-label="Protokol darurat dan tanda bahaya">
         <button
           type="button"
           className="hd-emergency-toggle"
           onClick={() => setShowRedFlags(!showRedFlags)}
+          aria-expanded={showRedFlags}
         >
           <div className="hd-emergency-title">
-            <AlertTriangle size={18} color="var(--color-danger)" />
-            <span>Tanda Bahaya & Protokol Darurat IGD</span>
+            <AlertTriangle size={18} color="var(--color-danger)" aria-hidden="true" />
+            <span>Tanda Bahaya &amp; Protokol Darurat IGD</span>
           </div>
-          {showRedFlags ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          {showRedFlags ? <ChevronUp size={18} aria-hidden="true" /> : <ChevronDown size={18} aria-hidden="true" />}
         </button>
 
         <div className="hd-bpjs-rule-box">
-          <ShieldCheck size={16} color="var(--color-secondary-dark)" className="hd-shield-icon" />
+          <ShieldCheck size={16} color="var(--color-secondary-dark)" className="hd-shield-icon" aria-hidden="true" />
           <p>
-            <strong>Hak Pasien BPJS:</strong> Pada kondisi gawat darurat maternal (ketuban pecah, pendarahan, tensi tinggi), Anda <strong>berhak langsung masuk IGD rumah sakit manapun tanpa surat rujukan</strong> faskes 1!
+            <strong>Hak Pasien BPJS:</strong> Pada kondisi gawat darurat maternal (ketuban pecah, perdarahan, tensi tinggi), Anda <strong>berhak langsung masuk IGD rumah sakit manapun tanpa surat rujukan</strong> faskes 1.
           </p>
         </div>
 
@@ -81,7 +83,7 @@ function HospitalDirectory() {
           <div className="hd-red-flags-list animate-fade-in-up">
             {EMERGENCY_RED_FLAGS.map((flag) => (
               <div key={flag.id} className="hd-flag-item">
-                <span className="hd-flag-emoji">{flag.emoji}</span>
+                <span className="hd-flag-emoji" aria-hidden="true">{flag.emoji}</span>
                 <div className="hd-flag-content">
                   <div className="hd-flag-top">
                     <strong>{flag.title}</strong>
@@ -96,10 +98,12 @@ function HospitalDirectory() {
       </section>
 
       {/* Search & Filter Bar */}
-      <div className="hd-controls animate-fade-in-up" style={{ animationDelay: '120ms' }}>
+      <div className="hd-controls animate-fade-in-up" style={{ animationDelay: '80ms' }}>
         <div className="hd-search-wrap card">
-          <Search size={16} color="var(--color-text-tertiary)" />
+          <label htmlFor="hd-search" className="sr-only">Cari rumah sakit atau kawasan</label>
+          <Search size={16} color="var(--color-text-tertiary)" aria-hidden="true" />
           <input
+            id="hd-search"
             type="text"
             className="hd-search-input"
             placeholder="Cari RS atau kawasan (misal: Kedaton, Teluk)..."
@@ -108,7 +112,7 @@ function HospitalDirectory() {
           />
         </div>
 
-        <div className="hd-filter-tabs">
+        <div className="hd-filter-tabs" role="group" aria-label="Filter fasilitas kesehatan">
           {[
             { id: 'all', label: 'Semua Faskes' },
             { id: 'bpjs', label: 'Bisa BPJS' },
@@ -116,6 +120,8 @@ function HospitalDirectory() {
           ].map((f) => (
             <button
               key={f.id}
+              type="button"
+              aria-pressed={filter === f.id}
               className={`hd-filter-btn ${filter === f.id ? 'hd-filter-btn--active' : ''}`}
               onClick={() => setFilter(f.id)}
             >
@@ -128,29 +134,30 @@ function HospitalDirectory() {
       {/* Hospital Cards List */}
       <div className="hd-list stagger-children">
         {filteredHospitals.map((hosp) => (
-          <div key={hosp.id} className="hd-card card">
+          <article key={hosp.id} className="hd-card card">
             <div className="hd-card-top">
               <div>
                 <div className="hd-badges-row">
                   <span className="hd-area-badge">{hosp.area}</span>
                   {hosp.bpjsAccept ? (
-                    <span className="hd-bpjs-badge hd-bpjs-badge--yes">✓ BPJS</span>
+                    <span className="hd-bpjs-badge hd-bpjs-badge--yes">BPJS</span>
                   ) : (
                     <span className="hd-bpjs-badge hd-bpjs-badge--no">Umum / Asuransi</span>
                   )}
                   {hosp.isTopRecommendation && (
                     <span className="hd-rec-badge">
-                      <Sparkles size={11} /> Rekomendasi
+                      <Award size={12} aria-hidden="true" />
+                      <span>Rekomendasi</span>
                     </span>
                   )}
                 </div>
-                <h3 className="hd-card-name">{hosp.name}</h3>
+                <h2 className="hd-card-name">{hosp.name}</h2>
                 <span className="hd-card-type">{hosp.type}</span>
               </div>
             </div>
 
             <p className="hd-card-address">
-              <MapPin size={14} className="hd-addr-icon" />
+              <MapPin size={14} className="hd-addr-icon" aria-hidden="true" />
               <span>{hosp.address}</span>
             </p>
 
@@ -166,10 +173,10 @@ function HospitalDirectory() {
             <div className="hd-card-actions">
               <a
                 href={`tel:${hosp.phoneRaw}`}
-                className="btn btn-secondary hd-call-btn"
+                className="btn btn-secondary hd-call-btn tabular-nums"
                 title={`Hubungi ${hosp.name}`}
               >
-                <Phone size={15} />
+                <Phone size={15} aria-hidden="true" />
                 <span>Panggil IGD ({hosp.phone})</span>
               </a>
               <a
@@ -179,17 +186,16 @@ function HospitalDirectory() {
                 className="btn btn-ghost hd-maps-btn"
                 title="Buka Navigasi Rute Maps"
               >
-                <ExternalLink size={15} />
+                <ExternalLink size={15} aria-hidden="true" />
                 <span>Rute Maps</span>
               </a>
             </div>
-          </div>
+          </article>
         ))}
 
         {filteredHospitals.length === 0 && (
           <div className="hd-empty-card card">
-            <span className="hd-empty-emoji">🏥</span>
-            <p>Tidak ada faskes yang cocok dengan pencarian "{searchQuery}".</p>
+            <p>Tidak ada faskes yang cocok dengan pencarian &ldquo;{searchQuery}&rdquo;. Coba hapus kata kunci atau ubah filter.</p>
           </div>
         )}
       </div>

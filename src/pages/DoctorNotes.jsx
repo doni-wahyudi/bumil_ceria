@@ -11,7 +11,6 @@ import {
   CheckCircle2,
   Circle,
   Trash2,
-  Sparkles,
   BookOpen,
   AlertTriangle,
   HeartPulse,
@@ -56,25 +55,20 @@ export default function DoctorNotes({ initialTab = null }) {
   const location = useLocation();
   const { profile, refreshProfile, pregnancyData } = useApp();
 
-  // Determine starting tab (from props, location state, query string, or default 'usg')
   const defaultTab = initialTab || (location.state?.tab) || 'usg';
   const [activeTab, setActiveTab] = useState(defaultTab); // 'usg' | 'mother' | 'guide' | 'questions'
 
-  // Data states
   const [usgRecords, setUsgRecords] = useState([]);
   const [maternalVitals, setMaternalVitals] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [newQuestionText, setNewQuestionText] = useState('');
 
-  // Guide search query
   const [guideSearch, setGuideSearch] = useState('');
   const [expandedGuideId, setExpandedGuideId] = useState(null);
 
-  // Form toggles
   const [showUsgForm, setShowUsgForm] = useState(false);
   const [showVitalForm, setShowVitalForm] = useState(false);
 
-  // USG Form State
   const [usgForm, setUsgForm] = useState({
     date: new Date().toISOString().split('T')[0],
     week: pregnancyData?.currentWeek || 12,
@@ -88,12 +82,11 @@ export default function DoctorNotes({ initialTab = null }) {
     efw: '',
     djj: '140',
     afi: '12',
-    placenta: 'Korpus Posterior',
+    placenta: 'Korpus Posterior (Aman)',
     gender: 'Belum Jelas',
     notes: '',
   });
 
-  // Maternal Vitals Form State
   const [vitalForm, setVitalForm] = useState({
     date: new Date().toISOString().split('T')[0],
     week: pregnancyData?.currentWeek || 12,
@@ -121,8 +114,6 @@ export default function DoctorNotes({ initialTab = null }) {
     loadAll();
   }, []);
 
-
-  // ---- USG Form Handlers ----
   const handleSaveUSG = async (e) => {
     e.preventDefault();
     if (!usgForm.date) return;
@@ -137,7 +128,6 @@ export default function DoctorNotes({ initialTab = null }) {
     setUsgRecords(updated);
   };
 
-  // ---- Maternal Vitals Form Handlers ----
   const handleSaveVital = async (e) => {
     e.preventDefault();
     if (!vitalForm.date) return;
@@ -159,7 +149,6 @@ export default function DoctorNotes({ initialTab = null }) {
     }
   };
 
-  // ---- Questions Handlers ----
   const handleAddQuestion = async (e) => {
     e.preventDefault();
     if (!newQuestionText.trim()) return;
@@ -178,7 +167,6 @@ export default function DoctorNotes({ initialTab = null }) {
     setQuestions([...updated]);
   };
 
-  // Filtered USG dictionary
   const filteredGuide = useMemo(() => {
     if (!guideSearch.trim()) return USG_INDICATORS;
     const q = guideSearch.toLowerCase();
@@ -191,16 +179,19 @@ export default function DoctorNotes({ initialTab = null }) {
     );
   }, [guideSearch]);
 
-  // Latest records for quick glance
   const latestUSG = usgRecords[0] || null;
   const latestVital = maternalVitals[0] || null;
 
-  // Real-time evaluation of vital form inputs
   const liveBpEval = evaluateBloodPressure(vitalForm.systolic, vitalForm.diastolic);
   const liveLilaEval = evaluateLila(vitalForm.lila);
   const liveHbEval = evaluateHb(vitalForm.hemoglobin);
   const liveDjjEval = evaluateDJJ(usgForm.djj);
   const liveAfiEval = evaluateAFI(usgForm.afi);
+
+  const formatDoctorName = (name) => {
+    if (!name) return 'Pemeriksaan USG Sp.OG';
+    return /^dr\.?\s/i.test(name.trim()) ? name.trim() : `dr. ${name.trim()}`;
+  };
 
   return (
     <div className="page-content doctor-notes-page" id="doctor-notes-page">
@@ -212,68 +203,74 @@ export default function DoctorNotes({ initialTab = null }) {
           onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
           aria-label="Kembali"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} aria-hidden="true" />
         </button>
         <div>
           <div className="dn-header-badge">
-            <Stethoscope size={14} /> Buku KIA & Medis Bumil
+            <Stethoscope size={14} aria-hidden="true" />
+            <span>Buku KIA &amp; Medis Bumil</span>
           </div>
-          <h2>Catatan Medis & USG</h2>
+          <h1>Catatan Medis &amp; USG</h1>
         </div>
       </header>
 
       {/* 4-Tab Navigation */}
-      <div className="dn-tab-toggle animate-fade-in-up" style={{ animationDelay: '60ms' }}>
+      <div className="dn-tab-toggle animate-fade-in-up" style={{ animationDelay: '40ms' }} role="tablist" aria-label="Bagian catatan medis">
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'usg'}
           className={`dn-tab-btn ${activeTab === 'usg' ? 'dn-tab-btn--active' : ''}`}
           onClick={() => setActiveTab('usg')}
         >
-          <Baby size={15} />
-          <span>USG Janin ({usgRecords.length})</span>
+          <Baby size={15} aria-hidden="true" />
+          <span className="tabular-nums">USG Janin ({usgRecords.length})</span>
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'mother'}
           className={`dn-tab-btn ${activeTab === 'mother' ? 'dn-tab-btn--active' : ''}`}
           onClick={() => setActiveTab('mother')}
         >
-          <HeartPulse size={15} />
-          <span>Kondisi Ibu ({maternalVitals.length})</span>
+          <HeartPulse size={15} aria-hidden="true" />
+          <span className="tabular-nums">Kondisi Ibu ({maternalVitals.length})</span>
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'guide'}
           className={`dn-tab-btn ${activeTab === 'guide' ? 'dn-tab-btn--active' : ''}`}
           onClick={() => setActiveTab('guide')}
         >
-          <BookOpen size={15} />
-          <span>Kamus & Mitigasi</span>
+          <BookOpen size={15} aria-hidden="true" />
+          <span>Kamus &amp; Mitigasi</span>
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'questions'}
           className={`dn-tab-btn ${activeTab === 'questions' ? 'dn-tab-btn--active' : ''}`}
           onClick={() => setActiveTab('questions')}
         >
-          <HelpCircle size={15} />
-          <span>Tanya Dokter ({questions.filter((q) => !q.isAnswered).length})</span>
+          <HelpCircle size={15} aria-hidden="true" />
+          <span className="tabular-nums">Tanya Dokter ({questions.filter((q) => !q.isAnswered).length})</span>
         </button>
       </div>
 
-      {/* ========================================================
-          TAB 1: USG JANIN (PROGRESS BIOMETRI & HASIL PEMERIKSAAN)
-          ======================================================== */}
+      {/* TAB 1: USG JANIN */}
       {activeTab === 'usg' && (
-        <div className="dn-section animate-fade-in-up" style={{ animationDelay: '90ms' }}>
-          {/* Quick glance highlight */}
+        <div className="dn-section animate-fade-in-up" style={{ animationDelay: '80ms' }}>
           {latestUSG && (
-            <div className="dn-quick-glance card">
+            <section className="dn-quick-glance card" aria-label="Ringkasan hasil USG terakhir">
               <div className="dn-qg-header">
-                <span className="eyebrow">Hasil USG Terakhir</span>
-                <span className="dn-qg-date">{formatDateID(latestUSG.date)} (Mg {latestUSG.week})</span>
+                <h2 className="eyebrow">Hasil USG Terakhir</h2>
+                <span className="dn-qg-date tabular-nums">{formatDateID(latestUSG.date)} (Mg {latestUSG.week})</span>
               </div>
               <div className="dn-qg-grid">
                 <div className="dn-qg-item">
                   <span className="dn-qg-label">Denyut Jantung (DJJ)</span>
-                  <strong className="dn-qg-val">{latestUSG.djj ? `${latestUSG.djj} bpm` : '-'}</strong>
+                  <strong className="dn-qg-val tabular-nums">{latestUSG.djj ? `${latestUSG.djj} bpm` : '-'}</strong>
                   {latestUSG.djj && (
                     <span className={`badge badge-${evaluateDJJ(latestUSG.djj)?.color || 'secondary'}`}>
                       {evaluateDJJ(latestUSG.djj)?.label}
@@ -282,7 +279,7 @@ export default function DoctorNotes({ initialTab = null }) {
                 </div>
                 <div className="dn-qg-item">
                   <span className="dn-qg-label">Air Ketuban (AFI)</span>
-                  <strong className="dn-qg-val">{latestUSG.afi ? `${latestUSG.afi} cm` : '-'}</strong>
+                  <strong className="dn-qg-val tabular-nums">{latestUSG.afi ? `${latestUSG.afi} cm` : '-'}</strong>
                   {latestUSG.afi && (
                     <span className={`badge badge-${evaluateAFI(latestUSG.afi)?.color || 'secondary'}`}>
                       {evaluateAFI(latestUSG.afi)?.label}
@@ -291,42 +288,42 @@ export default function DoctorNotes({ initialTab = null }) {
                 </div>
                 <div className="dn-qg-item">
                   <span className="dn-qg-label">Taksiran Berat (TBJ)</span>
-                  <strong className="dn-qg-val">{latestUSG.efw ? `${latestUSG.efw} gram` : '-'}</strong>
-                  <span className="text-xs text-secondary">{latestUSG.gender ? `JK: ${latestUSG.gender}` : ''}</span>
+                  <strong className="dn-qg-val tabular-nums">{latestUSG.efw ? `${latestUSG.efw} gram` : '-'}</strong>
+                  <span className="dn-qg-sub">{latestUSG.gender ? `JK: ${latestUSG.gender}` : ''}</span>
                 </div>
                 <div className="dn-qg-item">
                   <span className="dn-qg-label">Plasenta</span>
                   <strong className="dn-qg-val dn-qg-text-small">{latestUSG.placenta || '-'}</strong>
-                  <span className="text-xs text-secondary">{latestUSG.doctorName || profile?.doctorName || 'Sp.OG'}</span>
+                  <span className="dn-qg-sub">{latestUSG.doctorName || profile?.doctorName || 'Sp.OG'}</span>
                 </div>
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Toggle Add USG Button */}
           <div className="dn-action-bar">
             <button
               type="button"
               className="btn btn-primary btn-full"
               onClick={() => setShowUsgForm(!showUsgForm)}
+              aria-expanded={showUsgForm}
             >
-              <Plus size={16} />
-              {showUsgForm ? 'Tutup Formulir USG' : 'Catat Hasil USG Baru'}
+              <Plus size={16} aria-hidden="true" />
+              <span>{showUsgForm ? 'Tutup Formulir USG' : 'Catat Hasil USG Baru'}</span>
             </button>
           </div>
 
-          {/* New USG Record Form */}
           {showUsgForm && (
             <form className="dn-form card animate-fade-in-up" onSubmit={handleSaveUSG}>
               <div className="dn-form-header">
-                <h4>Pencatatan Biometri USG Janin</h4>
-                <span className="text-xs text-secondary">Isi sesuai printout foto USG dokter</span>
+                <h3>Pencatatan Biometri USG Janin</h3>
+                <span className="text-xs text-secondary">Sesuai printout USG dokter</span>
               </div>
 
               <div className="dn-form-grid">
                 <div className="input-group">
-                  <label>Tanggal Pemeriksaan *</label>
+                  <label htmlFor="usg-date">Tanggal Pemeriksaan *</label>
                   <input
+                    id="usg-date"
                     type="date"
                     className="input-field"
                     value={usgForm.date}
@@ -335,20 +332,22 @@ export default function DoctorNotes({ initialTab = null }) {
                   />
                 </div>
                 <div className="input-group">
-                  <label>Usia Janin (Minggu) *</label>
+                  <label htmlFor="usg-week">Usia Janin (Minggu) *</label>
                   <input
+                    id="usg-week"
                     type="number"
                     min="4"
                     max="42"
-                    className="input-field"
+                    className="input-field tabular-nums"
                     value={usgForm.week}
                     onChange={(e) => setUsgForm({ ...usgForm, week: parseInt(e.target.value, 10) || '' })}
                     required
                   />
                 </div>
                 <div className="input-group">
-                  <label>Nama Dokter / Sp.OG</label>
+                  <label htmlFor="usg-doctor">Nama Dokter / Sp.OG</label>
                   <input
+                    id="usg-doctor"
                     type="text"
                     className="input-field"
                     placeholder="Contoh: dr. Anita, Sp.OG"
@@ -357,97 +356,103 @@ export default function DoctorNotes({ initialTab = null }) {
                   />
                 </div>
                 <div className="input-group">
-                  <label>Klinik / Rumah Sakit</label>
+                  <label htmlFor="usg-clinic">Klinik / Rumah Sakit</label>
                   <input
+                    id="usg-clinic"
                     type="text"
                     className="input-field"
-                    placeholder="RSIA Bunda / Belleza / dll"
+                    placeholder="RSIA Bunda / Belleza"
                     value={usgForm.clinicName}
                     onChange={(e) => setUsgForm({ ...usgForm, clinicName: e.target.value })}
                   />
                 </div>
               </div>
 
-              {/* Biometri Janin Sub-Section */}
               <div className="dn-sub-form-section">
                 <div className="dn-sub-form-title">
-                  <Sparkles size={14} color="var(--color-primary)" />
-                  <span>Pengukuran Biometri Janin (Dalam mm & gram)</span>
+                  <Baby size={14} color="var(--color-primary)" aria-hidden="true" />
+                  <span>Pengukuran Biometri Janin (mm &amp; gram)</span>
                 </div>
 
                 <div className="dn-form-grid-3">
                   <div className="input-group">
-                    <label>
-                      CRL (mm) <span className="dn-field-hint">Puncak–Bokong T1</span>
+                    <label htmlFor="usg-crl">
+                      CRL (mm) <span className="dn-field-hint">T1</span>
                     </label>
                     <input
+                      id="usg-crl"
                       type="number"
                       step="0.1"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 54"
                       value={usgForm.crl}
                       onChange={(e) => setUsgForm({ ...usgForm, crl: e.target.value })}
                     />
                   </div>
                   <div className="input-group">
-                    <label>
-                      BPD (mm) <span className="dn-field-hint">Diameter Pelipis</span>
+                    <label htmlFor="usg-bpd">
+                      BPD (mm) <span className="dn-field-hint">Pelipis</span>
                     </label>
                     <input
+                      id="usg-bpd"
                       type="number"
                       step="0.1"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 62"
                       value={usgForm.bpd}
                       onChange={(e) => setUsgForm({ ...usgForm, bpd: e.target.value })}
                     />
                   </div>
                   <div className="input-group">
-                    <label>
-                      HC (mm) <span className="dn-field-hint">Lingkar Kepala</span>
+                    <label htmlFor="usg-hc">
+                      HC (mm) <span className="dn-field-hint">Kepala</span>
                     </label>
                     <input
+                      id="usg-hc"
                       type="number"
                       step="0.1"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 230"
                       value={usgForm.hc}
                       onChange={(e) => setUsgForm({ ...usgForm, hc: e.target.value })}
                     />
                   </div>
                   <div className="input-group">
-                    <label>
-                      AC (mm) <span className="dn-field-hint">Lingkar Perut</span>
+                    <label htmlFor="usg-ac">
+                      AC (mm) <span className="dn-field-hint">Perut</span>
                     </label>
                     <input
+                      id="usg-ac"
                       type="number"
                       step="0.1"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 215"
                       value={usgForm.ac}
                       onChange={(e) => setUsgForm({ ...usgForm, ac: e.target.value })}
                     />
                   </div>
                   <div className="input-group">
-                    <label>
-                      FL (mm) <span className="dn-field-hint">Panjang Paha</span>
+                    <label htmlFor="usg-fl">
+                      FL (mm) <span className="dn-field-hint">Paha</span>
                     </label>
                     <input
+                      id="usg-fl"
                       type="number"
                       step="0.1"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 48"
                       value={usgForm.fl}
                       onChange={(e) => setUsgForm({ ...usgForm, fl: e.target.value })}
                     />
                   </div>
                   <div className="input-group">
-                    <label>
-                      TBJ / EFW (gram) <span className="dn-field-hint">Taksiran Berat</span>
+                    <label htmlFor="usg-efw">
+                      TBJ (gram) <span className="dn-field-hint">Berat</span>
                     </label>
                     <input
+                      id="usg-efw"
                       type="number"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 1250"
                       value={usgForm.efw}
                       onChange={(e) => setUsgForm({ ...usgForm, efw: e.target.value })}
@@ -456,19 +461,19 @@ export default function DoctorNotes({ initialTab = null }) {
                 </div>
               </div>
 
-              {/* Fetal Well-being Sub-Section */}
               <div className="dn-sub-form-section">
                 <div className="dn-sub-form-title">
-                  <HeartPulse size={14} color="var(--color-secondary)" />
-                  <span>Kondisi Fisiologis Janin & Air Ketuban</span>
+                  <HeartPulse size={14} color="var(--color-secondary-dark)" aria-hidden="true" />
+                  <span>Kondisi Fisiologis Janin &amp; Air Ketuban</span>
                 </div>
 
                 <div className="dn-form-grid">
                   <div className="input-group">
-                    <label>DJJ / Denyut Jantung (bpm)</label>
+                    <label htmlFor="usg-djj">DJJ / Denyut Jantung (bpm)</label>
                     <input
+                      id="usg-djj"
                       type="number"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="Normal 110–160"
                       value={usgForm.djj}
                       onChange={(e) => setUsgForm({ ...usgForm, djj: e.target.value })}
@@ -480,11 +485,12 @@ export default function DoctorNotes({ initialTab = null }) {
                     )}
                   </div>
                   <div className="input-group">
-                    <label>AFI / Jumlah Ketuban (cm)</label>
+                    <label htmlFor="usg-afi">AFI / Ketuban (cm)</label>
                     <input
+                      id="usg-afi"
                       type="number"
                       step="0.1"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="Normal 5–24 cm"
                       value={usgForm.afi}
                       onChange={(e) => setUsgForm({ ...usgForm, afi: e.target.value })}
@@ -496,8 +502,9 @@ export default function DoctorNotes({ initialTab = null }) {
                     )}
                   </div>
                   <div className="input-group">
-                    <label>Posisi & Derajat Plasenta</label>
+                    <label htmlFor="usg-placenta">Posisi Plasenta</label>
                     <select
+                      id="usg-placenta"
                       className="input-field"
                       value={usgForm.placenta}
                       onChange={(e) => setUsgForm({ ...usgForm, placenta: e.target.value })}
@@ -510,22 +517,24 @@ export default function DoctorNotes({ initialTab = null }) {
                     </select>
                   </div>
                   <div className="input-group">
-                    <label>Jenis Kelamin (Gender)</label>
+                    <label htmlFor="usg-gender">Jenis Kelamin</label>
                     <select
+                      id="usg-gender"
                       className="input-field"
                       value={usgForm.gender}
                       onChange={(e) => setUsgForm({ ...usgForm, gender: e.target.value })}
                     >
                       <option value="Belum Jelas">Belum Jelas / Rahasia</option>
-                      <option value="Laki-laki 👦">Laki-laki 👦</option>
-                      <option value="Perempuan 👧">Perempuan 👧</option>
+                      <option value="Laki-laki">Laki-laki</option>
+                      <option value="Perempuan">Perempuan</option>
                     </select>
                   </div>
                 </div>
 
-                <div className="input-group" style={{ marginTop: '10px' }}>
-                  <label>Kesimpulan & Catatan Dokter</label>
+                <div className="input-group" style={{ marginTop: '12px' }}>
+                  <label htmlFor="usg-notes">Kesimpulan &amp; Catatan Dokter</label>
                   <textarea
+                    id="usg-notes"
                     className="input-field dn-textarea"
                     placeholder="Contoh: Janin aktif, posisi kepala di bawah, tidak ada lilitan tali pusat..."
                     value={usgForm.notes}
@@ -545,22 +554,21 @@ export default function DoctorNotes({ initialTab = null }) {
             </form>
           )}
 
-          {/* List of USG Records */}
           <div className="dn-records-list">
             {usgRecords.length === 0 ? (
               <div className="dn-empty-card card">
-                <span className="dn-empty-emoji">👶</span>
-                <h4>Belum Ada Catatan USG</h4>
+                <h3>Belum Ada Catatan USG</h3>
                 <p className="text-secondary text-xs">
-                  Bawa hasil foto USG saat kontrol, lalu catat ukuran CRL, BPD, AC, FL, dan DJJ untuk memantau grafik perkembangan janin.
+                  Catat ukuran CRL, BPD, AC, FL, dan DJJ setelah kontrol agar riwayat pertumbuhan janin tersimpan rapi.
                 </p>
                 <button
                   type="button"
-                  className="btn btn-secondary text-sm"
+                  className="btn btn-secondary btn-sm"
                   style={{ marginTop: '12px' }}
                   onClick={() => setShowUsgForm(true)}
                 >
-                  <Plus size={14} /> Catat Pemeriksaan Pertama
+                  <Plus size={14} aria-hidden="true" />
+                  <span>Catat Pemeriksaan Pertama</span>
                 </button>
               </div>
             ) : (
@@ -568,52 +576,53 @@ export default function DoctorNotes({ initialTab = null }) {
                 const djjEval = evaluateDJJ(rec.djj);
                 const afiEval = evaluateAFI(rec.afi);
                 return (
-                  <div key={rec.id} className="dn-record-card card animate-fade-in-up">
+                  <article key={rec.id} className="dn-record-card card animate-fade-in-up">
                     <div className="dn-rec-header">
                       <div className="dn-rec-meta">
-                        <span className="dn-rec-week-badge">Mg {rec.week}</span>
-                        <span className="dn-rec-date">
-                          <Calendar size={13} /> {formatDateID(rec.date)}
+                        <span className="dn-rec-week-badge tabular-nums">Mg {rec.week}</span>
+                        <span className="dn-rec-date tabular-nums">
+                          <Calendar size={13} aria-hidden="true" />
+                          <span>{formatDateID(rec.date)}</span>
                         </span>
                       </div>
                       <button
                         type="button"
                         className="dn-delete-btn"
                         onClick={() => handleDeleteUSG(rec.id)}
+                        aria-label={`Hapus riwayat USG tanggal ${formatDateID(rec.date)}`}
                         title="Hapus Catatan Ini"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={16} aria-hidden="true" />
                       </button>
                     </div>
 
                     <div className="dn-rec-doctor-line">
-                      <span>{rec.doctorName ? `dr. ${rec.doctorName}` : 'Pemeriksaan USG Sp.OG'}</span>
-                      {rec.clinicName && <span className="text-tertiary"> • {rec.clinicName}</span>}
+                      <span>{formatDoctorName(rec.doctorName)}</span>
+                      {rec.clinicName && <span className="text-tertiary"> · {rec.clinicName}</span>}
                     </div>
 
-                    {/* Biometry Chips */}
-                    <div className="dn-chips-grid">
+                    <div className="dn-chips-grid tabular-nums">
                       {rec.djj && (
                         <div className={`dn-chip dn-chip--${djjEval?.color || 'normal'}`}>
-                          <HeartPulse size={13} />
+                          <HeartPulse size={13} aria-hidden="true" />
                           <span>DJJ: <strong>{rec.djj} bpm</strong></span>
                         </div>
                       )}
                       {rec.afi && (
                         <div className={`dn-chip dn-chip--${afiEval?.color || 'normal'}`}>
-                          <Droplets size={13} />
+                          <Droplets size={13} aria-hidden="true" />
                           <span>AFI: <strong>{rec.afi} cm</strong></span>
                         </div>
                       )}
                       {rec.efw && (
                         <div className="dn-chip dn-chip--primary">
-                          <Weight size={13} />
+                          <Weight size={13} aria-hidden="true" />
                           <span>TBJ: <strong>{rec.efw} g</strong></span>
                         </div>
                       )}
                       {rec.gender && rec.gender !== 'Belum Jelas' && (
                         <div className="dn-chip dn-chip--accent">
-                          <Baby size={13} />
+                          <Baby size={13} aria-hidden="true" />
                           <span>JK: <strong>{rec.gender}</strong></span>
                         </div>
                       )}
@@ -636,7 +645,7 @@ export default function DoctorNotes({ initialTab = null }) {
                         <p>{rec.notes}</p>
                       </div>
                     )}
-                  </div>
+                  </article>
                 );
               })
             )}
@@ -644,12 +653,9 @@ export default function DoctorNotes({ initialTab = null }) {
         </div>
       )}
 
-      {/* ========================================================
-          TAB 2: KONDISI KESEHATAN IBU (BUKU KIA & INDIKATOR VITAL)
-          ======================================================== */}
+      {/* TAB 2: KONDISI KESEHATAN IBU */}
       {activeTab === 'mother' && (
-        <div className="dn-section animate-fade-in-up" style={{ animationDelay: '90ms' }}>
-          {/* Visual Gestational Weight Gain Trajectory & IMT Tracker */}
+        <div className="dn-section animate-fade-in-up" style={{ animationDelay: '80ms' }}>
           <WeightGainChart
             maternalVitals={maternalVitals}
             profile={profile}
@@ -667,17 +673,16 @@ export default function DoctorNotes({ initialTab = null }) {
             }}
           />
 
-          {/* Latest Maternal Health Vitals Card */}
           {latestVital && (
-            <div className="dn-quick-glance card">
+            <section className="dn-quick-glance card" aria-label="Status kesehatan terakhir ibu">
               <div className="dn-qg-header">
-                <span className="eyebrow">Status Kesehatan Terakhir</span>
-                <span className="dn-qg-date">{formatDateID(latestVital.date)} (Mg {latestVital.week})</span>
+                <h2 className="eyebrow">Status Kesehatan Terakhir</h2>
+                <span className="dn-qg-date tabular-nums">{formatDateID(latestVital.date)} (Mg {latestVital.week})</span>
               </div>
               <div className="dn-qg-grid">
                 <div className="dn-qg-item">
                   <span className="dn-qg-label">Tensi Darah</span>
-                  <strong className="dn-qg-val">
+                  <strong className="dn-qg-val tabular-nums">
                     {latestVital.systolic ? `${latestVital.systolic}/${latestVital.diastolic}` : '-'}
                   </strong>
                   {latestVital.systolic && (
@@ -688,7 +693,7 @@ export default function DoctorNotes({ initialTab = null }) {
                 </div>
                 <div className="dn-qg-item">
                   <span className="dn-qg-label">LiLA (Lengan Atas)</span>
-                  <strong className="dn-qg-val">{latestVital.lila ? `${latestVital.lila} cm` : '-'}</strong>
+                  <strong className="dn-qg-val tabular-nums">{latestVital.lila ? `${latestVital.lila} cm` : '-'}</strong>
                   {latestVital.lila && (
                     <span className={`badge badge-${evaluateLila(latestVital.lila)?.color || 'secondary'}`}>
                       {evaluateLila(latestVital.lila)?.label}
@@ -697,7 +702,7 @@ export default function DoctorNotes({ initialTab = null }) {
                 </div>
                 <div className="dn-qg-item">
                   <span className="dn-qg-label">Hemoglobin (Hb)</span>
-                  <strong className="dn-qg-val">{latestVital.hemoglobin ? `${latestVital.hemoglobin} g/dL` : '-'}</strong>
+                  <strong className="dn-qg-val tabular-nums">{latestVital.hemoglobin ? `${latestVital.hemoglobin} g/dL` : '-'}</strong>
                   {latestVital.hemoglobin && (
                     <span className={`badge badge-${evaluateHb(latestVital.hemoglobin)?.color || 'secondary'}`}>
                       {evaluateHb(latestVital.hemoglobin)?.label}
@@ -706,39 +711,39 @@ export default function DoctorNotes({ initialTab = null }) {
                 </div>
                 <div className="dn-qg-item">
                   <span className="dn-qg-label">Berat Badan</span>
-                  <strong className="dn-qg-val">{latestVital.weight ? `${latestVital.weight} kg` : '-'}</strong>
-                  <span className="text-xs text-secondary">
+                  <strong className="dn-qg-val tabular-nums">{latestVital.weight ? `${latestVital.weight} kg` : '-'}</strong>
+                  <span className="dn-qg-sub tabular-nums">
                     {profile?.prePregnancyWeight ? `Awal: ${profile.prePregnancyWeight} kg` : (latestVital.bloodSugar ? `Gula: ${latestVital.bloodSugar} mg/dL` : '')}
                   </span>
                 </div>
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Toggle Add Vital Button */}
           <div className="dn-action-bar">
             <button
               type="button"
               className="btn btn-primary btn-full"
               onClick={() => setShowVitalForm(!showVitalForm)}
+              aria-expanded={showVitalForm}
             >
-              <Plus size={16} />
-              {showVitalForm ? 'Tutup Formulir' : '+ Catat Berat Badan & Tensi Baru'}
+              <Plus size={16} aria-hidden="true" />
+              <span>{showVitalForm ? 'Tutup Formulir' : 'Catat Berat Badan & Tensi Baru'}</span>
             </button>
           </div>
 
-          {/* Vital Form */}
           {showVitalForm && (
             <form id="maternal-vital-form" className="dn-form card animate-fade-in-up" onSubmit={handleSaveVital}>
               <div className="dn-form-header">
-                <h4>Pencatatan Kesehatan Ibu (Standar Buku KIA)</h4>
-                <span className="text-xs text-secondary">Data saat kontrol ke Bidan / Puskesmas / RS</span>
+                <h3>Pencatatan Kesehatan Ibu (Buku KIA)</h3>
+                <span className="text-xs text-secondary">Saat kontrol Bidan / Puskesmas / RS</span>
               </div>
 
               <div className="dn-form-grid">
                 <div className="input-group">
-                  <label>Tanggal Pemeriksaan *</label>
+                  <label htmlFor="vital-date">Tanggal Pemeriksaan *</label>
                   <input
+                    id="vital-date"
                     type="date"
                     className="input-field"
                     value={vitalForm.date}
@@ -747,12 +752,13 @@ export default function DoctorNotes({ initialTab = null }) {
                   />
                 </div>
                 <div className="input-group">
-                  <label>Minggu Kehamilan *</label>
+                  <label htmlFor="vital-week">Minggu Kehamilan *</label>
                   <input
+                    id="vital-week"
                     type="number"
                     min="1"
                     max="42"
-                    className="input-field"
+                    className="input-field tabular-nums"
                     value={vitalForm.week}
                     onChange={(e) => setVitalForm({ ...vitalForm, week: parseInt(e.target.value, 10) || '' })}
                     required
@@ -760,41 +766,42 @@ export default function DoctorNotes({ initialTab = null }) {
                 </div>
               </div>
 
-              {/* Tensi & Berat */}
               <div className="dn-sub-form-section">
                 <div className="dn-sub-form-title">
-                  <Activity size={14} color="var(--color-primary)" />
-                  <span>Tekanan Darah & Berat Badan</span>
+                  <Activity size={14} color="var(--color-primary)" aria-hidden="true" />
+                  <span>Tekanan Darah &amp; Berat Badan</span>
                 </div>
 
                 <div className="dn-form-grid-3">
                   <div className="input-group">
-                    <label>Sistolik (mmHg)</label>
+                    <label htmlFor="vital-sys">Sistolik (mmHg)</label>
                     <input
+                      id="vital-sys"
                       type="number"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 110"
                       value={vitalForm.systolic}
                       onChange={(e) => setVitalForm({ ...vitalForm, systolic: e.target.value })}
                     />
                   </div>
                   <div className="input-group">
-                    <label>Diastolik (mmHg)</label>
+                    <label htmlFor="vital-dia">Diastolik (mmHg)</label>
                     <input
+                      id="vital-dia"
                       type="number"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 70"
                       value={vitalForm.diastolic}
                       onChange={(e) => setVitalForm({ ...vitalForm, diastolic: e.target.value })}
                     />
                   </div>
                   <div className="input-group">
-                    <label>Berat Badan (kg)</label>
+                    <label htmlFor="vital-weight-input">Berat Badan (kg)</label>
                     <input
                       id="vital-weight-input"
                       type="number"
                       step="0.1"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 58.5"
                       value={vitalForm.weight}
                       onChange={(e) => setVitalForm({ ...vitalForm, weight: e.target.value })}
@@ -812,47 +819,49 @@ export default function DoctorNotes({ initialTab = null }) {
                 )}
               </div>
 
-              {/* LiLA & Laboratorium */}
               <div className="dn-sub-form-section">
                 <div className="dn-sub-form-title">
-                  <Stethoscope size={14} color="var(--color-secondary)" />
-                  <span>Gizi & Laboratorium (LiLA, Hb, Gula)</span>
+                  <Stethoscope size={14} color="var(--color-secondary-dark)" aria-hidden="true" />
+                  <span>Gizi &amp; Laboratorium (LiLA, Hb, Gula)</span>
                 </div>
 
                 <div className="dn-form-grid-3">
                   <div className="input-group">
-                    <label>
-                      LiLA (cm) <span className="dn-field-hint">≥23.5 cm</span>
+                    <label htmlFor="vital-lila">
+                      LiLA (cm) <span className="dn-field-hint">≥23.5</span>
                     </label>
                     <input
+                      id="vital-lila"
                       type="number"
                       step="0.1"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 25.0"
                       value={vitalForm.lila}
                       onChange={(e) => setVitalForm({ ...vitalForm, lila: e.target.value })}
                     />
                   </div>
                   <div className="input-group">
-                    <label>
-                      Kadar Hb (g/dL) <span className="dn-field-hint">≥11.0 g/dL</span>
+                    <label htmlFor="vital-hb">
+                      Hb (g/dL) <span className="dn-field-hint">≥11.0</span>
                     </label>
                     <input
+                      id="vital-hb"
                       type="number"
                       step="0.1"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 12.1"
                       value={vitalForm.hemoglobin}
                       onChange={(e) => setVitalForm({ ...vitalForm, hemoglobin: e.target.value })}
                     />
                   </div>
                   <div className="input-group">
-                    <label>
-                      Gula Darah (mg/dL) <span className="dn-field-hint">&lt;140</span>
+                    <label htmlFor="vital-sugar">
+                      Gula (mg/dL) <span className="dn-field-hint">&lt;140</span>
                     </label>
                     <input
+                      id="vital-sugar"
                       type="number"
-                      className="input-field"
+                      className="input-field tabular-nums"
                       placeholder="cth: 105"
                       value={vitalForm.bloodSugar}
                       onChange={(e) => setVitalForm({ ...vitalForm, bloodSugar: e.target.value })}
@@ -863,17 +872,17 @@ export default function DoctorNotes({ initialTab = null }) {
                 {liveLilaEval && liveLilaEval.status === 'danger' && (
                   <div className="dn-eval-card dn-eval-card--danger" style={{ marginTop: '8px' }}>
                     <div className="dn-eval-header">
-                      <AlertTriangle size={15} />
+                      <AlertTriangle size={15} aria-hidden="true" />
                       <span className="dn-eval-tag">Peringatan: {liveLilaEval.label}</span>
                     </div>
                     <p className="dn-eval-advice">{liveLilaEval.advice}</p>
                   </div>
                 )}
 
-                {liveHbEval && (liveHbEval.status === 'warning' || liveHbEval.status === 'danger') && (
+                {liveHbEval && (liveHbEval.status === 'warning' || liveHbEval.status === 'danger' || liveHbEval.status === 'critical') && (
                   <div className="dn-eval-card dn-eval-card--warning" style={{ marginTop: '8px' }}>
                     <div className="dn-eval-header">
-                      <AlertTriangle size={15} />
+                      <AlertTriangle size={15} aria-hidden="true" />
                       <span className="dn-eval-tag">Peringatan: {liveHbEval.label}</span>
                     </div>
                     <p className="dn-eval-advice">{liveHbEval.advice}</p>
@@ -881,21 +890,22 @@ export default function DoctorNotes({ initialTab = null }) {
                 )}
               </div>
 
-              {/* Symptoms & Notes */}
               <div className="input-group">
-                <label>Keluhan Fisik Saat Ini</label>
+                <label htmlFor="vital-symptoms">Keluhan Fisik Saat Ini</label>
                 <input
+                  id="vital-symptoms"
                   type="text"
                   className="input-field"
-                  placeholder="Contoh: Kaki agak bengkak sore hari, sering buang air kecil..."
+                  placeholder="Contoh: Kaki agak bengkak sore hari..."
                   value={vitalForm.symptoms}
                   onChange={(e) => setVitalForm({ ...vitalForm, symptoms: e.target.value })}
                 />
               </div>
 
-              <div className="input-group">
-                <label>Catatan Tambahan Bidan / Dokter</label>
+              <div className="input-group" style={{ marginTop: '12px' }}>
+                <label htmlFor="vital-notes">Catatan Tambahan Bidan / Dokter</label>
                 <textarea
+                  id="vital-notes"
                   className="input-field dn-textarea"
                   placeholder="Instruksi obat, jadwal kontrol ulang, atau pantangan..."
                   value={vitalForm.notes}
@@ -914,22 +924,21 @@ export default function DoctorNotes({ initialTab = null }) {
             </form>
           )}
 
-          {/* List of Maternal Vitals */}
           <div className="dn-records-list">
             {maternalVitals.length === 0 ? (
               <div className="dn-empty-card card">
-                <span className="dn-empty-emoji">🩺</span>
-                <h4>Belum Ada Riwayat Vital Ibu</h4>
+                <h3>Belum Ada Riwayat Vital Ibu</h3>
                 <p className="text-secondary text-xs">
-                  Catat tensi, berat badan, lingkar lengan (LiLA), dan hasil cek laboratorium Hb setiap kali melakukan pemeriksaan kehamilan (ANC).
+                  Catat tensi, berat badan, lingkar lengan (LiLA), dan kadar Hb setiap pemeriksaan kehamilan (ANC).
                 </p>
                 <button
                   type="button"
-                  className="btn btn-secondary text-sm"
+                  className="btn btn-secondary btn-sm"
                   style={{ marginTop: '12px' }}
                   onClick={() => setShowVitalForm(true)}
                 >
-                  <Plus size={14} /> Catat Vitals Pertama
+                  <Plus size={14} aria-hidden="true" />
+                  <span>Catat Vitals Pertama</span>
                 </button>
               </div>
             ) : (
@@ -937,38 +946,39 @@ export default function DoctorNotes({ initialTab = null }) {
                 const bpEval = evaluateBloodPressure(v.systolic, v.diastolic);
                 const lilaEval = evaluateLila(v.lila);
                 const hbEval = evaluateHb(v.hemoglobin);
-                const hasAlert = bpEval?.status === 'danger' || lilaEval?.status === 'danger' || hbEval?.status === 'danger';
+                const hasAlert = bpEval?.status === 'danger' || bpEval?.status === 'critical' || lilaEval?.status === 'danger' || hbEval?.status === 'danger' || hbEval?.status === 'critical';
 
                 return (
-                  <div key={v.id} className="dn-record-card card animate-fade-in-up">
+                  <article key={v.id} className="dn-record-card card animate-fade-in-up">
                     <div className="dn-rec-header">
                       <div className="dn-rec-meta">
-                        <span className="dn-rec-week-badge">Mg {v.week}</span>
-                        <span className="dn-rec-date">
-                          <Calendar size={13} /> {formatDateID(v.date)}
+                        <span className="dn-rec-week-badge tabular-nums">Mg {v.week}</span>
+                        <span className="dn-rec-date tabular-nums">
+                          <Calendar size={13} aria-hidden="true" />
+                          <span>{formatDateID(v.date)}</span>
                         </span>
                       </div>
                       <button
                         type="button"
                         className="dn-delete-btn"
                         onClick={() => handleDeleteVital(v.id)}
+                        aria-label={`Hapus catatan vital tanggal ${formatDateID(v.date)}`}
                         title="Hapus Catatan Ini"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={16} aria-hidden="true" />
                       </button>
                     </div>
 
-                    {/* Vitals Chips */}
-                    <div className="dn-chips-grid">
+                    <div className="dn-chips-grid tabular-nums">
                       {v.systolic && v.diastolic && (
                         <div className={`dn-chip dn-chip--${bpEval?.color || 'normal'}`}>
-                          <Activity size={13} />
+                          <Activity size={13} aria-hidden="true" />
                           <span>Tensi: <strong>{v.systolic}/{v.diastolic}</strong></span>
                         </div>
                       )}
                       {v.weight && (
                         <div className="dn-chip dn-chip--primary">
-                          <Weight size={13} />
+                          <Weight size={13} aria-hidden="true" />
                           <span>BB: <strong>{v.weight} kg</strong></span>
                         </div>
                       )}
@@ -989,16 +999,15 @@ export default function DoctorNotes({ initialTab = null }) {
                       )}
                     </div>
 
-                    {/* Smart Mitigation Alert Box if any abnormal vital */}
                     {hasAlert && (
-                      <div className="dn-rec-alert-box card">
+                      <div className="dn-rec-alert-box card" role="alert">
                         <div className="dn-rec-alert-head">
-                          <AlertTriangle size={15} color="var(--color-danger)" />
-                          <strong>Panduan Tindakan & Mitigasi:</strong>
+                          <AlertTriangle size={15} color="var(--color-danger)" aria-hidden="true" />
+                          <strong>Panduan Tindakan &amp; Mitigasi:</strong>
                         </div>
-                        {bpEval?.status === 'danger' && <p>• <strong>Tensi Tinggi:</strong> {bpEval.advice}</p>}
-                        {lilaEval?.status === 'danger' && <p>• <strong>Gizi Rendah:</strong> {lilaEval.advice}</p>}
-                        {hbEval?.status === 'danger' && <p>• <strong>Anemia:</strong> {hbEval.advice}</p>}
+                        {(bpEval?.status === 'danger' || bpEval?.status === 'critical') && <p><strong>Tensi Tinggi:</strong> {bpEval.advice}</p>}
+                        {lilaEval?.status === 'danger' && <p><strong>Gizi Rendah:</strong> {lilaEval.advice}</p>}
+                        {(hbEval?.status === 'danger' || hbEval?.status === 'critical') && <p><strong>Anemia:</strong> {hbEval.advice}</p>}
                       </div>
                     )}
 
@@ -1014,7 +1023,7 @@ export default function DoctorNotes({ initialTab = null }) {
                         <p>{v.notes}</p>
                       </div>
                     )}
-                  </div>
+                  </article>
                 );
               })
             )}
@@ -1022,20 +1031,17 @@ export default function DoctorNotes({ initialTab = null }) {
         </div>
       )}
 
-      {/* ========================================================
-          TAB 3: KAMUS MEDIS USG & MITIGASI (EDUKASI UNTUK AWAM)
-          ======================================================== */}
+      {/* TAB 3: KAMUS MEDIS USG & MITIGASI */}
       {activeTab === 'guide' && (
-        <div className="dn-section animate-fade-in-up" style={{ animationDelay: '90ms' }}>
-          {/* Emergency Alert Banner */}
+        <div className="dn-section animate-fade-in-up" style={{ animationDelay: '80ms' }}>
           <div className="dn-emergency-banner card">
             <div className="dn-eb-icon">
-              <ShieldAlert size={24} />
+              <ShieldAlert size={22} aria-hidden="true" />
             </div>
             <div className="dn-eb-content">
-              <strong>Tanda Bahaya Kehamilan (Segera ke IGD RSIA!)</strong>
+              <strong>Tanda Bahaya Kehamilan (Segera ke IGD RSIA)</strong>
               <p className="text-xs">
-                Perdarahan jalan lahir, ketuban rembes, pusing hebat + pandangan kabur, atau gerak janin turun drastis adalah kondisi darurat.
+                Perdarahan jalan lahir, ketuban rembes, pusing hebat dengan pandangan kabur, atau gerak janin turun drastis merupakan kondisi darurat.
               </p>
               <div className="dn-eb-actions">
                 <button
@@ -1043,34 +1049,40 @@ export default function DoctorNotes({ initialTab = null }) {
                   className="btn btn-secondary btn-sm"
                   onClick={() => navigate('/hospitals')}
                 >
-                  <PhoneCall size={14} /> Daftar IGD RSIA Lampung
+                  <PhoneCall size={14} aria-hidden="true" />
+                  <span>Daftar IGD RSIA Lampung</span>
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Search bar for USG terms */}
           <div className="dn-search-wrap card">
-            <Search size={18} color="var(--color-text-tertiary)" />
+            <label htmlFor="dn-guide-search" className="sr-only">Cari istilah USG</label>
+            <Search size={18} color="var(--color-text-tertiary)" aria-hidden="true" />
             <input
+              id="dn-guide-search"
               type="text"
               className="dn-search-input"
-              placeholder="Cari istilah USG (misal: CRL, BPD, AC, AFI, DJJ)..."
+              placeholder="Cari istilah USG (CRL, BPD, AC, AFI, DJJ)..."
               value={guideSearch}
               onChange={(e) => setGuideSearch(e.target.value)}
             />
             {guideSearch && (
-              <button type="button" className="dn-search-clear" onClick={() => setGuideSearch('')}>
+              <button
+                type="button"
+                className="dn-search-clear"
+                onClick={() => setGuideSearch('')}
+                aria-label="Hapus pencarian"
+              >
                 ✕
               </button>
             )}
           </div>
 
-          {/* Interactive USG Accordion Dictionary */}
-          <div className="dn-guide-list">
+          <section className="dn-guide-list">
             <div className="dn-guide-section-header">
-              <BookOpen size={16} color="var(--color-primary)" />
-              <h4>Kamus Istilah Biometri USG & Nilai Acuan</h4>
+              <BookOpen size={16} color="var(--color-primary)" aria-hidden="true" />
+              <h2>Kamus Istilah Biometri USG &amp; Nilai Acuan</h2>
             </div>
 
             {filteredGuide.map((item) => {
@@ -1081,17 +1093,18 @@ export default function DoctorNotes({ initialTab = null }) {
                     type="button"
                     className="dn-guide-header-btn"
                     onClick={() => setExpandedGuideId(isExpanded ? null : item.id)}
+                    aria-expanded={isExpanded}
                   >
                     <div className="dn-guide-header-left">
                       <span className="dn-guide-code">{item.code}</span>
                       <div>
-                        <h5>{item.name}</h5>
+                        <h3>{item.name}</h3>
                         <span className="dn-guide-indo text-xs text-secondary">{item.indonesianName}</span>
                       </div>
                     </div>
                     <div className="dn-guide-header-right">
                       <span className="dn-guide-badge badge badge-mama">{item.badge}</span>
-                      {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                      {isExpanded ? <ChevronUp size={18} aria-hidden="true" /> : <ChevronDown size={18} aria-hidden="true" />}
                     </div>
                   </button>
 
@@ -1103,18 +1116,18 @@ export default function DoctorNotes({ initialTab = null }) {
                       </div>
                       <div className="dn-gb-row">
                         <span className="dn-gb-label">Rentang Normal:</span>
-                        <strong className="dn-gb-text dn-gb-text--highlight">{item.normalRange}</strong>
+                        <strong className="dn-gb-text dn-gb-text--highlight tabular-nums">{item.normalRange}</strong>
                       </div>
                       <div className="dn-gb-block">
-                        <span className="dn-gb-title">📌 Apa Artinya?</span>
+                        <span className="dn-gb-title">Apa Artinya?</span>
                         <p>{item.description}</p>
                       </div>
                       <div className="dn-gb-block">
-                        <span className="dn-gb-title">💡 Makna Medis:</span>
+                        <span className="dn-gb-title">Makna Medis</span>
                         <p>{item.clinicalMeaning}</p>
                       </div>
                       <div className="dn-gb-block dn-gb-block--mitigation">
-                        <span className="dn-gb-title">🛡️ Langkah Mitigasi & Saran:</span>
+                        <span className="dn-gb-title">Langkah Mitigasi &amp; Saran</span>
                         <p>{item.mitigation}</p>
                       </div>
                     </div>
@@ -1122,52 +1135,56 @@ export default function DoctorNotes({ initialTab = null }) {
                 </div>
               );
             })}
-          </div>
 
-          {/* Red Flags Guide Cards */}
-          <div className="dn-redflags-section">
+            {filteredGuide.length === 0 && (
+              <div className="dn-empty-card card">
+                <p className="text-xs text-secondary">Istilah USG tidak ditemukan. Coba kata kunci seperti CRL, BPD, AC, DJJ, atau AFI.</p>
+              </div>
+            )}
+          </section>
+
+          <section className="dn-redflags-section">
             <div className="dn-guide-section-header">
-              <AlertTriangle size={16} color="var(--color-danger)" />
-              <h4>6 Tanda Bahaya Kehamilan Buku KIA (Wajib Tahu!)</h4>
+              <AlertTriangle size={16} color="var(--color-danger)" aria-hidden="true" />
+              <h2>6 Tanda Bahaya Kehamilan Buku KIA</h2>
             </div>
 
             <div className="dn-rf-grid">
               {PREGNANCY_RED_FLAGS.map((rf) => (
                 <div key={rf.id} className="dn-rf-card card">
                   <div className="dn-rf-top">
-                    <span className="dn-rf-dot" />
+                    <span className="dn-rf-dot" aria-hidden="true" />
                     <strong>{rf.title}</strong>
                   </div>
                   <p className="dn-rf-desc text-xs text-secondary">{rf.desc}</p>
                   <div className="dn-rf-urgency">
-                    <Info size={13} color="var(--color-danger)" />
+                    <Info size={13} color="var(--color-danger)" aria-hidden="true" />
                     <span>{rf.urgency}</span>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         </div>
       )}
 
-      {/* ========================================================
-          TAB 4: TANYA DOKTER & BIDAN (CHECKLIST PERTANYAAN)
-          ======================================================== */}
+      {/* TAB 4: TANYA DOKTER */}
       {activeTab === 'questions' && (
-        <div className="dn-section animate-fade-in-up" style={{ animationDelay: '90ms' }}>
+        <div className="dn-section animate-fade-in-up" style={{ animationDelay: '80ms' }}>
           <div className="dn-intro-card card">
-            <Sparkles size={18} color="var(--color-accent-dark)" />
+            <HelpCircle size={18} color="var(--color-accent-dark)" aria-hidden="true" style={{ flexShrink: 0, marginTop: 2 }} />
             <p>
-              Tulis pertanyaan yang sering terpikirkan di rumah, agar saat bertemu Sp.OG atau bidan tidak ada yang terlupa!
+              Catat pertanyaan yang terpikirkan di rumah agar tidak terlupa saat konsultasi dengan dokter kandungan atau bidan.
             </p>
           </div>
 
-          {/* Add Question Input */}
           <form className="dn-add-q-form card" onSubmit={handleAddQuestion}>
+            <label htmlFor="dn-question-input" className="sr-only">Tulis pertanyaan untuk dokter</label>
             <input
+              id="dn-question-input"
               type="text"
               className="input-field dn-q-input"
-              placeholder="Tulis pertanyaan untuk dokter... (tekan enter)"
+              placeholder="Tulis pertanyaan untuk dokter..."
               value={newQuestionText}
               onChange={(e) => setNewQuestionText(e.target.value)}
             />
@@ -1177,18 +1194,16 @@ export default function DoctorNotes({ initialTab = null }) {
               disabled={!newQuestionText.trim()}
               aria-label="Tambah Pertanyaan"
             >
-              <Plus size={18} />
+              <Plus size={18} aria-hidden="true" />
             </button>
           </form>
 
-          {/* Questions List */}
           <div className="dn-questions-list">
             {questions.length === 0 ? (
               <div className="dn-empty-card card">
-                <span className="dn-empty-emoji">💬</span>
-                <h4>Belum Ada Pertanyaan Tercatat</h4>
+                <h3>Belum Ada Pertanyaan Tercatat</h3>
                 <p className="text-secondary text-xs">
-                  Contoh: "Bolehkah saya minum vitamin ini sebelum tidur?", "Apakah posisi tidur miring kanan aman?"
+                  Contoh: Bolehkah vitamin ini diminum sebelum tidur? Apakah posisi tidur miring kanan aman?
                 </p>
               </div>
             ) : (
@@ -1199,31 +1214,34 @@ export default function DoctorNotes({ initialTab = null }) {
                 >
                   <button
                     type="button"
-                    className="dn-q-check-btn"
+                    className="dn-q-toggle-btn"
                     onClick={() => handleToggleQuestion(q.id)}
-                    aria-label={q.isAnswered ? 'Tandai belum terjawab' : 'Tandai sudah terjawab'}
+                    aria-pressed={q.isAnswered}
+                    aria-label={`${q.isAnswered ? 'Sudah terjawab' : 'Belum terjawab'}: ${q.text}`}
                   >
-                    {q.isAnswered ? (
-                      <CheckCircle2 size={20} color="var(--color-secondary)" />
-                    ) : (
-                      <Circle size={20} color="var(--color-text-tertiary)" />
-                    )}
-                  </button>
-                  <div className="dn-q-text-wrap" onClick={() => handleToggleQuestion(q.id)}>
-                    <span className={`dn-q-text ${q.isAnswered ? 'dn-q-text--strikethrough' : ''}`}>
-                      {q.text}
+                    <span className="dn-q-check-icon" aria-hidden="true">
+                      {q.isAnswered ? (
+                        <CheckCircle2 size={20} color="var(--color-secondary-dark)" />
+                      ) : (
+                        <Circle size={20} color="var(--color-text-tertiary)" />
+                      )}
                     </span>
-                    {q.isAnswered && (
-                      <span className="dn-q-badge badge badge-success">✓ Sudah Dijawab Dokter</span>
-                    )}
-                  </div>
+                    <span className="dn-q-body">
+                      <span className={`dn-q-text ${q.isAnswered ? 'dn-q-text--strikethrough' : ''}`}>
+                        {q.text}
+                      </span>
+                      {q.isAnswered && (
+                        <span className="dn-q-badge badge badge-success">Sudah Dijawab Dokter</span>
+                      )}
+                    </span>
+                  </button>
                   <button
                     type="button"
                     className="dn-delete-btn"
                     onClick={() => handleDeleteQuestion(q.id)}
-                    aria-label="Hapus pertanyaan"
+                    aria-label={`Hapus pertanyaan: ${q.text}`}
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={16} aria-hidden="true" />
                   </button>
                 </div>
               ))

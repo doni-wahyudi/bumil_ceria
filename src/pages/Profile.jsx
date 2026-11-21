@@ -7,13 +7,14 @@ import {
   syncLocalToSupabase,
   fetchSupabaseToLocal,
 } from '../utils/storage';
+import { isSupabaseConfigured } from '../utils/supabaseClient';
 import {
   printMedicalSummary,
   exportDataToJSON,
   importDataFromJSON,
 } from '../utils/exportData';
 import { formatDateID, calculateDueDate } from '../utils/pregnancyCalc';
-import { calculateBMI, classifyBMI } from '../utils/bmiTracker';
+import { calculateBMI } from '../utils/bmiTracker';
 import {
   Save,
   RotateCcw,
@@ -33,6 +34,10 @@ import {
   LogOut,
   Cloud,
   Check,
+  AlertCircle,
+  Calendar,
+  Target,
+  Clock,
 } from 'lucide-react';
 import './Profile.css';
 
@@ -44,7 +49,7 @@ const insuranceLabels = {
 
 function Profile() {
   const navigate = useNavigate();
-  const { profile, refreshProfile, pregnancyData, handleLogout } = useApp();
+  const { profile, refreshProfile, pregnancyData, handleLogout, session } = useApp();
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({});
   const [showReset, setShowReset] = useState(false);
@@ -52,7 +57,6 @@ function Profile() {
   const [cloudStatus, setCloudStatus] = useState(null);
   const [isSyncing, setIsSyncing] = useState(false);
 
-  // Theme State
   const [theme, setTheme] = useState(localStorage.getItem('bumpbuddy_theme') || 'system');
 
   const handleThemeChange = (newTheme) => {
@@ -69,6 +73,10 @@ function Profile() {
   if (!profile) return null;
 
   const startEdit = (section) => {
+    if (editing === section) {
+      setEditing(null);
+      return;
+    }
     setEditing(section);
     setSaved(false);
     if (section === 'names') {
@@ -104,7 +112,6 @@ function Profile() {
     window.location.reload();
   };
 
-  // Cloud sync actions
   const handleSyncToCloud = async () => {
     setIsSyncing(true);
     const res = await syncLocalToSupabase();
@@ -128,83 +135,84 @@ function Profile() {
     });
   };
 
-  // JSON Import
   const handleFileImport = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const res = await importDataFromJSON(file);
     if (res.success) {
       await refreshProfile();
-      alert('Data cadangan berhasil dipulihkan!');
-      window.location.reload();
+      setCloudStatus({ type: 'success', message: res.message });
+      setTimeout(() => window.location.reload(), 800);
     } else {
-      alert(res.message);
+      setCloudStatus({ type: 'error', message: res.message });
     }
   };
+
+  const isGuestSession = !!session?.isGuest;
+  const canCloudSync = isSupabaseConfigured && !isGuestSession;
 
   return (
     <div className="page-content profile-page" id="profile-page">
       <header className="profile-header animate-fade-in-up">
-        <h2>Profil & Pengaturan</h2>
+        <h1>Profil &amp; Pengaturan</h1>
       </header>
 
       {saved && (
-        <div className="profile-saved animate-scale-in">
-          ✓ Tersimpan!
+        <div className="profile-saved animate-scale-in" role="status">
+          Perubahan tersimpan
         </div>
       )}
 
       {/* Pregnancy summary card */}
-      <div className="profile-summary card animate-fade-in-up" style={{ animationDelay: '60ms' }}>
+      <section className="profile-summary card animate-fade-in-up" style={{ animationDelay: '40ms' }} aria-label="Ringkasan usia kehamilan">
         <div className="profile-summary__row">
-          <Baby size={18} color="var(--color-primary)" />
+          <Baby size={18} color="var(--color-primary)" aria-hidden="true" />
           <span>Usia Kehamilan</span>
-          <strong>Minggu {pregnancyData?.currentWeek || '-'}</strong>
+          <strong className="tabular-nums">Minggu {pregnancyData?.currentWeek || '-'}</strong>
         </div>
         <div className="profile-summary__row">
-          <span>📅</span>
+          <Calendar size={18} color="var(--color-secondary-dark)" aria-hidden="true" />
           <span>HPHT</span>
-          <strong>{formatDateID(profile.hpht)}</strong>
+          <strong className="tabular-nums">{formatDateID(profile.hpht)}</strong>
         </div>
         <div className="profile-summary__row">
-          <span>🎯</span>
+          <Target size={18} color="var(--color-accent-dark)" aria-hidden="true" />
           <span>HPL (Perkiraan Lahir)</span>
-          <strong>{formatDateID(calculateDueDate(profile.hpht))}</strong>
+          <strong className="tabular-nums">{formatDateID(calculateDueDate(profile.hpht))}</strong>
         </div>
         <div className="profile-summary__row">
-          <span>⏳</span>
-          <span>Sisa</span>
-          <strong>{pregnancyData?.daysRemaining || '-'} hari</strong>
+          <Clock size={18} color="var(--color-papa)" aria-hidden="true" />
+          <span>Sisa Hari</span>
+          <strong className="tabular-nums">{pregnancyData?.daysRemaining || '-'} hari</strong>
         </div>
-      </div>
+      </section>
 
       {/* Quick Action: Bandar Lampung Hospital Directory */}
-      <div
+      <button
+        type="button"
         className="profile-hosp-btn card animate-fade-in-up"
-        style={{ animationDelay: '90ms' }}
+        style={{ animationDelay: '60ms' }}
         onClick={() => navigate('/hospitals')}
-        role="button"
-        tabIndex={0}
       >
         <div className="profile-hosp-btn__left">
           <div className="profile-hosp-icon">
-            <Building2 size={20} color="var(--color-primary)" />
+            <Building2 size={20} color="var(--color-primary)" aria-hidden="true" />
           </div>
           <div>
-            <h4 style={{ fontSize: 'var(--text-sm)' }}>Faskes & RS Bandar Lampung</h4>
-            <p className="text-secondary text-xs">RSIA Bunda, Belleza, RS Advent, RSUDAM & Call IGD</p>
+            <h2>Faskes &amp; RS Bandar Lampung</h2>
+            <p className="text-secondary text-xs">RSIA Bunda, Belleza, RS Advent, RSUDAM &amp; Telepon IGD</p>
           </div>
         </div>
-        <ChevronRight size={18} color="var(--color-text-tertiary)" />
-      </div>
+        <ChevronRight size={18} color="var(--color-text-tertiary)" aria-hidden="true" />
+      </button>
 
-      {/* Theme Switcher (Phase 3) */}
-      <div className="profile-theme-card card animate-fade-in-up" style={{ animationDelay: '120ms' }}>
+      {/* Theme Switcher */}
+      <section className="profile-theme-card card animate-fade-in-up" style={{ animationDelay: '80ms' }} aria-label="Pengaturan tema">
         <div className="profile-theme-header">
-          <span className="eyebrow">Tema Tampilan</span>
-          <span className="text-xs text-secondary">Warm Night Mode</span>
+          <h2 className="eyebrow">Tema Tampilan</h2>
+          <span className="text-xs text-secondary">Terang &amp; Warm Night</span>
         </div>
-        <div className="profile-theme-options">
+        <div className="profile-theme-options" role="group" aria-label="Pilih tema warna">
           {[
             { id: 'light', label: 'Terang', icon: Sun },
             { id: 'dark', label: 'Gelap', icon: Moon },
@@ -216,36 +224,43 @@ function Profile() {
               <button
                 key={t.id}
                 type="button"
+                aria-pressed={isActive}
                 className={`profile-theme-btn ${isActive ? 'profile-theme-btn--active' : ''}`}
                 onClick={() => handleThemeChange(t.id)}
               >
-                <Icon size={16} />
+                <Icon size={16} aria-hidden="true" />
                 <span>{t.label}</span>
               </button>
             );
           })}
         </div>
-      </div>
+      </section>
 
       {/* Edit Sections */}
-      <div className="profile-sections stagger-children" style={{ animationDelay: '150ms' }}>
+      <div className="profile-sections stagger-children" style={{ animationDelay: '100ms' }}>
         {/* Names */}
         <div className="profile-section card">
-          <button className="profile-section__header" onClick={() => startEdit('names')}>
+          <button
+            type="button"
+            className="profile-section__header"
+            onClick={() => startEdit('names')}
+            aria-expanded={editing === 'names'}
+          >
             <div className="profile-section__title">
-              <User size={18} color="var(--color-text-secondary)" />
+              <User size={18} color="var(--color-text-secondary)" aria-hidden="true" />
               <div>
-                <span className="eyebrow">Nama</span>
-                <p>👩 {profile.mamaName} &nbsp;&&nbsp; 👨 {profile.papaName}</p>
+                <span className="eyebrow">Nama Orang Tua</span>
+                <p>{profile.mamaName} &amp; {profile.papaName}</p>
               </div>
             </div>
-            <ChevronRight size={18} color="var(--color-text-tertiary)" />
+            <ChevronRight size={18} color="var(--color-text-tertiary)" aria-hidden="true" />
           </button>
           {editing === 'names' && (
             <div className="profile-section__form animate-fade-in-up">
               <div className="input-group">
-                <label>Nama Mama</label>
+                <label htmlFor="profile-mama-name">Nama Mama</label>
                 <input
+                  id="profile-mama-name"
                   type="text"
                   className="input-field"
                   value={form.mamaName || ''}
@@ -253,16 +268,18 @@ function Profile() {
                 />
               </div>
               <div className="input-group">
-                <label>Nama Papa</label>
+                <label htmlFor="profile-papa-name">Nama Papa</label>
                 <input
+                  id="profile-papa-name"
                   type="text"
                   className="input-field"
                   value={form.papaName || ''}
                   onChange={(e) => setForm((f) => ({ ...f, papaName: e.target.value }))}
                 />
               </div>
-              <button className="btn btn-primary btn-full" onClick={handleSave}>
-                <Save size={16} /> Simpan
+              <button type="button" className="btn btn-primary btn-full" onClick={handleSave}>
+                <Save size={16} aria-hidden="true" />
+                <span>Simpan</span>
               </button>
             </div>
           )}
@@ -270,21 +287,27 @@ function Profile() {
 
         {/* HPHT */}
         <div className="profile-section card">
-          <button className="profile-section__header" onClick={() => startEdit('hpht')}>
+          <button
+            type="button"
+            className="profile-section__header"
+            onClick={() => startEdit('hpht')}
+            aria-expanded={editing === 'hpht'}
+          >
             <div className="profile-section__title">
-              <span>📅</span>
+              <Calendar size={18} color="var(--color-text-secondary)" aria-hidden="true" />
               <div>
                 <span className="eyebrow">HPHT</span>
-                <p>{formatDateID(profile.hpht)}</p>
+                <p className="tabular-nums">{formatDateID(profile.hpht)}</p>
               </div>
             </div>
-            <ChevronRight size={18} color="var(--color-text-tertiary)" />
+            <ChevronRight size={18} color="var(--color-text-tertiary)" aria-hidden="true" />
           </button>
           {editing === 'hpht' && (
             <div className="profile-section__form animate-fade-in-up">
               <div className="input-group">
-                <label>Tanggal HPHT</label>
+                <label htmlFor="profile-hpht">Tanggal HPHT</label>
                 <input
+                  id="profile-hpht"
                   type="date"
                   className="input-field"
                   value={form.hpht || ''}
@@ -292,8 +315,9 @@ function Profile() {
                   max={new Date().toISOString().split('T')[0]}
                 />
               </div>
-              <button className="btn btn-primary btn-full" onClick={handleSave}>
-                <Save size={16} /> Simpan
+              <button type="button" className="btn btn-primary btn-full" onClick={handleSave}>
+                <Save size={16} aria-hidden="true" />
+                <span>Simpan</span>
               </button>
             </div>
           )}
@@ -301,25 +325,31 @@ function Profile() {
 
         {/* Physical Baseline & BMI */}
         <div className="profile-section card">
-          <button className="profile-section__header" onClick={() => startEdit('bodyStats')}>
+          <button
+            type="button"
+            className="profile-section__header"
+            onClick={() => startEdit('bodyStats')}
+            aria-expanded={editing === 'bodyStats'}
+          >
             <div className="profile-section__title">
-              <Scale size={18} color="var(--color-text-secondary)" />
+              <Scale size={18} color="var(--color-text-secondary)" aria-hidden="true" />
               <div>
-                <span className="eyebrow">Fisik & IMT Pra-Hamil</span>
-                <p>
+                <span className="eyebrow">Fisik &amp; IMT Pra-Hamil</span>
+                <p className="tabular-nums">
                   {profile.heightCm && profile.prePregnancyWeight
-                    ? `TB: ${profile.heightCm} cm • BB: ${profile.prePregnancyWeight} kg (IMT ${calculateBMI(profile.prePregnancyWeight, profile.heightCm)} - ${classifyBMI(calculateBMI(profile.prePregnancyWeight, profile.heightCm)).label})`
-                    : 'Belum diisi (Klik untuk atur)'}
+                    ? `TB ${profile.heightCm} cm · BB ${profile.prePregnancyWeight} kg (IMT ${calculateBMI(profile.prePregnancyWeight, profile.heightCm)})`
+                    : 'Belum diisi (Ketuk untuk atur)'}
                 </p>
               </div>
             </div>
-            <ChevronRight size={18} color="var(--color-text-tertiary)" />
+            <ChevronRight size={18} color="var(--color-text-tertiary)" aria-hidden="true" />
           </button>
           {editing === 'bodyStats' && (
             <div className="profile-section__form animate-fade-in-up">
               <div className="input-group">
-                <label>Tinggi Badan Ibu (cm)</label>
+                <label htmlFor="profile-height-cm">Tinggi Badan Ibu (cm)</label>
                 <input
+                  id="profile-height-cm"
                   type="number"
                   step="0.5"
                   className="input-field"
@@ -329,8 +359,9 @@ function Profile() {
                 />
               </div>
               <div className="input-group">
-                <label>Berat Badan Sebelum Hamil (kg)</label>
+                <label htmlFor="profile-pre-weight">Berat Badan Sebelum Hamil (kg)</label>
                 <input
+                  id="profile-pre-weight"
                   type="number"
                   step="0.1"
                   className="input-field"
@@ -339,8 +370,9 @@ function Profile() {
                   onChange={(e) => setForm((f) => ({ ...f, prePregnancyWeight: e.target.value }))}
                 />
               </div>
-              <button className="btn btn-primary btn-full" onClick={handleSave}>
-                <Save size={16} /> Simpan
+              <button type="button" className="btn btn-primary btn-full" onClick={handleSave}>
+                <Save size={16} aria-hidden="true" />
+                <span>Simpan</span>
               </button>
             </div>
           )}
@@ -348,21 +380,27 @@ function Profile() {
 
         {/* Hospital */}
         <div className="profile-section card">
-          <button className="profile-section__header" onClick={() => startEdit('hospital')}>
+          <button
+            type="button"
+            className="profile-section__header"
+            onClick={() => startEdit('hospital')}
+            aria-expanded={editing === 'hospital'}
+          >
             <div className="profile-section__title">
-              <Hospital size={18} color="var(--color-text-secondary)" />
+              <Hospital size={18} color="var(--color-text-secondary)" aria-hidden="true" />
               <div>
-                <span className="eyebrow">Rumah Sakit & Dokter</span>
+                <span className="eyebrow">Rumah Sakit &amp; Dokter</span>
                 <p>{profile.hospitalName || 'Belum diisi'}</p>
               </div>
             </div>
-            <ChevronRight size={18} color="var(--color-text-tertiary)" />
+            <ChevronRight size={18} color="var(--color-text-tertiary)" aria-hidden="true" />
           </button>
           {editing === 'hospital' && (
             <div className="profile-section__form animate-fade-in-up">
               <div className="input-group">
-                <label>Nama Rumah Sakit / Klinik</label>
+                <label htmlFor="profile-hosp-name">Nama Rumah Sakit / Klinik</label>
                 <input
+                  id="profile-hosp-name"
                   type="text"
                   className="input-field"
                   placeholder="Contoh: RSIA Bunda"
@@ -371,8 +409,9 @@ function Profile() {
                 />
               </div>
               <div className="input-group">
-                <label>Alamat RS (opsional)</label>
+                <label htmlFor="profile-hosp-addr">Alamat RS (opsional)</label>
                 <input
+                  id="profile-hosp-addr"
                   type="text"
                   className="input-field"
                   placeholder="Contoh: Jl. Teuku Umar No. 12"
@@ -381,8 +420,9 @@ function Profile() {
                 />
               </div>
               <div className="input-group">
-                <label>Nama Dokter (opsional)</label>
+                <label htmlFor="profile-doctor-name">Nama Dokter (opsional)</label>
                 <input
+                  id="profile-doctor-name"
                   type="text"
                   className="input-field"
                   placeholder="Contoh: dr. Rina, SpOG"
@@ -390,8 +430,9 @@ function Profile() {
                   onChange={(e) => setForm((f) => ({ ...f, doctorName: e.target.value }))}
                 />
               </div>
-              <button className="btn btn-primary btn-full" onClick={handleSave}>
-                <Save size={16} /> Simpan
+              <button type="button" className="btn btn-primary btn-full" onClick={handleSave}>
+                <Save size={16} aria-hidden="true" />
+                <span>Simpan</span>
               </button>
             </div>
           )}
@@ -399,15 +440,20 @@ function Profile() {
 
         {/* Insurance */}
         <div className="profile-section card">
-          <button className="profile-section__header" onClick={() => startEdit('insurance')}>
+          <button
+            type="button"
+            className="profile-section__header"
+            onClick={() => startEdit('insurance')}
+            aria-expanded={editing === 'insurance'}
+          >
             <div className="profile-section__title">
-              <Shield size={18} color="var(--color-text-secondary)" />
+              <Shield size={18} color="var(--color-text-secondary)" aria-hidden="true" />
               <div>
                 <span className="eyebrow">Asuransi Kesehatan</span>
                 <p>{insuranceLabels[profile.insuranceType] || '-'}</p>
               </div>
             </div>
-            <ChevronRight size={18} color="var(--color-text-tertiary)" />
+            <ChevronRight size={18} color="var(--color-text-tertiary)" aria-hidden="true" />
           </button>
           {editing === 'insurance' && (
             <div className="profile-section__form animate-fade-in-up">
@@ -415,6 +461,8 @@ function Profile() {
                 {Object.entries(insuranceLabels).map(([value, label]) => (
                   <button
                     key={value}
+                    type="button"
+                    aria-pressed={form.insuranceType === value}
                     className={`profile-insurance-option ${form.insuranceType === value ? 'profile-insurance-option--active' : ''}`}
                     onClick={() => setForm((f) => ({ ...f, insuranceType: value }))}
                   >
@@ -422,8 +470,9 @@ function Profile() {
                   </button>
                 ))}
               </div>
-              <button className="btn btn-primary btn-full" onClick={handleSave}>
-                <Save size={16} /> Simpan
+              <button type="button" className="btn btn-primary btn-full" onClick={handleSave}>
+                <Save size={16} aria-hidden="true" />
+                <span>Simpan</span>
               </button>
             </div>
           )}
@@ -431,21 +480,27 @@ function Profile() {
       </div>
 
       {/* Cloud Sync Card */}
-      <div className="profile-cloud-card card animate-fade-in-up" style={{ animationDelay: '180ms' }}>
+      <section className="profile-cloud-card card animate-fade-in-up" style={{ animationDelay: '140ms' }} aria-label="Sinkronisasi Cloud">
         <div className="profile-cloud-title" style={{ marginBottom: '10px' }}>
-          <Cloud size={18} color="var(--color-secondary-dark)" />
+          <Cloud size={18} color="var(--color-secondary-dark)" aria-hidden="true" />
           <div>
-            <span className="eyebrow">Sinkronisasi Cloud</span>
-            <p className="text-xs text-secondary">Data disimpan ke Supabase database</p>
+            <h2 className="eyebrow">Sinkronisasi Cloud</h2>
+            <p className="text-xs text-secondary">
+              {canCloudSync
+                ? 'Terhubung ke database Supabase akun Anda'
+                : isGuestSession
+                  ? 'Mode Tamu aktif: data tersimpan aman secara lokal di perangkat ini'
+                  : 'Koneksi Supabase tidak aktif pada pratinjau lokal'}
+            </p>
           </div>
         </div>
 
         {cloudStatus && (
           <div
             className={`profile-cloud-status profile-cloud-status--${cloudStatus.type} animate-scale-in`}
-            style={{ marginBottom: '8px' }}
+            role={cloudStatus.type === 'error' ? 'alert' : 'status'}
           >
-            <Check size={14} />
+            {cloudStatus.type === 'error' ? <AlertCircle size={14} aria-hidden="true" /> : <Check size={14} aria-hidden="true" />}
             <span>{cloudStatus.message}</span>
           </div>
         )}
@@ -453,35 +508,36 @@ function Profile() {
         <div className="profile-cloud-actions">
           <button
             type="button"
-            className="btn btn-secondary text-xs"
+            className="btn btn-secondary btn-sm"
             onClick={handleFetchFromCloud}
-            disabled={isSyncing}
+            disabled={isSyncing || !isSupabaseConfigured}
           >
-            Tarik Cloud
+            {isSyncing ? 'Memuat...' : 'Tarik Cloud'}
           </button>
           <button
             type="button"
-            className="btn btn-primary text-xs"
+            className="btn btn-primary btn-sm"
             onClick={handleSyncToCloud}
-            disabled={isSyncing}
+            disabled={isSyncing || !isSupabaseConfigured}
           >
             {isSyncing ? 'Menyinkronkan...' : 'Unggah ke Cloud'}
           </button>
         </div>
-      </div>
+      </section>
 
-      {/* Export & Medical Summary Card (Phase 3) */}
-      <div className="profile-export-card card animate-fade-in-up" style={{ animationDelay: '210ms' }}>
-        <span className="eyebrow" style={{ display: 'block', marginBottom: '8px' }}>
-          Ekspor & Cadangan Data
-        </span>
+      {/* Export & Medical Summary Card */}
+      <section className="profile-export-card card animate-fade-in-up" style={{ animationDelay: '160ms' }} aria-label="Ekspor dan cadangan data">
+        <h2 className="eyebrow" style={{ display: 'block', marginBottom: '10px' }}>
+          Ekspor &amp; Cadangan Data
+        </h2>
 
         <button
           type="button"
           className="btn btn-secondary btn-full profile-export-action-btn"
           onClick={printMedicalSummary}
         >
-          <Printer size={16} /> Cetak / PDF Ringkasan Medis
+          <Printer size={16} aria-hidden="true" />
+          <span>Cetak / PDF Ringkasan Medis</span>
         </button>
 
         <div className="profile-backup-row">
@@ -490,33 +546,42 @@ function Profile() {
             className="btn btn-ghost profile-backup-btn"
             onClick={exportDataToJSON}
           >
-            <Download size={14} /> Cadangkan JSON
+            <Download size={14} aria-hidden="true" />
+            <span>Cadangkan JSON</span>
           </button>
 
-          <label className="btn btn-ghost profile-backup-btn">
-            <Upload size={14} /> Pulihkan JSON
+          <label className="btn btn-ghost profile-backup-btn" htmlFor="profile-json-import">
+            <Upload size={14} aria-hidden="true" />
+            <span>Pulihkan JSON</span>
             <input
+              id="profile-json-import"
               type="file"
               accept=".json"
-              style={{ display: 'none' }}
+              className="sr-only"
               onChange={handleFileImport}
             />
           </label>
         </div>
-      </div>
+      </section>
 
       {/* Reset */}
-      <div className="profile-reset animate-fade-in-up" style={{ animationDelay: '240ms' }}>
+      <div className="profile-reset animate-fade-in-up" style={{ animationDelay: '180ms' }}>
         {!showReset ? (
-          <button className="btn btn-ghost" onClick={() => setShowReset(true)}>
-            <RotateCcw size={16} /> Reset Semua Data
+          <button type="button" className="btn btn-ghost" onClick={() => setShowReset(true)}>
+            <RotateCcw size={16} aria-hidden="true" />
+            <span>Reset Semua Data</span>
           </button>
         ) : (
           <div className="profile-reset__confirm card">
-            <p className="text-sm"><strong>Yakin ingin reset?</strong> Semua data akan hilang.</p>
+            <p className="text-sm"><strong>Yakin ingin reset?</strong> Semua data lokal akan dihapus.</p>
             <div className="profile-reset__actions">
-              <button className="btn btn-ghost" onClick={() => setShowReset(false)}>Batal</button>
-              <button className="btn btn-primary" style={{ background: 'var(--color-danger)' }} onClick={handleReset}>
+              <button type="button" className="btn btn-ghost" onClick={() => setShowReset(false)}>Batal</button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                style={{ background: 'var(--color-danger)', color: 'var(--color-text-inverse)' }}
+                onClick={handleReset}
+              >
                 Reset
               </button>
             </div>
@@ -525,20 +590,22 @@ function Profile() {
       </div>
 
       {/* Logout */}
-      <div className="profile-reset animate-fade-in-up" style={{ animationDelay: '255ms' }}>
+      <div className="profile-reset animate-fade-in-up" style={{ animationDelay: '200ms' }}>
         <button
+          type="button"
           className="btn btn-ghost"
           style={{ color: 'var(--color-danger)', gap: '6px' }}
           onClick={handleLogout}
         >
-          <LogOut size={16} /> Keluar dari Akun
+          <LogOut size={16} aria-hidden="true" />
+          <span>Keluar dari Akun</span>
         </button>
       </div>
 
       {/* App info */}
-      <div className="profile-info animate-fade-in-up" style={{ animationDelay: '270ms' }}>
+      <div className="profile-info animate-fade-in-up" style={{ animationDelay: '220ms' }}>
         <p className="text-xs text-tertiary" style={{ textAlign: 'center' }}>
-          Bumil Ceria v1.0 • Dibuat dengan ❤️ di Bandar Lampung
+          Bumil Ceria v1.0 · Bandar Lampung
         </p>
       </div>
     </div>

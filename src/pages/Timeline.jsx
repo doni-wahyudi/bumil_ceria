@@ -12,19 +12,19 @@ function Timeline() {
   const currentWeek = pregnancyData?.currentWeek || 1;
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [tab, setTab] = useState('week'); // 'week' | 'usg'
-  const [expandedWeeks, setExpandedWeeks] = useState(new Set([currentWeek]));
+  const [expandedWeeks, setExpandedWeeks] = useState(new Set([`mama-${currentWeek}`]));
 
   const weekData = getWeekData(selectedWeek);
   const hasUSG = hasUSGInWeek(selectedWeek);
   const usgData = getUSGForWeek(selectedWeek);
 
-  const toggleExpand = (week) => {
+  const toggleExpand = (key) => {
     setExpandedWeeks((prev) => {
       const next = new Set(prev);
-      if (next.has(week)) {
-        next.delete(week);
+      if (next.has(key)) {
+        next.delete(key);
       } else {
-        next.add(week);
+        next.add(key);
       }
       return next;
     });
@@ -33,29 +33,36 @@ function Timeline() {
   return (
     <div className="page-content timeline-page" id="timeline-page">
       <header className="timeline-header animate-fade-in-up">
-        <h2>Timeline Kehamilan</h2>
+        <h1>Timeline Kehamilan</h1>
       </header>
 
       {/* Tab toggle */}
-      <div className="timeline-tabs animate-fade-in-up" style={{ animationDelay: '60ms' }}>
+      <div className="timeline-tabs animate-fade-in-up" role="tablist" aria-label="Tampilan timeline" style={{ animationDelay: '40ms' }}>
         <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'week'}
           className={`timeline-tab ${tab === 'week' ? 'timeline-tab--active' : ''}`}
           onClick={() => setTab('week')}
         >
           Mingguan
         </button>
         <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'usg'}
           className={`timeline-tab ${tab === 'usg' ? 'timeline-tab--active' : ''}`}
           onClick={() => setTab('usg')}
         >
-          <Stethoscope size={16} /> Jadwal USG
+          <Stethoscope size={16} aria-hidden="true" />
+          <span>Jadwal USG</span>
         </button>
       </div>
 
       {tab === 'week' ? (
         <>
           {/* Week Selector */}
-          <div className="animate-fade-in-up" style={{ animationDelay: '120ms' }}>
+          <div className="animate-fade-in-up" style={{ animationDelay: '80ms' }}>
             <WeekSelector
               currentWeek={currentWeek}
               selectedWeek={selectedWeek}
@@ -65,16 +72,16 @@ function Timeline() {
 
           {/* Week Detail */}
           {weekData && (
-            <div className="timeline-week-detail animate-fade-in-up" style={{ animationDelay: '180ms' }}>
-              <div className="timeline-week-card card">
+            <div className="timeline-week-detail animate-fade-in-up" style={{ animationDelay: '120ms' }}>
+              <section className="timeline-week-card card">
                 <div className="timeline-week-card__header">
                   <div>
-                    <span className="eyebrow">
-                      Minggu {selectedWeek} • {weekData.trimester === 1 ? 'Trimester 1' : weekData.trimester === 2 ? 'Trimester 2' : 'Trimester 3'}
+                    <span className="eyebrow tabular-nums">
+                      Minggu {selectedWeek} · {weekData.trimester === 1 ? 'Trimester 1' : weekData.trimester === 2 ? 'Trimester 2' : 'Trimester 3'}
                     </span>
-                    <h3>Perkembangan Bayi</h3>
+                    <h2>Perkembangan Bayi</h2>
                   </div>
-                  <span className="timeline-week-card__size-emoji">{weekData.babySizeEmoji}</span>
+                  <span className="timeline-week-card__size-emoji" aria-hidden="true">{weekData.babySizeEmoji}</span>
                 </div>
 
                 <div className="timeline-week-card__size">
@@ -86,32 +93,34 @@ function Timeline() {
 
                 {hasUSG && usgData && (
                   <div className="timeline-week-card__usg">
-                    <span className="badge badge-usg">📋 USG: {usgData.title}</span>
+                    <span className="badge badge-usg">Jadwal USG: {usgData.title}</span>
                     <p className="text-sm text-secondary" style={{ marginTop: 'var(--space-2)' }}>
                       {usgData.description}
                     </p>
                   </div>
                 )}
-              </div>
+              </section>
 
               {/* Mama section */}
               <button
+                type="button"
                 className="timeline-section-toggle card"
                 onClick={() => toggleExpand(`mama-${selectedWeek}`)}
+                aria-expanded={expandedWeeks.has(`mama-${selectedWeek}`)}
               >
                 <div className="timeline-section-toggle__header">
-                  <span>👩 Kondisi Mama</span>
-                  {expandedWeeks.has(`mama-${selectedWeek}`) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  <span>Kondisi &amp; Tips Mama</span>
+                  {expandedWeeks.has(`mama-${selectedWeek}`) ? <ChevronUp size={18} aria-hidden="true" /> : <ChevronDown size={18} aria-hidden="true" />}
                 </div>
               </button>
               {expandedWeeks.has(`mama-${selectedWeek}`) && (
                 <div className="timeline-section-content card animate-fade-in-up">
                   <div className="timeline-info-block">
-                    <h5>Gejala & Perubahan</h5>
+                    <h3>Gejala &amp; Perubahan</h3>
                     <p>{weekData.mamaSymptoms}</p>
                   </div>
                   <div className="timeline-info-block">
-                    <h5>Tips</h5>
+                    <h3>Tips Minggu Ini</h3>
                     <p>{weekData.mamaTips}</p>
                   </div>
                 </div>
@@ -119,12 +128,14 @@ function Timeline() {
 
               {/* Checklist preview */}
               <button
+                type="button"
                 className="timeline-section-toggle card"
                 onClick={() => toggleExpand(`checklist-${selectedWeek}`)}
+                aria-expanded={expandedWeeks.has(`checklist-${selectedWeek}`)}
               >
                 <div className="timeline-section-toggle__header">
-                  <span>{role === 'mama' ? '📋 Checklist Mama' : '📋 Checklist Papa'}</span>
-                  {expandedWeeks.has(`checklist-${selectedWeek}`) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  <span>{role === 'mama' ? 'Checklist Mama' : 'Checklist Papa'}</span>
+                  {expandedWeeks.has(`checklist-${selectedWeek}`) ? <ChevronUp size={18} aria-hidden="true" /> : <ChevronDown size={18} aria-hidden="true" />}
                 </div>
               </button>
               {expandedWeeks.has(`checklist-${selectedWeek}`) && (
@@ -132,8 +143,8 @@ function Timeline() {
                   <ul className="timeline-checklist-preview">
                     {(role === 'mama' ? weekData.mamaChecklist : weekData.papaChecklist).map((item) => (
                       <li key={item.id}>
-                        <span className={`timeline-priority timeline-priority--${item.priority}`} />
-                        {item.text}
+                        <span className={`timeline-priority timeline-priority--${item.priority}`} aria-hidden="true" />
+                        <span>{item.text}</span>
                       </li>
                     ))}
                   </ul>
@@ -144,7 +155,7 @@ function Timeline() {
         </>
       ) : (
         /* USG Tab */
-        <div className="animate-fade-in-up" style={{ animationDelay: '120ms' }}>
+        <div className="animate-fade-in-up" style={{ animationDelay: '80ms' }}>
           <USGTimeline currentWeek={currentWeek} />
         </div>
       )}

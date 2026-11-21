@@ -1,19 +1,23 @@
 /* Labor Tools Page Styles */
 
 .labor-tools-page {
-  padding-bottom: calc(var(--safe-area-bottom) + 36px);
+  padding-bottom: calc(var(--safe-area-bottom) + 40px);
 }
 
 .lt-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.lt-header h1 {
+  font-size: var(--text-xl);
 }
 
 .lt-back-btn {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-full);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -22,19 +26,19 @@
   justify-content: center;
   color: var(--color-text-primary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
   flex-shrink: 0;
 }
 
 .lt-back-btn:hover {
   background: var(--color-bg-secondary);
-  transform: scale(1.05);
+  transform: translateX(-2px);
 }
 
 .lt-header-badge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
   font-size: var(--text-xs);
   font-weight: 700;
   text-transform: uppercase;
@@ -47,8 +51,8 @@
 .lt-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .lt-tab-btn {
@@ -56,6 +60,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+  min-height: 48px;
   padding: 10px 8px;
   border-radius: var(--radius-lg);
   background: var(--color-surface);
@@ -64,7 +69,7 @@
   font-weight: 700;
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
   text-align: center;
 }
 
@@ -72,20 +77,20 @@
   background: var(--color-surface);
   border-color: var(--color-primary);
   color: var(--color-text-primary);
-  box-shadow: 0 4px 12px rgba(216, 142, 170, 0.18);
+  box-shadow: var(--shadow-sm);
 }
 
 .lt-info-box {
   display: flex;
-  gap: 10px;
+  gap: var(--space-3);
   align-items: flex-start;
-  padding: 12px 14px;
-  background: rgba(126, 174, 178, 0.12);
-  border: 1px solid rgba(126, 174, 178, 0.25);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-secondary-light);
+  border: 1px solid rgba(var(--color-secondary-rgb), 0.25);
   font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-  line-height: 1.45;
-  margin-bottom: 14px;
+  color: var(--color-secondary-dark);
+  line-height: 1.5;
+  margin-bottom: var(--space-4);
 }
 
 .lt-info-icon {
@@ -98,8 +103,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 16px;
-  margin-bottom: 14px;
+  padding: var(--space-6) var(--space-4);
+  margin-bottom: var(--space-4);
   text-align: center;
 }
 
@@ -109,41 +114,40 @@
   gap: 6px;
   font-size: var(--text-xs);
   color: var(--color-text-secondary);
-  margin-bottom: 18px;
+  margin-bottom: var(--space-5);
   background: var(--color-bg-secondary);
-  padding: 4px 12px;
+  padding: 6px 14px;
   border-radius: var(--radius-full);
 }
 
 .lt-kick-button-wrap {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 
 .lt-kick-main-btn {
-  width: 170px;
-  height: 170px;
+  width: 176px;
+  height: 176px;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   border: 6px solid var(--color-surface);
-  box-shadow: 0 8px 24px rgba(216, 142, 170, 0.35);
+  box-shadow: var(--shadow-lg);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  color: var(--color-text-inverse);
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
 .lt-kick-main-btn:active,
 .lt-kick-main-btn--pulse {
-  transform: scale(0.92);
+  transform: scale(0.94);
 }
 
 .lt-kick-main-btn--done {
-  background: linear-gradient(135deg, var(--color-secondary-light) 0%, var(--color-secondary) 100%);
-  box-shadow: 0 8px 24px rgba(126, 174, 178, 0.35);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
 }
 
 .lt-kick-inner {
@@ -160,17 +164,17 @@
 }
 
 .lt-kick-label {
-  font-size: 0.7rem;
+  font-size: var(--text-xs);
   font-weight: 700;
-  margin-top: 4px;
-  max-width: 120px;
-  line-height: 1.2;
+  margin-top: 6px;
+  max-width: 124px;
+  line-height: 1.25;
 }
 
 .lt-kick-progress-wrap {
   width: 100%;
   max-width: 280px;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 .lt-kick-progress-header {
@@ -198,29 +202,34 @@
 .lt-kick-success {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   background: var(--color-secondary-light);
   border: 1px solid var(--color-secondary);
   text-align: left;
-  padding: 12px 14px;
-  margin-bottom: 14px;
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-4);
   width: 100%;
+}
+
+.lt-kick-success h2 {
+  font-size: var(--text-sm);
+  color: var(--color-secondary-dark);
 }
 
 .lt-kick-actions {
   display: flex;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .lt-low-kick-card {
   display: flex;
-  gap: 10px;
+  gap: var(--space-3);
   align-items: flex-start;
-  padding: 12px 14px;
-  background: rgba(242, 201, 126, 0.15);
-  border: 1px solid rgba(242, 201, 126, 0.35);
-  margin-bottom: 20px;
-  line-height: 1.4;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-warning-light);
+  border: 1px solid rgba(var(--color-accent-rgb), 0.35);
+  margin-bottom: var(--space-5);
+  line-height: 1.45;
 }
 
 /* Contraction Card */
@@ -228,8 +237,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 16px;
-  margin-bottom: 16px;
+  padding: var(--space-6) var(--space-4);
+  margin-bottom: var(--space-4);
   text-align: center;
 }
 
@@ -237,7 +246,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 
 .lt-contraction-sec-text {
@@ -255,38 +264,36 @@
 }
 
 .lt-contract-btn {
-  height: 52px;
+  min-height: 52px;
   font-size: var(--text-base);
-  gap: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 16px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .lt-contract-btn--stop {
   background: var(--color-danger);
-  color: white;
+  color: var(--color-text-inverse);
 }
 
 .lt-intensity-wrap {
   width: 100%;
   border-top: 1px solid var(--color-border-light);
-  padding-top: 14px;
+  padding-top: var(--space-4);
   text-align: left;
 }
 
 .lt-intensity-buttons {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .lt-intensity-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
+  min-height: 44px;
   padding: 8px;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
@@ -295,7 +302,7 @@
   font-weight: 700;
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .lt-intensity-btn--active {
@@ -306,67 +313,67 @@
 
 /* 5-1-1 Emergency Alert Banner */
 .lt-511-alert {
-  background: linear-gradient(135deg, #E05660 0%, #B83A43 100%);
-  color: white;
-  padding: 16px;
-  margin-bottom: 16px;
+  background: linear-gradient(135deg, #B4232C 0%, #8E1B22 100%);
+  color: #FFFFFF;
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
 }
 
 .lt-511-top {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
 }
 
-.lt-511-top h3 {
-  color: white;
-  font-size: var(--text-sm);
-  margin-bottom: 2px;
+.lt-511-top h2 {
+  color: #FFFFFF;
+  font-size: var(--text-base);
+  margin-bottom: 4px;
 }
 
 .lt-511-top p {
   font-size: var(--text-xs);
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.94);
+  line-height: 1.45;
 }
 
 .lt-511-call-btn {
-  background: white;
-  color: #B83A43;
+  background: #FFFFFF;
+  color: #8E1B22;
   font-weight: 700;
   font-size: var(--text-xs);
   width: 100%;
-  gap: 6px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* History List */
 .lt-history-section {
-  margin-top: 8px;
+  margin-top: var(--space-2);
 }
 
 .lt-history-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: var(--space-3);
 }
 
 .lt-history-title {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
   font-weight: 700;
   color: var(--color-text-primary);
-  margin-bottom: 10px;
+  margin-bottom: var(--space-3);
+}
+
+.lt-history-header-row .lt-history-title {
+  margin-bottom: 0;
 }
 
 .lt-history-list,
 .lt-contractions-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .lt-session-card,
@@ -374,7 +381,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--color-border);
 }
 
@@ -382,12 +389,12 @@
 .lt-cr-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-3);
 }
 
 .lt-session-kicks {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-full);
   background: var(--color-secondary-light);
   color: var(--color-secondary-dark);
@@ -403,14 +410,14 @@
   font-size: var(--text-xs);
   font-weight: 800;
   color: var(--color-text-tertiary);
-  width: 24px;
+  width: 28px;
 }
 
 .lt-cr-badge {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: var(--radius-full);
 }
 
@@ -425,7 +432,7 @@
 }
 
 .lt-cr-badge--kuat {
-  background: rgba(224, 86, 96, 0.15);
+  background: var(--color-danger-light);
   color: var(--color-danger);
 }
 
@@ -434,21 +441,21 @@
   border: none;
   color: var(--color-text-tertiary);
   cursor: pointer;
-  padding: 4px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
 }
 
 .lt-delete-btn:hover {
   color: var(--color-danger);
+  background: var(--color-danger-light);
 }
 
 .lt-empty-card {
   text-align: center;
-  padding: 28px 16px;
+  padding: var(--space-6) var(--space-4);
   color: var(--color-text-secondary);
-}
-
-.lt-empty-emoji {
-  font-size: 2.2rem;
-  display: block;
-  margin-bottom: 6px;
 }

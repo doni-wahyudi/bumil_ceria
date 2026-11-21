@@ -3,6 +3,7 @@
   align-items: flex-start;
   gap: var(--space-3);
   width: 100%;
+  min-height: 48px;
   padding: var(--space-3) var(--space-4);
   background: var(--color-surface);
   border: 1px solid var(--color-border-light);
@@ -10,18 +11,24 @@
   cursor: pointer;
   text-align: left;
   font-family: var(--font-body);
-  transition: all var(--duration-fast) var(--ease-smooth);
+  transition: border-color var(--duration-fast) var(--ease-smooth),
+              background-color var(--duration-fast) var(--ease-smooth),
+              transform var(--duration-fast) var(--ease-spring);
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
+.checklist-item:hover {
+  border-color: var(--color-border-hover);
+}
+
 .checklist-item:active {
   transform: scale(0.985);
-  background: var(--color-bg);
+  background: var(--color-bg-secondary);
 }
 
 .checklist-item--completed {
-  opacity: 0.65;
+  background: var(--color-bg-secondary);
 }
 
 .checklist-item--completed .checklist-item__text {
@@ -41,9 +48,10 @@
   width: 24px;
   height: 24px;
   border-radius: 7px;
-  border: 2px solid var(--color-border);
-  background: transparent;
-  transition: all var(--duration-fast) var(--ease-spring);
+  border: 2px solid var(--color-border-hover);
+  background: var(--color-surface);
+  transition: background-color var(--duration-fast) var(--ease-spring),
+              border-color var(--duration-fast) var(--ease-spring);
   margin-top: 1px;
 }
 
@@ -64,8 +72,8 @@
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-text-primary);
-  line-height: 1.4;
-  transition: all var(--duration-fast) var(--ease-smooth);
+  line-height: 1.45;
+  transition: color var(--duration-fast) var(--ease-smooth);
 }
 
 .checklist-item__meta {
@@ -75,16 +83,5 @@
 
 .checklist-item__priority {
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: var(--radius-full);
-  background: var(--color-accent-light);
-  color: var(--color-accent-dark);
-  font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 800;
-  margin-top: 2px;
+  margin-top: 1px;
 }

@@ -31,7 +31,7 @@ function LaborTools() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('kick'); // 'kick' | 'contraction'
 
-  // ---- Kick Counter State ----
+  // Kick Counter State
   const [kicks, setKicks] = useState(0);
   const [kickStartTime, setKickStartTime] = useState(null);
   const [kickElapsedSeconds, setKickElapsedSeconds] = useState(0);
@@ -41,7 +41,7 @@ function LaborTools() {
   const [kickRipple, setKickRipple] = useState(false);
   const kickTimerRef = useRef(null);
 
-  // ---- Contraction Timer State ----
+  // Contraction Timer State
   const [isContracting, setIsContracting] = useState(false);
   const [currentContractionStart, setCurrentContractionStart] = useState(null);
   const [currentContractionSeconds, setCurrentContractionSeconds] = useState(0);
@@ -49,7 +49,6 @@ function LaborTools() {
   const [contractions, setContractions] = useState([]);
   const contractionTimerRef = useRef(null);
 
-  // Load past history
   useEffect(() => {
     async function loadHistory() {
       const [kHistory, cHistory] = await Promise.all([
@@ -62,7 +61,6 @@ function LaborTools() {
     loadHistory();
   }, []);
 
-  // Kick Timer Tick
   useEffect(() => {
     if (isKickActive && !isKickFinished) {
       kickTimerRef.current = setInterval(() => {
@@ -74,7 +72,6 @@ function LaborTools() {
     return () => clearInterval(kickTimerRef.current);
   }, [isKickActive, isKickFinished]);
 
-  // Contraction Timer Tick
   useEffect(() => {
     if (isContracting) {
       contractionTimerRef.current = setInterval(() => {
@@ -86,9 +83,7 @@ function LaborTools() {
     return () => clearInterval(contractionTimerRef.current);
   }, [isContracting]);
 
-  // ---- Kick Handlers ----
   const handleRecordKick = () => {
-    // Trigger vibration if supported on mobile
     if (navigator.vibrate) {
       navigator.vibrate(50);
     }
@@ -136,7 +131,6 @@ function LaborTools() {
     setKickSessions(updated);
   };
 
-  // ---- Contraction Handlers ----
   const handleStartContraction = () => {
     setIsContracting(true);
     setCurrentContractionStart(new Date());
@@ -150,7 +144,6 @@ function LaborTools() {
     const endTime = new Date();
     const durationSeconds = Math.max(1, currentContractionSeconds);
 
-    // Calculate interval from previous contraction start
     let intervalMinutes = null;
     if (contractions.length > 0) {
       const lastStart = new Date(contractions[0].startTime);
@@ -178,14 +171,12 @@ function LaborTools() {
     }
   };
 
-  // Format MM:SS
   const formatTime = (totalSeconds) => {
     const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
     const s = (totalSeconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
   };
 
-  // 5-1-1 Rule Evaluation
   const isLabor511Active = () => {
     if (contractions.length < 3) return false;
     const recent = contractions.slice(0, 3);
@@ -206,80 +197,79 @@ function LaborTools() {
           onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
           aria-label="Kembali"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} aria-hidden="true" />
         </button>
         <div>
           <div className="lt-header-badge">
-            <Activity size={14} /> Pemantauan Persalinan
+            <Activity size={14} aria-hidden="true" />
+            <span>Pemantauan Persalinan</span>
           </div>
-          <h2>Alat Medis Persalinan</h2>
+          <h1>Alat Medis Persalinan</h1>
         </div>
       </header>
 
       {/* Sub-Tab Selector */}
-      <div className="lt-tabs animate-fade-in-up" style={{ animationDelay: '60ms' }}>
+      <div className="lt-tabs animate-fade-in-up" style={{ animationDelay: '40ms' }} role="tablist" aria-label="Pilih alat pemantauan">
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'kick'}
           className={`lt-tab-btn ${activeTab === 'kick' ? 'lt-tab-btn--active' : ''}`}
           onClick={() => setActiveTab('kick')}
         >
-          <Footprints size={16} />
+          <Footprints size={16} aria-hidden="true" />
           <span>Tendangan Janin (10 Gerakan)</span>
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeTab === 'contraction'}
           className={`lt-tab-btn ${activeTab === 'contraction' ? 'lt-tab-btn--active' : ''}`}
           onClick={() => setActiveTab('contraction')}
         >
-          <Timer size={16} />
+          <Timer size={16} aria-hidden="true" />
           <span>Timer Kontraksi (5-1-1)</span>
         </button>
       </div>
 
-      {/* ============================================================== */}
-      {/* TAB 1: KICK COUNTER (CARDIFF COUNT-TO-10 PROTOCOL)              */}
-      {/* ============================================================== */}
+      {/* TAB 1: KICK COUNTER */}
       {activeTab === 'kick' && (
-        <div className="lt-section animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-          {/* Medical Protocol Notice */}
+        <div className="lt-section animate-fade-in-up" style={{ animationDelay: '80ms' }}>
           <div className="lt-info-box card">
-            <Heart size={18} color="var(--color-primary)" className="lt-info-icon" />
+            <Heart size={18} color="var(--color-primary)" className="lt-info-icon" aria-hidden="true" />
             <p>
-              <strong>Metode Cardiff Count-to-10:</strong> Dokter kandungan merekomendasikan Mama menghitung minimal <strong>10 gerakan janin</strong> dalam kurun waktu <strong>2 jam</strong> (mulai usia kehamilan 28 minggu).
+              <strong>Metode Cardiff Count-to-10:</strong> Hitung minimal <strong>10 gerakan janin</strong> dalam kurun waktu <strong>2 jam</strong> mulai usia kehamilan 28 minggu.
             </p>
           </div>
 
-          {/* Kick Button & Counter Display */}
-          <div className="lt-kick-card card">
-            <div className="lt-kick-timer">
-              <Clock size={16} color="var(--color-text-secondary)" />
+          <section className="lt-kick-card card" aria-label="Penghitung tendangan janin">
+            <div className="lt-kick-timer tabular-nums">
+              <Clock size={16} color="var(--color-text-secondary)" aria-hidden="true" />
               <span>Durasi Sesi: <strong>{formatTime(kickElapsedSeconds)}</strong></span>
             </div>
 
-            {/* Big Interactive Tactile Kick Button */}
             <div className="lt-kick-button-wrap">
               <button
                 type="button"
                 className={`lt-kick-main-btn ${kickRipple ? 'lt-kick-main-btn--pulse' : ''} ${kicks >= 10 ? 'lt-kick-main-btn--done' : ''}`}
                 onClick={handleRecordKick}
-                aria-label="Rekam satu tendangan janin"
+                aria-label={`Rekam satu tendangan janin, saat ini ${kicks} dari 10`}
               >
                 <div className="lt-kick-inner">
-                  <span className="lt-kick-number">{kicks}</span>
+                  <span className="lt-kick-number tabular-nums">{kicks}</span>
                   <span className="lt-kick-label">
-                    {kicks === 0 ? 'Ketuk Saat Janin Bergerak' : kicks >= 10 ? 'Target Tercapai! 🎉' : 'Tendangan Janin'}
+                    {kicks === 0 ? 'Ketuk Saat Janin Bergerak' : kicks >= 10 ? 'Target Tercapai' : 'Tendangan Janin'}
                   </span>
                 </div>
               </button>
             </div>
 
-            {/* Target Progress Bar */}
             <div className="lt-kick-progress-wrap">
-              <div className="lt-kick-progress-header">
+              <div className="lt-kick-progress-header tabular-nums">
                 <span>Progres Gerakan</span>
                 <strong>{kicks} / 10 gerakan</strong>
               </div>
-              <div className="lt-kick-progress-bar">
+              <div className="lt-kick-progress-bar" role="progressbar" aria-valuenow={kicks} aria-valuemin={0} aria-valuemax={10}>
                 <div
                   className="lt-kick-progress-fill"
                   style={{ width: `${Math.min(100, (kicks / 10) * 100)}%` }}
@@ -287,25 +277,24 @@ function LaborTools() {
               </div>
             </div>
 
-            {/* Target Reached Success Card */}
             {isKickFinished && (
-              <div className="lt-kick-success card animate-scale-in">
-                <CheckCircle2 size={24} color="var(--color-secondary)" />
+              <div className="lt-kick-success card animate-scale-in" role="status">
+                <CheckCircle2 size={24} color="var(--color-secondary-dark)" aria-hidden="true" />
                 <div>
-                  <h4>Alhamdulillah! 10 Gerakan Tercapai</h4>
-                  <p className="text-xs text-secondary">
-                    Tercapai dalam <strong>{formatTime(kickElapsedSeconds)}</strong>. Janin dalam kondisi aktif dan responsif!
+                  <h2>10 Gerakan Tercapai</h2>
+                  <p className="text-xs text-secondary tabular-nums">
+                    Tercapai dalam <strong>{formatTime(kickElapsedSeconds)}</strong>. Janin dalam kondisi aktif dan responsif.
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="lt-kick-actions">
               {(isKickActive || isKickFinished || kicks > 0) && (
                 <>
                   <button type="button" className="btn btn-ghost" onClick={handleResetKick}>
-                    <RotateCcw size={15} /> Reset
+                    <RotateCcw size={15} aria-hidden="true" />
+                    <span>Reset</span>
                   </button>
                   <button type="button" className="btn btn-primary" onClick={handleSaveKickSession}>
                     Simpan Sesi Ini
@@ -313,33 +302,31 @@ function LaborTools() {
                 </>
               )}
             </div>
-          </div>
+          </section>
 
-          {/* Advice if low fetal movement */}
           <div className="lt-low-kick-card card">
-            <AlertTriangle size={18} color="var(--color-warning)" className="lt-info-icon" />
+            <AlertTriangle size={18} color="var(--color-warning)" className="lt-info-icon" aria-hidden="true" />
             <div>
               <strong>Tips Jika Janin Kurang Aktif:</strong>
-              <p className="text-xs text-secondary" style={{ marginTop: '2px' }}>
-                Janin mungkin sedang tidur (siklus tidur 20–40 menit). Coba minum segelas air dingin manis, makan cemilan, lalu berbaring miring ke kiri selama 30 menit. Jika dalam 2 jam tetap kurang dari 10 gerakan, segera hubungi dokter atau periksa ke faskes.
+              <p className="text-xs text-secondary" style={{ marginTop: '4px' }}>
+                Janin mungkin sedang tidur (siklus 20–40 menit). Minum segelas air dingin manis, makan camilan, lalu berbaring miring ke kiri 30 menit. Jika dalam 2 jam tetap kurang dari 10 gerakan, segera periksa ke faskes.
               </p>
             </div>
           </div>
 
-          {/* Past Sessions History */}
-          <div className="lt-history-section">
-            <h4 className="lt-history-title">Riwayat Hitung Tendangan</h4>
+          <section className="lt-history-section">
+            <h2 className="lt-history-title">Riwayat Hitung Tendangan</h2>
             <div className="lt-history-list stagger-children">
               {kickSessions.map((s) => (
                 <div key={s.id} className="lt-session-card card">
                   <div className="lt-session-left">
-                    <span className="lt-session-kicks">
-                      {s.kicks} {s.kicks >= 10 ? '✓' : ''}
+                    <span className="lt-session-kicks tabular-nums">
+                      {s.kicks}
                     </span>
                     <div>
                       <strong>{formatDateID(s.date)}</strong>
-                      <p className="text-xs text-secondary">
-                        Mulai {s.startTime} • Durasi {formatTime(s.durationSeconds)}
+                      <p className="text-xs text-secondary tabular-nums">
+                        Mulai {s.startTime} · Durasi {formatTime(s.durationSeconds)}
                       </p>
                     </div>
                   </div>
@@ -347,37 +334,34 @@ function LaborTools() {
                     type="button"
                     className="lt-delete-btn"
                     onClick={() => handleDeleteKickSession(s.id)}
+                    aria-label={`Hapus sesi ${formatDateID(s.date)}`}
                     title="Hapus riwayat"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={16} aria-hidden="true" />
                   </button>
                 </div>
               ))}
 
               {kickSessions.length === 0 && (
                 <div className="lt-empty-card card">
-                  <span className="lt-empty-emoji">👶</span>
-                  <p>Belum ada rekaman sesi. Ketuk lingkaran di atas saat janin bergerak!</p>
+                  <p>Belum ada rekaman sesi. Ketuk tombol lingkaran di atas saat janin bergerak.</p>
                 </div>
               )}
             </div>
-          </div>
+          </section>
         </div>
       )}
 
-      {/* ============================================================== */}
-      {/* TAB 2: CONTRACTION TIMER & 5-1-1 RULE DETECTOR                 */}
-      {/* ============================================================== */}
+      {/* TAB 2: CONTRACTION TIMER */}
       {activeTab === 'contraction' && (
-        <div className="lt-section animate-fade-in-up" style={{ animationDelay: '100ms' }}>
-          {/* 5-1-1 Emergency Alert Banner */}
+        <div className="lt-section animate-fade-in-up" style={{ animationDelay: '80ms' }}>
           {is511 ? (
-            <div className="lt-511-alert card animate-scale-in">
+            <div className="lt-511-alert card animate-scale-in" role="alert">
               <div className="lt-511-top">
-                <AlertTriangle size={24} color="#fff" />
+                <AlertTriangle size={24} color="#FFFFFF" aria-hidden="true" />
                 <div>
-                  <h3>POLA KONTRAKSI 5-1-1 TERDETEKSI!</h3>
-                  <p>Kontraksi Anda sudah teratur tiap ~5 menit berdurasi ~1 menit. Ini tanda persalinan aktif!</p>
+                  <h2>Pola Kontraksi 5-1-1 Terdeteksi</h2>
+                  <p>Kontraksi teratur tiap ~5 menit berdurasi ~1 menit. Segera hubungi atau berangkat ke rumah sakit.</p>
                 </div>
               </div>
               <button
@@ -385,22 +369,22 @@ function LaborTools() {
                 className="btn lt-511-call-btn"
                 onClick={() => navigate('/hospitals')}
               >
-                <Phone size={16} /> Buka Direktori Faskes & Telepon IGD
+                <Phone size={16} aria-hidden="true" />
+                <span>Buka Direktori Faskes &amp; Telepon IGD</span>
               </button>
             </div>
           ) : (
             <div className="lt-info-box card">
-              <Timer size={18} color="var(--color-secondary-dark)" className="lt-info-icon" />
+              <Timer size={18} color="var(--color-secondary-dark)" className="lt-info-icon" aria-hidden="true" />
               <p>
-                <strong>Rumus Medis 5-1-1:</strong> Segera ke rumah sakit jika kontraksi terjadi <strong>setiap 5 menit</strong>, berdurasi <strong>minimal 1 menit (60 detik)</strong>, dan konsisten berlangsung selama <strong>1 jam</strong>.
+                <strong>Rumus Medis 5-1-1:</strong> Segera ke rumah sakit jika kontraksi terjadi <strong>setiap 5 menit</strong>, berdurasi <strong>minimal 1 menit (60 detik)</strong>, dan konsisten selama <strong>1 jam</strong>.
               </p>
             </div>
           )}
 
-          {/* Active Timer Card */}
-          <div className="lt-contraction-card card">
+          <section className="lt-contraction-card card" aria-label="Timer kontraksi">
             <div className="lt-contraction-timer-display">
-              <span className="lt-contraction-sec-text">
+              <span className="lt-contraction-sec-text tabular-nums" aria-live="polite">
                 {formatTime(currentContractionSeconds)}
               </span>
               <span className="lt-contraction-status-label">
@@ -408,14 +392,14 @@ function LaborTools() {
               </span>
             </div>
 
-            {/* Start / Stop Button */}
             {!isContracting ? (
               <button
                 type="button"
                 className="btn btn-primary btn-full lt-contract-btn lt-contract-btn--start"
                 onClick={handleStartContraction}
               >
-                <Play size={20} /> Mulai Kontraksi
+                <Play size={20} aria-hidden="true" />
+                <span>Mulai Kontraksi</span>
               </button>
             ) : (
               <button
@@ -423,43 +407,43 @@ function LaborTools() {
                 className="btn btn-full lt-contract-btn lt-contract-btn--stop"
                 onClick={handleStopContraction}
               >
-                <Square size={20} /> Kontraksi Berhenti
+                <Square size={20} aria-hidden="true" />
+                <span>Kontraksi Berhenti</span>
               </button>
             )}
 
-            {/* Pain Intensity Selector */}
             <div className="lt-intensity-wrap">
-              <span className="eyebrow" style={{ display: 'block', marginBottom: '6px' }}>
+              <span className="eyebrow" style={{ display: 'block', marginBottom: '8px' }}>
                 Tingkat Rasa Kencang / Nyeri:
               </span>
-              <div className="lt-intensity-buttons">
+              <div className="lt-intensity-buttons" role="group" aria-label="Pilih intensitas kontraksi">
                 {[
-                  { id: 'ringan', label: 'Ringan', desc: 'Bisa bicara normal' },
-                  { id: 'sedang', label: 'Sedang', desc: 'Sulit bicara' },
-                  { id: 'kuat', label: 'Kuat', desc: 'Sangat intens' },
+                  { id: 'ringan', label: 'Ringan' },
+                  { id: 'sedang', label: 'Sedang' },
+                  { id: 'kuat', label: 'Kuat' },
                 ].map((lvl) => (
                   <button
                     key={lvl.id}
                     type="button"
+                    aria-pressed={selectedIntensity === lvl.id}
                     className={`lt-intensity-btn ${selectedIntensity === lvl.id ? 'lt-intensity-btn--active' : ''}`}
                     onClick={() => setSelectedIntensity(lvl.id)}
                   >
-                    <Flame size={14} />
+                    <Flame size={14} aria-hidden="true" />
                     <span>{lvl.label}</span>
                   </button>
                 ))}
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Contraction History */}
-          <div className="lt-history-section">
+          <section className="lt-history-section">
             <div className="lt-history-header-row">
-              <h4 className="lt-history-title">Riwayat Kontraksi Sesi Ini ({contractions.length})</h4>
+              <h2 className="lt-history-title tabular-nums">Riwayat Kontraksi Sesi Ini ({contractions.length})</h2>
               {contractions.length > 0 && (
                 <button
                   type="button"
-                  className="btn btn-ghost text-xs"
+                  className="btn btn-ghost btn-sm"
                   onClick={handleClearContractions}
                 >
                   Hapus Sesi
@@ -471,12 +455,12 @@ function LaborTools() {
               {contractions.map((c, idx) => (
                 <div key={c.id} className="lt-contraction-row card">
                   <div className="lt-cr-left">
-                    <span className="lt-cr-index">#{contractions.length - idx}</span>
+                    <span className="lt-cr-index tabular-nums">#{contractions.length - idx}</span>
                     <div>
-                      <strong>Durasi: {c.durationSeconds} detik</strong>
-                      <p className="text-xs text-secondary">
+                      <strong className="tabular-nums">Durasi: {c.durationSeconds} detik</strong>
+                      <p className="text-xs text-secondary tabular-nums">
                         Pukul {new Date(c.startTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
-                        {c.intervalMinutes !== null ? ` • Jarak: ${c.intervalMinutes} menit` : ' • Kontraksi pertama'}
+                        {c.intervalMinutes !== null ? ` · Jarak: ${c.intervalMinutes} menit` : ' · Kontraksi pertama'}
                       </p>
                     </div>
                   </div>
@@ -488,12 +472,11 @@ function LaborTools() {
 
               {contractions.length === 0 && !isContracting && (
                 <div className="lt-empty-card card">
-                  <span className="lt-empty-emoji">⏱️</span>
                   <p>Belum ada kontraksi yang dicatat. Ketuk tombol di atas saat perut mulai mengencang.</p>
                 </div>
               )}
             </div>
-          </div>
+          </section>
         </div>
       )}
     </div>
